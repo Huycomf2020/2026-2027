@@ -15,11 +15,37 @@ const CONFIG = Object.freeze({
   ]
 });
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.action) return handleApiRequest_(e);
   return HtmlService.createTemplateFromFile('index').evaluate()
     .setTitle('Đoàn trường THPT Lộc Ninh')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+function doPost(e) {
+  return handleApiRequest_(e);
+}
+
+function handleApiRequest_(e) {
+  try {
+    const action = String(e.parameter.action || '');
+    const args = JSON.parse(e.parameter.args || '[]');
+    const allowed = {
+      getBootstrapData: getBootstrapData,
+      getRules: getRules,
+      verifyAttendancePassword: verifyAttendancePassword,
+      getStudentsByClass: getStudentsByClass,
+      saveAttendance: saveAttendance,
+      getCompetitionData: getCompetitionData
+    };
+    if (!allowed[action]) throw new Error('API action không hợp lệ.');
+    return ContentService.createTextOutput(JSON.stringify({ok:true, data:allowed[action].apply(null, args)}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ok:false, error:error.message || String(error)}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function onOpen() {

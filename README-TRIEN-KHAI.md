@@ -10,6 +10,10 @@
 6. Chạy hàm `initializeSystem` một lần và cấp quyền. Hàm sẽ tạo/định dạng các sheet `quy_dinh`, `khoi_lop`, `thi_dua`, `hoat_dong_khac`, `dashboard`.
 7. Chọn **Deploy → Manage deployments → Edit**, phiên bản **New version**, thực thi dưới tài khoản của bạn và đặt quyền truy cập phù hợp; sau đó **Deploy**.
 
+## Chạy giao diện trên GitHub Pages
+
+`index.html` tự động gọi Apps Script như một API khi được mở ngoài Apps Script. Trong GitHub, vào **Settings → Pages**, chọn **Deploy from a branch**, nhánh `main`, thư mục `/ (root)` rồi lưu. Không thay đổi hằng số `API_URL` trừ khi tạo deployment Apps Script mới.
+
 ## Dữ liệu
 
 - `quy_dinh`: nhập nội dung và mức điểm trừ.
