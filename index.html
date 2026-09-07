@@ -433,7 +433,7 @@
     }
   }
 
-  // Bấm khắc phục trực tiếp trong tab Hỗ trợ (không cần nhập lại mật khẩu)
+  // Bấm khắc phục trực tiếp trong tab Hỗ trợ
   async function confirmResolveDirect(targetKey, studentName) {
     if(confirm(`Xác nhận học sinh ${studentName} đã hoàn thành khắc phục lỗi?`)) {
       try {
@@ -441,6 +441,8 @@
         const res = await server('resolveViolation', targetKey);
         if (res.ok) {
           toast(res.message);
+          // Tải lại dữ liệu thi đua toàn hệ thống & danh sách vi phạm
+          await init();
           loadViolationsData();
         }
       } catch(e) {
