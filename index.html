@@ -98,7 +98,7 @@
   
   async function loadClass(cls){$('#studentArea').style.display='block';$('#classTitle').textContent=`Lớp ${cls}`;$('#students').innerHTML='<div class="loader"></div>';try{state.students=await server('getStudentsByClass',cls,state.token);state.className=cls;$('#studentCount').textContent=`${state.students.length} học sinh`;renderStudents()}catch(e){toast(e.message);$('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>'}}
   
-  // Render Học sinh với 4 nút trạng thái (bao gồm nút Vi phạm)
+  // Render Học sinh với 4 nút trạng thái (Sửa lỗi CSS Selector chuẩn)
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
     const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
@@ -112,14 +112,14 @@
         </div>
         <div class="statuses">
           ${baseStatuses.map(x=>`<button class="status ${s.status===x?'selected':''}" data-s="${x}">${x}</button>`).join('')}
-          <button class="status ${s.status && !baseStatuses.includes(s.status) ? 'selected rule-active' : ''}" data-s="Vi phạm" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
+          <button class="status btn-rule ${s.status && !baseStatuses.includes(s.status) ? 'selected rule-active' : ''}" data-s="Vi phạm" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
             ${s.status && !baseStatuses.includes(s.status) ? esc(s.status) : 'Vi phạm'}
           </button>
         </div>
       </div>
     `).join('');
     
-    $$('.status[data-s!="Vi phạm"]').forEach(btn=>btn.onclick=()=>{
+    $$('.status:not(.btn-rule)').forEach(btn=>btn.onclick=()=>{
       const row=btn.closest('.student');
       const student=state.students.find(s=>s.row==row.dataset.row);
       if(btn.classList.contains('selected')){
