@@ -55,7 +55,7 @@
       <!-- Thanh Marquee hiển thị học sinh vi phạm >= 4 lỗi -->
       <div class="card" style="margin-bottom: 18px; padding: 12px 20px; background: #fff5f5; border: 1px solid #fed7d7;">
         <div style="display: flex; align-items: center; gap: 10px; color: #c53030; font-weight: 700;">
-          <span style="white-space: nowrap;">🚨 HỌC SINH TỪ 4 LỖI VI PHẠM:</span>
+          <span style="white-space: nowrap;">🚨 HỌC SINH VI PHẠM TỪ 4 LỖI TRỞ LÊN:</span>
           <marquee id="marqueeViolations" behavior="scroll" direction="left" scrollamount="6" style="font-weight: 600;">
             Đang tải danh sách vi phạm...
           </marquee>
@@ -67,9 +67,9 @@
         <div class="card"><h3>Bảng xếp hạng</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
       </div>
 
-      <!-- Bảng Thống Kê Học Sinh Vi Phạm Chi Tiết Dưới Chart -->
+      <!-- Bảng Thống Kê Học Sinh Vi Phạm (Chỉ hiện các em >= 4 lỗi) -->
       <div class="card" style="margin-top: 18px;">
-        <h3>⚠️ Bảng thống kê học sinh vi phạm thi đua</h3>
+        <h3>⚠️ Bảng thống kê học sinh vi phạm nghiêm trọng (Từ 4 lỗi)</h3>
         <div class="table-wrap">
           <table class="ranking">
             <thead>
@@ -243,7 +243,7 @@
         students:state.students.map(s=>({row:s.row, status:s.status, deduction:s.deduction}))
       },state.token);
       toast(`Đã ghi nhận ${r.count} trường hợp vi phạm/vắng`);
-      loadViolationsData();
+      init(); // Load lại điểm thi đua & danh sách vi phạm
     }catch(e){
       toast(e.message);
     }finally{
@@ -267,14 +267,16 @@
     try {
       const res = await server('getViolationsSummary');
       
+      // Marquee (Chỉ hiện các em >= 4 lỗi CHƯA KHẮC PHỤC)
       if (res.marqueeList && res.marqueeList.length > 0) {
         $('#marqueeViolations').textContent = res.marqueeList
           .map(s => `${s.name} (${s.className}: ${s.count} lỗi -${s.totalDeduction}đ)`)
           .join('   •   ');
       } else {
-        $('#marqueeViolations').textContent = '✅ Chưa có học sinh nào vi phạm từ 4 lỗi trở lên chưa khắc phục!';
+        $('#marqueeViolations').textContent = '🎉 Tuyệt vời: Không có học sinh nào vi phạm từ 4 lỗi trở lên!';
       }
 
+      // Bảng thống kê (Chỉ hiện các em >= 4 lỗi)
       if (res.allErrors && res.allErrors.length > 0) {
         $('#violationTableBody').innerHTML = res.allErrors.map(s => `
           <tr>
@@ -293,14 +295,13 @@
           </tr>
         `).join('');
       } else {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm trong kỳ này.</td></tr>';
+        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm từ 4 lỗi trở lên trong kỳ này.</td></tr>';
       }
     } catch(e) {
       console.error(e);
     }
   }
 
-  // 🔴 HÀM XỬ LÝ KHI BÍ THƯ ĐOÀN BẤM NÚT GHI NHẬN KHẮC PHỤC
   async function confirmResolve(targetKey, studentName) {
     if (confirm(`Xác nhận ghi nhận học sinh ${studentName} đã hoàn thành khắc phục vi phạm (lao động/vệ sinh)?`)) {
       try {
@@ -308,7 +309,7 @@
         const res = await server('resolveViolation', targetKey);
         if (res.ok) {
           toast(res.message);
-          init(); // Tải lại toàn bộ dữ liệu thi đua & bảng
+          init();
         }
       } catch(e) {
         toast(e.message);
