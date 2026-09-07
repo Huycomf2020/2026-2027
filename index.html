@@ -30,7 +30,6 @@
     .status[data-s="Đi trễ"].selected{background:#f59e0b;color:#fff;border-color:#f59e0b}
     .status.rule-btn.selected{background:#7c3aed !important;color:#fff !important;border-color:#7c3aed !important;}
     
-    /* FIX LỖI CĂN CHỈNH CHECKBOX VÀ TRÀN LỀ POPUP */
     .rule-checkbox-item {background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px;display:flex !important;flex-direction:row !important;align-items:center !important;gap:12px;cursor:pointer;transition:all 0.2s;width:100%;box-sizing:border-box;}
     .rule-checkbox-item:hover {background:#f1f5f9;border-color:#7c3aed;}
     .rule-checkbox-item input.chk-rule {width:20px !important;height:20px !important;flex-shrink:0 !important;margin:0 !important;cursor:pointer;}
@@ -174,13 +173,21 @@
   
   async function loadClass(cls){$('#studentArea').style.display='block';$('#classTitle').textContent=`Lớp ${cls}`;$('#students').innerHTML='<div class="loader"></div>';try{state.students=await server('getStudentsByClass',cls,state.token);state.className=cls;$('#studentCount').textContent=`${state.students.length} học sinh`;renderStudents()}catch(e){toast(e.message);$('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>'}}
   
+  // 🔴 RENDER HỌC SINH: HỖ TRỢ CHỌN NHIỀU NÚT TRẠNG THÁI CÙNG LÚC
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
     const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
     
     $('#students').innerHTML=state.students.map(s=>{
       if (s.status === 'Có mặt') s.status = '';
-      const isCustomRule = s.status && !baseStatuses.includes(s.status);
+      
+      // Phân tách trạng thái hiện tại thành mảng các lỗi
+      const selectedList = s.status ? s.status.split(', ').map(x=>x.trim()) : [];
+      const hasBaseStatus = (st) => selectedList.includes(st);
+      
+      // Kiểm tra có lỗi từ Popup không (Lỗi ngoài 3 lỗi cơ bản)
+      const customRules = selectedList.filter(x => !baseStatuses.includes(x));
+      const hasCustomRule = customRules.length > 0;
       
       return `
         <div class="student" data-row="${s.row}">
@@ -190,11 +197,11 @@
             <small>${esc(s.code)}</small>
           </div>
           <div class="statuses">
-            <button class="status ${s.status==='Vắng mặt'?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng mặt', 1)">Vắng mặt</button>
-            <button class="status ${s.status==='Vắng không phép'?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
-            <button class="status ${s.status==='Đi trễ'?'selected':''}" onclick="toggleStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
-            <button class="status rule-btn ${isCustomRule?'selected':''}" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
-              ${isCustomRule ? esc(s.status) : 'Vi phạm'}
+            <button class="status ${hasBaseStatus('Vắng mặt')?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng mặt', 1)">Vắng mặt</button>
+            <button class="status ${hasBaseStatus('Vắng không phép')?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
+            <button class="status ${hasBaseStatus('Đi trễ')?'selected':''}" onclick="toggleStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
+            <button class="status rule-btn ${hasCustomRule?'selected':''}" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
+              ${hasCustomRule ? esc(customRules.join(', ')) : 'Vi phạm'}
             </button>
           </div>
         </div>
@@ -202,16 +209,25 @@
     }).join('');
   }
 
+  // 🔴 CỘNG/TRỪ BẬT TẮT NHIỀU LỰA CHỌN GIỮA CÁC NÚT CƠ BẢN
   function toggleStatus(rowId, statusName, defaultDeduction) {
     const student = state.students.find(s => s.row == rowId);
     if (!student) return;
-    if (student.status === statusName) {
-      student.status = '';
-      student.deduction = 0;
+    
+    const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
+    let currentList = student.status ? student.status.split(', ').map(x=>x.trim()).filter(Boolean) : [];
+    
+    if (currentList.includes(statusName)) {
+      // Bỏ chọn nút này
+      currentList = currentList.filter(x => x !== statusName);
+      student.deduction = Math.max(0, (student.deduction || 0) - defaultDeduction);
     } else {
-      student.status = statusName;
-      student.deduction = defaultDeduction;
+      // Chọn thêm nút này
+      currentList.push(statusName);
+      student.deduction = (student.deduction || 0) + defaultDeduction;
     }
+    
+    student.status = currentList.join(', ');
     renderStudents();
   }
 
@@ -228,13 +244,19 @@
         return;
       }
 
-      $('#ruleListContainer').innerHTML = rules.map((r) => `
-        <label class="rule-checkbox-item">
-          <input type="checkbox" class="chk-rule" data-content="${esc(r.content)}" data-deduction="${r.deduction}">
-          <div class="rule-text-content"><b>${esc(r.content)}</b></div>
-          <span class="rule-badge">-${r.deduction} điểm</span>
-        </label>
-      `).join('');
+      const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
+      const currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()) : [];
+
+      $('#ruleListContainer').innerHTML = rules.map((r) => {
+        const isChecked = currentList.includes(r.content);
+        return `
+          <label class="rule-checkbox-item">
+            <input type="checkbox" class="chk-rule" data-content="${esc(r.content)}" data-deduction="${r.deduction}" ${isChecked ? 'checked' : ''}>
+            <div class="rule-text-content"><b>${esc(r.content)}</b></div>
+            <span class="rule-badge">-${r.deduction} điểm</span>
+          </label>
+        `;
+      }).join('');
     } catch(e) {
       toast(e.message);
     }
@@ -243,26 +265,28 @@
   function applySelectedViolations() {
     if (!activeStudentForModal) return;
     
-    const selectedBoxes = $$('.chk-rule:checked');
-    if (selectedBoxes.length === 0) {
-      toast("Vui lòng chọn ít nhất 1 lỗi vi phạm!");
-      return;
-    }
-
+    const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
+    let currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()).filter(x => baseStatuses.includes(x)) : [];
+    
+    // Tính lại điểm trừ từ các nút cơ bản đang chọn
     let totalDeduction = 0;
-    const selectedNames = [];
+    if (currentList.includes('Vắng mặt')) totalDeduction += 1;
+    if (currentList.includes('Vắng không phép')) totalDeduction += 3;
+    if (currentList.includes('Đi trễ')) totalDeduction += 2;
 
+    // Cộng thêm các lỗi tích chọn trong Modal
+    const selectedBoxes = $$('.chk-rule:checked');
     selectedBoxes.forEach(chk => {
-      selectedNames.push(chk.dataset.content);
+      currentList.push(chk.dataset.content);
       totalDeduction += Number(chk.dataset.deduction) || 0;
     });
 
-    activeStudentForModal.status = selectedNames.join(', ');
+    activeStudentForModal.status = currentList.join(', ');
     activeStudentForModal.deduction = totalDeduction;
 
     $('#ruleModal').classList.remove('open');
     renderStudents();
-    toast(`Đã gán ${selectedNames.length} lỗi (-${totalDeduction}đ)`);
+    toast(`Đã cập nhật các vi phạm (-${totalDeduction}đ)`);
   }
 
   $('#saveAttendance').onclick=async()=>{
