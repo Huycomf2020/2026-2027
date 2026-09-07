@@ -33,6 +33,9 @@
     .rule-item:hover {background:#f1f5f9;border-color:#7c3aed;}
     .rule-badge {background:#fee2e2;color:#dc2626;font-weight:700;padding:4px 8px;border-radius:8px;font-size:12px;}
     
+    .btn-resolve {background:#10b981; color:#fff; border:0; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer;}
+    .btn-resolve:hover {background:#059669;}
+    
     .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
     .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(420px,calc(100% - 30px));background:#fff;border-radius:24px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.28)}.modal-card h3{font-size:23px;margin:0}.modal-card input{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:17px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}footer{text-align:center;color:#738796;padding:20px}.loader{width:25px;height:25px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:35px auto}@keyframes spin{to{transform:rotate(360deg)}}
     @media(max-width:800px){.grid2{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}}
@@ -49,7 +52,7 @@
       </div>
       <div id="podium" class="podium"></div>
       
-      <!-- 🔴 Thanh Marquee hiển thị học sinh vi phạm >= 4 lỗi -->
+      <!-- Thanh Marquee hiển thị học sinh vi phạm >= 4 lỗi -->
       <div class="card" style="margin-bottom: 18px; padding: 12px 20px; background: #fff5f5; border: 1px solid #fed7d7;">
         <div style="display: flex; align-items: center; gap: 10px; color: #c53030; font-weight: 700;">
           <span style="white-space: nowrap;">🚨 HỌC SINH TỪ 4 LỖI VI PHẠM:</span>
@@ -64,7 +67,7 @@
         <div class="card"><h3>Bảng xếp hạng</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
       </div>
 
-      <!-- 🔴 Bảng Thống Kê Học Sinh Vi Phạm Chi Tiết Dưới Chart -->
+      <!-- Bảng Thống Kê Học Sinh Vi Phạm Chi Tiết Dưới Chart -->
       <div class="card" style="margin-top: 18px;">
         <h3>⚠️ Bảng thống kê học sinh vi phạm thi đua</h3>
         <div class="table-wrap">
@@ -77,10 +80,11 @@
                 <th>Số lần vi phạm</th>
                 <th>Tổng điểm trừ</th>
                 <th>Chi tiết các lỗi</th>
+                <th>Thao tác (Bí thư Đoàn)</th>
               </tr>
             </thead>
             <tbody id="violationTableBody">
-              <tr><td colspan="6" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
+              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
             </tbody>
           </table>
         </div>
@@ -132,7 +136,7 @@
       renderRules();
       renderClasses();
       renderCompetition(state.data.competition);
-      loadViolationsData(); // 🔴 Load dữ liệu vi phạm cho Bảng và Marquee
+      loadViolationsData();
       const c=state.data.current;
       $('#sessionText').textContent=c.date;
       $('#periodBadge').textContent=(c.period==='Sáng'?'🌤️ ':'🌇 ')+c.period;
@@ -239,7 +243,7 @@
         students:state.students.map(s=>({row:s.row, status:s.status, deduction:s.deduction}))
       },state.token);
       toast(`Đã ghi nhận ${r.count} trường hợp vi phạm/vắng`);
-      loadViolationsData(); // Tải lại bảng vi phạm ngay khi lưu thành công
+      loadViolationsData();
     }catch(e){
       toast(e.message);
     }finally{
@@ -259,21 +263,18 @@
     state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
   }
 
-  // 🔴 HÀM RENDER DỮ LIỆU VI PHẠM CHO MARQUEE VÀ BẢNG THỐNG KÊ
   async function loadViolationsData() {
     try {
       const res = await server('getViolationsSummary');
       
-      // 1. Thanh Marquee (Chỉ hiện các em >= 4 lỗi)
       if (res.marqueeList && res.marqueeList.length > 0) {
         $('#marqueeViolations').textContent = res.marqueeList
           .map(s => `${s.name} (${s.className}: ${s.count} lỗi -${s.totalDeduction}đ)`)
           .join('   •   ');
       } else {
-        $('#marqueeViolations').textContent = '✅ Chưa có học sinh nào vi phạm từ 4 lỗi trở lên!';
+        $('#marqueeViolations').textContent = '✅ Chưa có học sinh nào vi phạm từ 4 lỗi trở lên chưa khắc phục!';
       }
 
-      // 2. Bảng thống kê bên dưới Chart
       if (res.allErrors && res.allErrors.length > 0) {
         $('#violationTableBody').innerHTML = res.allErrors.map(s => `
           <tr>
@@ -283,13 +284,35 @@
             <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${s.count} lần</span></td>
             <td><strong style="color:#dc2626;">-${s.totalDeduction}đ</strong></td>
             <td><small>${esc(s.errors.join(', '))}</small></td>
+            <td>
+              ${s.isFullyResolved 
+                ? '<span style="color:#10b981; font-weight:700;">✅ Đã khắc phục</span>' 
+                : `<button class="btn-resolve" onclick="confirmResolve('${esc(s.code ? s.code : s.className + "_" + s.name)}', '${esc(s.name)}')">✨ Ghi nhận khắc phục</button>`
+              }
+            </td>
           </tr>
         `).join('');
       } else {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm trong kỳ này.</td></tr>';
+        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm trong kỳ này.</td></tr>';
       }
     } catch(e) {
-      console.error("Lỗi nạp danh sách vi phạm:", e);
+      console.error(e);
+    }
+  }
+
+  // 🔴 HÀM XỬ LÝ KHI BÍ THƯ ĐOÀN BẤM NÚT GHI NHẬN KHẮC PHỤC
+  async function confirmResolve(targetKey, studentName) {
+    if (confirm(`Xác nhận ghi nhận học sinh ${studentName} đã hoàn thành khắc phục vi phạm (lao động/vệ sinh)?`)) {
+      try {
+        toast("Đang cập nhật...");
+        const res = await server('resolveViolation', targetKey);
+        if (res.ok) {
+          toast(res.message);
+          init(); // Tải lại toàn bộ dữ liệu thi đua & bảng
+        }
+      } catch(e) {
+        toast(e.message);
+      }
     }
   }
   
