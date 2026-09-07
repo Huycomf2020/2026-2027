@@ -21,14 +21,13 @@
     .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
     .student{display:grid;grid-template-columns:50px minmax(180px,1fr) minmax(320px,1fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
     
-    /* 4 nút trạng thái điểm danh */
     .statuses{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
     .status{border:1px solid #dce6eb;background:#fff;border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;transition:.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .status.selected{background:#075985;color:#fff;border-color:#075985}
     .status[data-s="Vắng mặt"].selected{background:#64748b;color:#fff;border-color:#64748b}
     .status[data-s="Vắng không phép"].selected{background:#dc2626;color:#fff;border-color:#dc2626}
     .status[data-s="Đi trễ"].selected{background:#f59e0b;color:#fff;border-color:#f59e0b}
-    .status[data-s="Vi phạm"].selected, .status.rule-active {background:#7c3aed !important;color:#fff !important;border-color:#7c3aed !important;}
+    .status.rule-btn.selected{background:#7c3aed !important;color:#fff !important;border-color:#7c3aed !important;}
     
     .rule-item {background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all 0.2s;}
     .rule-item:hover {background:#f1f5f9;border-color:#7c3aed;}
@@ -98,41 +97,46 @@
   
   async function loadClass(cls){$('#studentArea').style.display='block';$('#classTitle').textContent=`Lớp ${cls}`;$('#students').innerHTML='<div class="loader"></div>';try{state.students=await server('getStudentsByClass',cls,state.token);state.className=cls;$('#studentCount').textContent=`${state.students.length} học sinh`;renderStudents()}catch(e){toast(e.message);$('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>'}}
   
-  // Render Học sinh với 4 nút trạng thái (Sửa lỗi CSS Selector chuẩn)
+  // 🔴 SỬA DỨT ĐIỂM: ÉP NÚT TÍM HIỂN THỊ DÙNG CHỮ "VI PHẠM"
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
     const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
     
-    $('#students').innerHTML=state.students.map(s=>`
-      <div class="student" data-row="${s.row}">
-        <b>${esc(s.stt)}</b>
-        <div class="student-name">
-          <b>${esc(s.name)}</b>
-          <small>${esc(s.code)}</small>
+    $('#students').innerHTML=state.students.map(s=>{
+      if (s.status === 'Có mặt') s.status = '';
+      const isCustomRule = s.status && !baseStatuses.includes(s.status);
+      
+      return `
+        <div class="student" data-row="${s.row}">
+          <b>${esc(s.stt)}</b>
+          <div class="student-name">
+            <b>${esc(s.name)}</b>
+            <small>${esc(s.code)}</small>
+          </div>
+          <div class="statuses">
+            <button class="status ${s.status==='Vắng mặt'?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng mặt', 1)">Vắng mặt</button>
+            <button class="status ${s.status==='Vắng không phép'?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
+            <button class="status ${s.status==='Đi trễ'?'selected':''}" onclick="toggleStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
+            <button class="status rule-btn ${isCustomRule?'selected':''}" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
+              ${isCustomRule ? esc(s.status) : 'Vi phạm'}
+            </button>
+          </div>
         </div>
-        <div class="statuses">
-          ${baseStatuses.map(x=>`<button class="status ${s.status===x?'selected':''}" data-s="${x}">${x}</button>`).join('')}
-          <button class="status btn-rule ${s.status && !baseStatuses.includes(s.status) ? 'selected rule-active' : ''}" data-s="Vi phạm" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
-            ${s.status && !baseStatuses.includes(s.status) ? esc(s.status) : 'Vi phạm'}
-          </button>
-        </div>
-      </div>
-    `).join('');
-    
-    $$('.status:not(.btn-rule)').forEach(btn=>btn.onclick=()=>{
-      const row=btn.closest('.student');
-      const student=state.students.find(s=>s.row==row.dataset.row);
-      if(btn.classList.contains('selected')){
-        btn.classList.remove('selected');
-        student.status = '';
-        student.deduction = 0;
-      } else {
-        row.querySelectorAll('.status').forEach(x=>x.classList.remove('selected', 'rule-active'));
-        btn.classList.add('selected');
-        student.status = btn.dataset.s;
-        student.deduction = student.status === 'Vắng không phép' ? 3 : (student.status === 'Đi trễ' ? 2 : 1);
-      }
-    });
+      `;
+    }).join('');
+  }
+
+  function toggleStatus(rowId, statusName, defaultDeduction) {
+    const student = state.students.find(s => s.row == rowId);
+    if (!student) return;
+    if (student.status === statusName) {
+      student.status = '';
+      student.deduction = 0;
+    } else {
+      student.status = statusName;
+      student.deduction = defaultDeduction;
+    }
+    renderStudents();
   }
 
   async function openRuleModal(rowId, studentName) {
