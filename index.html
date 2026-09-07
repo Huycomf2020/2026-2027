@@ -19,19 +19,24 @@
     .grid2{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}.card h3{margin:0 0 18px}.chartbox{height:370px}.table-wrap{overflow:auto}.ranking{width:100%;border-collapse:collapse}.ranking th,.ranking td{padding:13px 12px;border-bottom:1px solid #e7eef2;text-align:left}.ranking th{font-size:12px;text-transform:uppercase;color:var(--muted)}.badge{background:#e0f2fe;color:#0369a1;border-radius:99px;padding:5px 9px;font-weight:700;font-size:12px}
     .rules{display:grid;gap:12px}.rule{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(6,44,67,.06);display:flex;gap:16px}.rule-num{width:38px;height:38px;flex:0 0 auto;border-radius:12px;background:var(--sky);display:grid;place-items:center;font-weight:800;color:#0369a1}.empty{text-align:center;padding:60px 15px;color:var(--muted)}
     .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
-    .student{display:grid;grid-template-columns:50px minmax(180px,1fr) minmax(300px,1fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
+    .student{display:grid;grid-template-columns:50px minmax(180px,1fr) minmax(320px,1fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
     
-    /* Cấu hình 3 nút trạng thái mới (Đã bỏ Có mặt) */
-    .statuses{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-    .status{border:1px solid #dce6eb;background:#fff;border-radius:10px;padding:8px;font-size:12px;font-weight:600;transition:.2s}
+    /* 4 nút trạng thái điểm danh */
+    .statuses{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .status{border:1px solid #dce6eb;background:#fff;border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;transition:.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .status.selected{background:#075985;color:#fff;border-color:#075985}
     .status[data-s="Vắng mặt"].selected{background:#64748b;color:#fff;border-color:#64748b}
     .status[data-s="Vắng không phép"].selected{background:#dc2626;color:#fff;border-color:#dc2626}
     .status[data-s="Đi trễ"].selected{background:#f59e0b;color:#fff;border-color:#f59e0b}
+    .status[data-s="Vi phạm"].selected, .status.rule-active {background:#7c3aed !important;color:#fff !important;border-color:#7c3aed !important;}
+    
+    .rule-item {background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all 0.2s;}
+    .rule-item:hover {background:#f1f5f9;border-color:#7c3aed;}
+    .rule-badge {background:#fee2e2;color:#dc2626;font-weight:700;padding:4px 8px;border-radius:8px;font-size:12px;}
     
     .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
     .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(420px,calc(100% - 30px));background:#fff;border-radius:24px;padding:28px;box-shadow:0 30px 90px rgba(0,0,0,.28)}.modal-card h3{font-size:23px;margin:0}.modal-card input{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:17px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}footer{text-align:center;color:#738796;padding:20px}.loader{width:25px;height:25px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:35px auto}@keyframes spin{to{transform:rotate(360deg)}}
-    @media(max-width:800px){.grid2{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(3,1fr)}.brand img{width:54px;height:54px}}
+    @media(max-width:800px){.grid2{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}}
   </style>
 </head>
 <body>
@@ -44,11 +49,27 @@
   </main>
   <footer>made by Huycomf</footer>
 </div>
+
+<!-- Modal Chọn Nội Quy Vi Phạm -->
+<div id="ruleModal" class="modal">
+  <div class="modal-card" style="width: min(550px, calc(100% - 30px)); max-height: 80vh; display: flex; flex-direction: column;">
+    <h3 id="ruleModalTitle">📜 Chọn lỗi vi phạm</h3>
+    <p id="ruleStudentTarget" style="margin: 5px 0 15px; color: var(--cyan); font-weight: 700;"></p>
+    <div id="ruleListContainer" style="overflow-y: auto; flex: 1; display: grid; gap: 8px; padding-right: 5px;"></div>
+    <div class="modal-actions" style="margin-top: 15px;">
+      <button class="secondary" onclick="$('#ruleModal').classList.remove('open')">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <div id="passwordModal" class="modal"><div class="modal-card"><h3>🔐 Khu vực điểm danh</h3><p>Vui lòng nhập mật khẩu được Đoàn trường cấp.</p><input id="password" type="password" placeholder="Mật khẩu"><div class="modal-actions"><button class="secondary" id="cancelLogin">Đóng</button><button class="save" id="login">Mở điểm danh</button></div></div></div>
 <div id="toast" class="toast"></div>
+
 <script>
   const API_URL='https://script.google.com/macros/s/AKfycbySKeKg_sNYRlvTPx2VK44RR2iUr9fs53a1T0i-MTZWkrlwsvH8zvQ6TwL2Qi6lmJZjMg/exec';
   const state={data:null,token:'',students:[],chart:null};
+  let activeStudentForModal = null;
+
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   function server(fn,...args){
     if(typeof google!=='undefined'&&google.script&&google.script.run){
@@ -61,21 +82,27 @@
   }
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  
   async function init(){try{state.data=await server('getBootstrapData');renderRules();renderClasses();renderCompetition(state.data.competition);const c=state.data.current;$('#sessionText').textContent=c.date;$('#periodBadge').textContent=(c.period==='Sáng'?'🌤️ ':'🌇 ')+c.period}catch(e){toast(e.message);$('#podium').innerHTML='<div class="empty">Chưa thể tải dữ liệu. Hãy chạy initializeSystem trong Apps Script.</div>'}}
+  
   $$('.nav button').forEach(btn=>btn.onclick=()=>{if(btn.dataset.page==='attendance'&&!state.token){$('#passwordModal').classList.add('open');$('#password').focus();return}openPage(btn.dataset.page)});
   function openPage(id){$$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$$('.panel').forEach(p=>p.classList.toggle('active',p.id===id))}
+  
   $('#cancelLogin').onclick=()=>$('#passwordModal').classList.remove('open');
   $('#login').onclick=async()=>{try{const r=await server('verifyAttendancePassword',$('#password').value);if(!r.valid)throw new Error('Mật khẩu chưa đúng.');state.token=r.token;$('#passwordModal').classList.remove('open');openPage('attendance');toast('Đã mở khu vực điểm danh')}catch(e){toast(e.message)}};
   $('#password').onkeydown=e=>{if(e.key==='Enter')$('#login').click()};
+  
   function renderRules(){const list=state.data.rules||[];$('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}${r.note?`<small>${esc(r.note)}</small>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung. Bạn có thể dán quy định vào sheet <b>quy_dinh</b>.</div>'}
   function renderClasses(filter=''){const q=filter.toUpperCase().trim();$('#classes').innerHTML=state.data.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" data-class="${c}">${c}</button>`).join('');$$('.class-btn').forEach(b=>b.onclick=()=>loadClass(b.dataset.class))}
   $('#classSearch').oninput=e=>renderClasses(e.target.value);
+  
   async function loadClass(cls){$('#studentArea').style.display='block';$('#classTitle').textContent=`Lớp ${cls}`;$('#students').innerHTML='<div class="loader"></div>';try{state.students=await server('getStudentsByClass',cls,state.token);state.className=cls;$('#studentCount').textContent=`${state.students.length} học sinh`;renderStudents()}catch(e){toast(e.message);$('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>'}}
   
-  // RENDER HỌC SINH TỐI ƯU (BỎ NÚT "CÓ MẶT", BẤM LẦN 2 ĐỂ HỦY CHỌN)
+  // Render Học sinh với 4 nút trạng thái (bao gồm nút Vi phạm)
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
-    const statuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
+    const baseStatuses = ['Vắng mặt', 'Vắng không phép', 'Đi trễ'];
+    
     $('#students').innerHTML=state.students.map(s=>`
       <div class="student" data-row="${s.row}">
         <b>${esc(s.stt)}</b>
@@ -84,28 +111,92 @@
           <small>${esc(s.code)}</small>
         </div>
         <div class="statuses">
-          ${statuses.map(x=>`<button class="status ${s.status===x?'selected':''}" data-s="${x}">${x}</button>`).join('')}
+          ${baseStatuses.map(x=>`<button class="status ${s.status===x?'selected':''}" data-s="${x}">${x}</button>`).join('')}
+          <button class="status ${s.status && !baseStatuses.includes(s.status) ? 'selected rule-active' : ''}" data-s="Vi phạm" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
+            ${s.status && !baseStatuses.includes(s.status) ? esc(s.status) : 'Vi phạm'}
+          </button>
         </div>
       </div>
     `).join('');
     
-    $$('.status').forEach(btn=>btn.onclick=()=>{
+    $$('.status[data-s!="Vi phạm"]').forEach(btn=>btn.onclick=()=>{
       const row=btn.closest('.student');
       const student=state.students.find(s=>s.row==row.dataset.row);
       if(btn.classList.contains('selected')){
         btn.classList.remove('selected');
         student.status = '';
+        student.deduction = 0;
       } else {
-        row.querySelectorAll('.status').forEach(x=>x.classList.remove('selected'));
+        row.querySelectorAll('.status').forEach(x=>x.classList.remove('selected', 'rule-active'));
         btn.classList.add('selected');
         student.status = btn.dataset.s;
+        student.deduction = student.status === 'Vắng không phép' ? 3 : (student.status === 'Đi trễ' ? 2 : 1);
       }
     });
   }
 
-  $('#saveAttendance').onclick=async()=>{const btn=$('#saveAttendance');btn.disabled=true;btn.textContent='Đang lưu...';try{const r=await server('saveAttendance',{className:state.className,students:state.students.map(s=>({row:s.row,status:s.status}))},state.token);toast(`Đã ghi nhận ${r.count} trường hợp vi phạm/vắng`)}catch(e){toast(e.message)}finally{btn.disabled=false;btn.textContent='Lưu điểm danh'}};
+  async function openRuleModal(rowId, studentName) {
+    activeStudentForModal = state.students.find(s => s.row == rowId);
+    $('#ruleStudentTarget').textContent = `Học sinh: ${studentName}`;
+    $('#ruleModal').classList.add('open');
+    $('#ruleListContainer').innerHTML = '<div class="loader"></div>';
+    
+    try {
+      const rules = await server('getRulesDetail');
+      if(!rules.length) {
+        $('#ruleListContainer').innerHTML = '<div class="empty">Chưa có danh mục quy định trong sheet quy_dinh.</div>';
+        return;
+      }
+      $('#ruleListContainer').innerHTML = rules.map(r => `
+        <div class="rule-item" onclick="selectViolation('${esc(r.content)}', ${r.deduction})">
+          <div><b>${esc(r.content)}</b></div>
+          <span class="rule-badge">-${r.deduction} điểm</span>
+        </div>
+      `).join('');
+    } catch(e) {
+      toast(e.message);
+    }
+  }
+
+  function selectViolation(content, deduction) {
+    if (activeStudentForModal) {
+      activeStudentForModal.status = content;
+      activeStudentForModal.deduction = deduction;
+      $('#ruleModal').classList.remove('open');
+      renderStudents();
+      toast(`Đã gán lỗi: ${content} (-${deduction}đ)`);
+    }
+  }
+
+  $('#saveAttendance').onclick=async()=>{
+    const btn=$('#saveAttendance');
+    btn.disabled=true;
+    btn.textContent='Đang lưu...';
+    try{
+      const r=await server('saveAttendance',{
+        className:state.className,
+        students:state.students.map(s=>({row:s.row, status:s.status, deduction:s.deduction}))
+      },state.token);
+      toast(`Đã ghi nhận ${r.count} trường hợp vi phạm/vắng`);
+    }catch(e){
+      toast(e.message);
+    }finally{
+      btn.disabled=false;
+      btn.textContent='Lưu điểm danh';
+    }
+  };
+
   $$('.periods button').forEach(btn=>btn.onclick=async()=>{$$('.periods button').forEach(b=>b.classList.toggle('active',b===btn));try{renderCompetition(await server('getCompetitionData',btn.dataset.period))}catch(e){toast(e.message)}});
-  function renderCompetition(rows=[]){const medals=['🥇','🥈','🥉'];$('#podium').innerHTML=rows.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.className)}</b><span>Hạng ${r.rank} • <strong>${r.total} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có dữ liệu thi đua.</div>';$('#ranking').innerHTML=rows.map(r=>`<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.className)}</b></td><td>${r.total}</td></tr>`).join('');const top=rows.slice(0,15);if(state.chart)state.chart.destroy();state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}})}
+  
+  function renderCompetition(rows=[]){
+    const medals=['🥇','🥈','🥉'];
+    $('#podium').innerHTML=rows.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.className)}</b><span>Hạng ${r.rank} • <strong>${r.total} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có dữ liệu thi đua.</div>';
+    $('#ranking').innerHTML=rows.map(r=>`<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.className)}</b></td><td>${r.total}</td></tr>`).join('');
+    const top=rows.slice(0,15);
+    if(state.chart)state.chart.destroy();
+    state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
+  }
+  
   init();
 </script>
 </body>
