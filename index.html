@@ -178,7 +178,10 @@
         </div>
         <span id="periodBadge" class="session">—</span>
       </div>
-      <div id="classChooser" class="card" style="margin-top:20px"><input id="classSearch" class="search" placeholder="🔎 Tìm lớp, ví dụ: 10A1"><div id="classes" class="classes"></div></div>
+      <div id="classChooser" class="card" style="margin-top:20px">
+        <input id="classSearch" class="search" placeholder="🔎 Tìm lớp, ví dụ: 10A1">
+        <div id="classes" class="classes"></div>
+      </div>
       <div id="studentArea" class="card" style="display:none;margin-top:18px">
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
@@ -221,16 +224,16 @@
   </div>
 </div>
 
-<!-- MODAL ĐĂNG NHẬP THEO EMAIL VÀ MẬT KHẨU RIÊNG TỪNG LỚP -->
+<!-- MODAL ĐĂNG NHẬP KHI BẤM CHỌN LỚP CỤ THỂ -->
 <div id="passwordModal" class="modal">
   <div class="modal-card">
-    <h3>🔐 Đăng nhập điểm danh theo Lớp</h3>
-    <p style="margin-top:4px; color:var(--muted);">Nhập Email Edu và Mật khẩu riêng do Lớp quản lý.</p>
-    <input id="classEmail" type="email" placeholder="Ví dụ: 10a1@thptlocninh.edu.vn">
+    <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
+    <p style="margin-top:4px; color:var(--muted);">Nhập Mật khẩu do Lớp quản lý để tiến hành điểm danh.</p>
+    <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Mở điểm danh</button>
+      <button class="save" id="login">Đăng nhập</button>
     </div>
   </div>
 </div>
@@ -239,7 +242,7 @@
 
 <script>
   const API_URL='https://script.google.com/macros/s/AKfycbySKeKg_sNYRlvTPx2VK44RR2iUr9fs53a1T0i-MTZWkrlwsvH8zvQ6TwL2Qi6lmJZjMg/exec';
-  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null};
+  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',pendingClass:'',students:[],chart:null};
   let activeStudentForModal = null;
 
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -273,11 +276,6 @@
   
   $$('.nav button').forEach(btn=>btn.onclick=()=>{
     const target = btn.dataset.page;
-    if(target==='attendance' && !state.token){
-      $('#passwordModal').classList.add('open');
-      $('#classEmail').focus();
-      return;
-    }
     if(target==='support' && !state.supportToken){
       $('#supportPasswordModal').classList.add('open');
       $('#supportPassword').focus();
@@ -296,24 +294,36 @@
     if(id === 'adminLog') loadAdminLog();
   }
   
+  // BẤM VÀO NÚT CHỌN LỚP SẼ BẬT KHU VỰC ĐĂNG NHẬP DÀNH RIÊNG CHO LỚP ĐÓ
+  function onSelectClassBtn(clsName) {
+    if (state.token && state.assignedClass === clsName) {
+      loadClass(clsName);
+      return;
+    }
+    state.pendingClass = clsName;
+    $('#modalClassTitle').textContent = `🔐 Đăng nhập Điểm danh Lớp ${clsName}`;
+    $('#classEmail').value = `${clsName.toLowerCase()}@thptlocninh.edu.vn`;
+    $('#password').value = '';
+    $('#passwordModal').classList.add('open');
+    $('#password').focus();
+  }
+
   $('#cancelLogin').onclick=()=>$('#passwordModal').classList.remove('open');
   $('#login').onclick=async()=>{
     try{
       const email = $('#classEmail').value;
       const pass = $('#password').value;
       const r = await server('verifyAttendancePassword', email, pass);
-      if(!r.valid) throw new Error(r.message || 'Thông tin đăng nhập không đúng.');
+      if(!r.valid) throw new Error(r.message || 'Mật khẩu không chính xác.');
       
       state.token = r.token;
       state.assignedClass = r.assignedClass;
       state.userEmail = r.userEmail;
       
       $('#passwordModal').classList.remove('open');
-      openPage('attendance');
       toast(`Đăng nhập thành công (${state.assignedClass})`);
-      $('#userLoginBadge').textContent = `👤 ${state.userEmail} (Khóa quyền: ${state.assignedClass})`;
+      $('#userLoginBadge').textContent = `👤 Tải khoản: ${state.userEmail}`;
       
-      // Tự động tải đúng Lớp được phân quyền
       loadClass(state.assignedClass);
     }catch(e){
       toast(e.message);
@@ -329,10 +339,8 @@
   
   function renderClasses(filter=''){
     const q=filter.toUpperCase().trim();
-    // Nếu đã đăng nhập, chỉ hiện nút chọn Lớp được phân quyền
-    const available = state.assignedClass ? [state.assignedClass] : state.data.classes;
-    $('#classes').innerHTML=available.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" data-class="${c}">${c}</button>`).join('');
-    $$('.class-btn').forEach(b=>b.onclick=()=>loadClass(b.dataset.class));
+    $('#classes').innerHTML=state.data.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" data-class="${c}">${c}</button>`).join('');
+    $$('.class-btn').forEach(b=>b.onclick=()=>onSelectClassBtn(b.dataset.class));
   }
   $('#classSearch').oninput=e=>renderClasses(e.target.value);
   
@@ -342,14 +350,13 @@
   }
 
   async function loadClass(cls){
-    const targetCls = state.assignedClass || cls;
     $('#studentArea').style.display='block';
-    $('#classTitle').textContent=`Lớp ${targetCls}`;
+    $('#classTitle').textContent=`Lớp ${cls}`;
     $('#students').innerHTML='<div class="loader"></div>';
     try{
-      const res = await server('getStudentsByClass', targetCls, state.token);
+      const res = await server('getStudentsByClass', cls, state.token);
       state.students = res.students;
-      state.className = res.assignedClass || targetCls;
+      state.className = res.assignedClass || cls;
       $('#studentCount').textContent = `${state.students.length} học sinh`;
 
       const alertBox = $('#sessionAlertBox');
@@ -554,7 +561,6 @@
     }
   }
 
-  // 🔴 THỐNG KÊ HỌC SINH VI PHẠM & KHẮC PHỤC THEO SỐ LẦN ĐẾM
   async function loadViolationsData() {
     try {
       const res = await server('getViolationsSummary');
