@@ -478,7 +478,7 @@
     state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
   }
 
-  // BÁO CÁO BGH & GVCN
+  // 🔴 FIX BẢNG BGH & GVCN HIỂN THỊ TRẠNG THÁI CHUẨN
   async function loadAdminLog() {
     const d = $('#adminLogDate').value;
     const c = $('#adminLogClass').value;
@@ -498,9 +498,9 @@
           <td><b>${esc(r.className)}</b></td>
           <td><small>${esc(r.code)}</small></td>
           <td><b>${esc(r.name)}</b></td>
-          <td>${r.status === 'Không vi phạm' ? '<span style="color:#10b981; font-weight:700;">✅ Không vi phạm</span>' : esc(r.status)}</td>
+          <td>${r.status.includes('không vi phạm') || r.status.includes('Không vi phạm') ? '<span style="color:#10b981; font-weight:700;">✅ Lớp không vi phạm</span>' : esc(r.status)}</td>
           <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
-          <td>${r.isResolved ? `<span style="color:#10b981;">✅ Đã KP (${r.fixCount} lần)</span>` : (r.status === 'Không vi phạm' ? '—' : '<span style="color:#dc2626;">Chưa KP</span>')}</td>
+          <td>${r.statusLabel === '—' ? '<span style="color:#10b981; font-weight:700;">—</span>' : (r.isResolved ? `<span style="color:#10b981; font-weight:700;">✅ ${r.statusLabel}</span>` : `<span style="color:#dc2626; font-weight:700;">❌ ${r.statusLabel}</span>`)}</td>
         </tr>
       `).join('');
     } catch(e) {
