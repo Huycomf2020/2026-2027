@@ -11,9 +11,9 @@
   <style>
     :root{--navy:#062c43;--cyan:#0891b2;--sky:#e0f2fe;--gold:#f59e0b;--ink:#102a3a;--muted:#637889;--card:#fff;--bg:#f4f8fb;--danger:#dc2626;--radius:22px;--shadow:0 16px 45px rgba(6,44,67,.10)}
     *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 90% 0,#cffafe 0,transparent 28%),var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--ink)}
-    button,input{font:inherit} button{cursor:pointer}.shell{min-height:100vh;display:flex;flex-direction:column}.top{background:linear-gradient(120deg,#041f30,#075985 70%,#0e7490);color:#fff;padding:22px clamp(18px,5vw,70px);box-shadow:0 10px 35px rgba(2,32,49,.2)}
+    button,input,select{font:inherit} button{cursor:pointer}.shell{min-height:100vh;display:flex;flex-direction:column}.top{background:linear-gradient(120deg,#041f30,#075985 70%,#0e7490);color:#fff;padding:22px clamp(18px,5vw,70px);box-shadow:0 10px 35px rgba(2,32,49,.2)}
     .brand{max-width:1250px;margin:auto;display:flex;align-items:center;gap:16px}.brand img{width:68px;height:68px;object-fit:contain;filter:drop-shadow(0 6px 12px rgba(0,0,0,.2))}.brand h1{font-size:clamp(19px,3vw,31px);margin:0;font-weight:800}.brand p{margin:5px 0 0;color:#bae6fd;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
-    .nav{max-width:1250px;margin:20px auto -45px;display:flex;gap:10px;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);padding:8px;border:1px solid rgba(255,255,255,.18);border-radius:18px;width:max-content}.nav button{border:0;border-radius:13px;background:transparent;color:#dff7ff;font-weight:700;padding:12px 20px;transition:.2s}.nav button:hover,.nav button.active{color:var(--navy);background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.14)}
+    .nav{max-width:1250px;margin:20px auto -45px;display:flex;gap:8px;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);padding:8px;border:1px solid rgba(255,255,255,.18);border-radius:18px;width:max-content;flex-wrap:wrap;}.nav button{border:0;border-radius:13px;background:transparent;color:#dff7ff;font-weight:700;padding:12px 18px;transition:.2s}.nav button:hover,.nav button.active{color:var(--navy);background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.14)}
     main{width:min(1250px,calc(100% - 30px));margin:58px auto 40px;flex:1}.panel{display:none}.panel.active{display:block;animation:rise .28s ease}@keyframes rise{from{opacity:0;transform:translateY(8px)}}
     .hero{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.hero h2{font-size:clamp(25px,4vw,42px);margin:0;color:var(--navy)}.hero p{margin:7px 0 0;color:var(--muted)}.periods{display:flex;gap:6px;background:#e7f0f5;padding:5px;border-radius:14px}.periods button{border:0;border-radius:10px;padding:9px 13px;background:transparent;font-weight:700;color:#526a78}.periods button.active{background:#fff;color:var(--cyan);box-shadow:0 5px 15px #bfd2dc}
     .podium{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:18px 0}.winner{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}.winner:first-child{background:linear-gradient(145deg,#fff8dc,#fff)}.winner .rank{font-size:28px}.winner b{font-size:25px;display:block;margin:8px 0}.winner span{color:var(--muted)}
@@ -50,6 +50,9 @@
     .assistant-modal-body{display:flex;align-items:center;gap:15px;}
     .assistant-img{width:130px;height:auto;object-fit:contain;flex-shrink:0;}
 
+    /* LỊCH SỬ ĐIỂM DANH THÔNG BÁO */
+    .session-alert {background:#e0f2fe; border:1px solid #bae6fd; color:#0369a1; padding:12px 16px; border-radius:14px; margin-bottom:15px; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:space-between;}
+
     @media(max-width:800px){.grid2,.grade-container{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}.modal-card{padding:18px 14px;}.assistant-modal-body{flex-direction:column;text-align:center;}.assistant-img{width:100px;}}
   </style>
 </head>
@@ -61,10 +64,12 @@
       <button data-page="rules">📜 Quy định</button>
       <button data-page="attendance">✅ Điểm danh</button>
       <button class="active" data-page="competition">🏆 Thi đua</button>
+      <button data-page="adminLog">👁️ BGH & GVCN</button>
       <button data-page="support">🛠️ Hỗ trợ</button>
     </nav>
   </header>
   <main>
+    <!-- TAB THI ĐUA -->
     <section id="competition" class="panel active">
       <div class="hero">
         <div><h2>🏆 Bảng vàng thi đua</h2><p>Thành tích nổi bật của các chi đoàn</p></div>
@@ -93,6 +98,40 @@
       </div>
     </section>
 
+    <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY -->
+    <section id="adminLog" class="panel">
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày</h2><p>Dành cho BGH & Giáo viên chủ nhiệm theo dõi trực quan</p></div></div>
+      <div class="card" style="margin-bottom: 18px;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <input type="date" id="adminLogDate" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <select id="adminLogClass" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <button class="save" onclick="loadAdminLog()">Tải nhật ký</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table class="ranking">
+            <thead>
+              <tr>
+                <th>Thời gian</th>
+                <th>Buổi</th>
+                <th>Lớp</th>
+                <th>Mã HS</th>
+                <th>Họ và Tên</th>
+                <th>Nội dung ghi nhận</th>
+                <th>Điểm trừ</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody id="adminLogTableBody">
+              <tr><td colspan="8" style="text-align:center; padding: 20px;">Vui lòng chọn ngày và lớp để xem nhật ký.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB HỖ TRỢ -->
     <section id="support" class="panel">
       <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Khắc phục</h2><p>Quản lý và ghi nhận xử lý vi phạm thi đua</p></div></div>
       
@@ -129,7 +168,20 @@
     </section>
 
     <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
-    <section id="attendance" class="panel"><div class="attendance-head"><div><h2>✅ Điểm danh</h2><p id="sessionText">Đang xác định thời gian...</p></div><span id="periodBadge" class="session">—</span></div><div id="classChooser" class="card" style="margin-top:20px"><input id="classSearch" class="search" placeholder="🔎 Tìm lớp, ví dụ: 10A1"><div id="classes" class="classes"></div></div><div id="studentArea" class="card" style="display:none;margin-top:18px"><div class="attendance-head"><div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div><button id="saveAttendance" class="save">Lưu điểm danh</button></div><div id="students"></div></div></section>
+    
+    <!-- TAB ĐIỂM DANH -->
+    <section id="attendance" class="panel">
+      <div class="attendance-head"><div><h2>✅ Điểm danh</h2><p id="sessionText">Đang xác định thời gian...</p></div><span id="periodBadge" class="session">—</span></div>
+      <div id="classChooser" class="card" style="margin-top:20px"><input id="classSearch" class="search" placeholder="🔎 Tìm lớp, ví dụ: 10A1"><div id="classes" class="classes"></div></div>
+      <div id="studentArea" class="card" style="display:none;margin-top:18px">
+        <div id="sessionAlertBox"></div>
+        <div class="attendance-head">
+          <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
+          <button id="saveAttendance" class="save">Lưu điểm danh</button>
+        </div>
+        <div id="students"></div>
+      </div>
+    </section>
   </main>
   <footer>made by Huycomf</footer>
 </div>
@@ -190,12 +242,13 @@
       renderRules();
       renderClasses();
       renderCompetition(state.data.competition);
+      setupAdminClassSelect();
       const c=state.data.current;
       $('#sessionText').textContent=c.date;
       $('#periodBadge').textContent=(c.period==='Sáng'?'🌤️ ':'🌇 ')+c.period;
+      $('#adminLogDate').value = c.isoDate;
     }catch(e){
       toast(e.message);
-      $('#podium').innerHTML='<div class="empty">Chưa thể tải dữ liệu. Hãy chạy initializeSystem trong Apps Script.</div>';
     }
   }
   
@@ -219,10 +272,9 @@
     $$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
     if(id === 'support') {
       loadViolationsData();
-      // KÍCH HOẠT LẠI ANIMATION MARQUEE KHI MỞ TAB
-      const mq = $('#marqueeViolations');
-      if(mq) { mq.start && mq.start(); }
+      const mq = $('#marqueeViolations'); if(mq&&mq.start) mq.start();
     }
+    if(id === 'adminLog') loadAdminLog();
   }
   
   $('#cancelLogin').onclick=()=>$('#passwordModal').classList.remove('open');
@@ -233,11 +285,43 @@
   $('#loginSupport').onclick=async()=>{try{const r=await server('verifySupportPassword',$('#supportPassword').value);if(!r.valid)throw new Error('Mật khẩu Bí thư Đoàn không đúng.');state.supportToken=r.token;$('#supportPasswordModal').classList.remove('open');openPage('support');toast('Đã mở khu vực Hỗ trợ')}catch(e){toast(e.message)}};
   $('#supportPassword').onkeydown=e=>{if(e.key==='Enter')$('#loginSupport').click()};
   
-  function renderRules(){const list=state.data.rules||[];$('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}${r.note?`<small>${esc(r.note)}</small>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung. Bạn có thể dán quy định vào sheet <b>quy_dinh</b>.</div>'}
+  function renderRules(){const list=state.data.rules||[];$('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}${r.note?`<small>${esc(r.note)}</small>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung.</div>'}
   function renderClasses(filter=''){const q=filter.toUpperCase().trim();$('#classes').innerHTML=state.data.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" data-class="${c}">${c}</button>`).join('');$$('.class-btn').forEach(b=>b.onclick=()=>loadClass(b.dataset.class))}
   $('#classSearch').oninput=e=>renderClasses(e.target.value);
   
-  async function loadClass(cls){$('#studentArea').style.display='block';$('#classTitle').textContent=`Lớp ${cls}`;$('#students').innerHTML='<div class="loader"></div>';try{state.students=await server('getStudentsByClass',cls,state.token);state.className=cls;$('#studentCount').textContent=`${state.students.length} học sinh`;renderStudents()}catch(e){toast(e.message);$('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>'}}
+  function setupAdminClassSelect() {
+    const sel = $('#adminLogClass');
+    sel.innerHTML = '<option value="ALL">-- Tất cả các lớp --</option>' + state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+
+  async function loadClass(cls){
+    $('#studentArea').style.display='block';
+    $('#classTitle').textContent=`Lớp ${cls}`;
+    $('#students').innerHTML='<div class="loader"></div>';
+    try{
+      const res = await server('getStudentsByClass', cls, state.token);
+      state.students = res.students;
+      state.className = cls;
+      $('#studentCount').textContent = `${state.students.length} học sinh`;
+
+      // CẢNH BÁO LỊCH SỬ ĐIỂM DANH
+      const alertBox = $('#sessionAlertBox');
+      if (res.lastSession) {
+        if (res.lastSession.isNoViolation) {
+          alertBox.innerHTML = `<div class="sessionAlert" style="background:#e6fffa; border-color:#38b2ac; color:#234e52;">✅ Lớp đã được điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (Không có vi phạm). Nếu lưu lại sẽ ghi đè bản mới.</div>`;
+        } else {
+          alertBox.innerHTML = `<div class="sessionAlert">⚠️ Lớp đã điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (${res.lastSession.count} vi phạm). Cập nhật lại sẽ ghi đè bản cũ.</div>`;
+        }
+      } else {
+        alertBox.innerHTML = '';
+      }
+
+      renderStudents();
+    }catch(e){
+      toast(e.message);
+      $('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>';
+    }
+  }
   
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
@@ -352,9 +436,16 @@
     try{
       const r=await server('saveAttendance',{
         className:state.className,
-        students:state.students.map(s=>({row:s.row, status:s.status, deduction:s.deduction}))
+        students:state.students.map(s=>({row:s.row, name:s.name, code:s.code, status:s.status, deduction:s.deduction}))
       },state.token);
-      toast(`Đã ghi nhận ${r.count} trường hợp vi phạm/vắng`);
+      
+      if(r.isClean) {
+        toast(`Đã ghi nhận điểm danh: Lớp ${state.className} KHÔNG CÓ VI PHẠM!`);
+      } else {
+        toast(`Đã ghi nhận điểm danh thành công (${r.count} trường hợp)`);
+      }
+      
+      loadClass(state.className); // Tải lại lịch sử điểm danh mới nhất
       init();
     }catch(e){
       toast(e.message);
@@ -387,7 +478,36 @@
     state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
   }
 
-  // LẤY VÀ RENDER CHÍNH XÁC NÚT ĐÃ KHẮC PHỤC
+  // BÁO CÁO BGH & GVCN
+  async function loadAdminLog() {
+    const d = $('#adminLogDate').value;
+    const c = $('#adminLogClass').value;
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;"><div class="loader"></div></td></tr>';
+    
+    try {
+      const logs = await server('getDailyLogForAdmin', d, c);
+      if(!logs || logs.length === 0) {
+        $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 20px;">Không có dữ liệu điểm danh trong ngày này.</td></tr>';
+        return;
+      }
+
+      $('#adminLogTableBody').innerHTML = logs.map(r => `
+        <tr>
+          <td><small>${esc(r.time)}</small></td>
+          <td><b>${esc(r.period)}</b></td>
+          <td><b>${esc(r.className)}</b></td>
+          <td><small>${esc(r.code)}</small></td>
+          <td><b>${esc(r.name)}</b></td>
+          <td>${r.status === 'Không vi phạm' ? '<span style="color:#10b981; font-weight:700;">✅ Không vi phạm</span>' : esc(r.status)}</td>
+          <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
+          <td>${r.isResolved ? `<span style="color:#10b981;">✅ Đã KP (${r.fixCount} lần)</span>` : (r.status === 'Không vi phạm' ? '—' : '<span style="color:#dc2626;">Chưa KP</span>')}</td>
+        </tr>
+      `).join('');
+    } catch(e) {
+      toast(e.message);
+    }
+  }
+
   async function loadViolationsData() {
     try {
       const res = await server('getViolationsSummary');
