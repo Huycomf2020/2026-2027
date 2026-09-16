@@ -66,7 +66,7 @@
     <!-- TAB THI ĐUA -->
     <section id="competition" class="panel active">
       <div class="hero">
-        <div><h2>🏆 Bảng vàng thi đua</h2><p>Thành tích nổi bật của các chi đoàn</p></div>
+        <div><h2>🏆 Bảng vàng thi đua</h2><p>Thành tích nổi bật của các chi đoàn (Công thức Chuẩn hóa 2026)</p></div>
         <div class="periods"><button class="active" data-period="week">Tuần</button><button data-period="period">Tháng</button><button data-period="semester">Học kỳ</button><button data-period="year">Năm</button></div>
       </div>
       <div id="podium" class="podium"></div>
@@ -148,7 +148,7 @@
     <section id="support" class="panel">
       <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Khắc phục</h2><p>Quản lý và ghi nhận xử lý vi phạm thi đua</p></div></div>
       <div class="card">
-        <h3>⚠️ Bảng thống kê học sinh vi phạm nghiêm trọng (Từ 4 lỗi)</h3>
+        <h3>⚠️ Bảng thống kê học sinh vi phạm</h3>
         <div class="table-wrap">
           <table class="ranking">
             <thead>
@@ -500,7 +500,7 @@
           </tr>
         `).join('');
       } else {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm từ 4 lỗi trở lên.</td></tr>';
+        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm.</td></tr>';
       }
     } catch(e) { console.error(e); }
   }
