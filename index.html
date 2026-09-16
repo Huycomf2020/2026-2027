@@ -43,16 +43,15 @@
     
     .btn-resolve {background:#10b981; color:#fff; border:0; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer;}
     .btn-resolve:hover {background:#059669;}
+    .btn-del {background:#ef4444; color:#fff; border:0; border-radius:8px; padding:6px 10px; font-weight:700; font-size:12px; cursor:pointer;}
     
     .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
-    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(550px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}footer{text-align:center;color:#738796;padding:20px}.loader{width:25px;height:25px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:35px auto}@keyframes spin{to{transform:rotate(360deg)}}
+    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(650px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
     
-    .assistant-modal-body{display:flex;align-items:center;gap:15px;}
-    .assistant-img{width:130px;height:auto;object-fit:contain;flex-shrink:0;}
+    footer{text-align:center;color:#738796;padding:20px;font-weight:600;} footer a{color:var(--cyan);text-decoration:none;} footer a:hover{text-decoration:underline;}
+    .loader{width:25px;height:25px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:35px auto}@keyframes spin{to{transform:rotate(360deg)}}
 
-    .session-alert {background:#e0f2fe; border:1px solid #bae6fd; color:#0369a1; padding:12px 16px; border-radius:14px; margin-bottom:15px; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:space-between;}
-
-    @media(max-width:800px){.grid2,.grade-container{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}.modal-card{padding:18px 14px;}.assistant-modal-body{flex-direction:column;text-align:center;}.assistant-img{width:100px;}}
+    @media(max-width:800px){.grid2,.grade-container{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}.modal-card{padding:18px 14px;}}
   </style>
 </head>
 <body>
@@ -63,6 +62,7 @@
       <button data-page="rules">📜 Quy định</button>
       <button data-page="attendance">✅ Điểm danh</button>
       <button class="active" data-page="competition">🏆 Thi đua</button>
+      <button data-page="homeroom">🏫 GVCN & Sơ đồ lớp</button>
       <button data-page="adminLog">👁️ BGH & GVCN</button>
       <button data-page="support">🛠️ Hỗ trợ</button>
     </nav>
@@ -97,33 +97,54 @@
       </div>
     </section>
 
-    <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY -->
+    <!-- TAB TAB GVCN & SƠ ĐỒ LỚP -->
+    <section id="homeroom" class="panel">
+      <div class="hero"><div><h2>🏫 Thông tin GVCN & Sơ đồ lớp</h2><p>Bấm chọn lớp để xem thông tin giáo viên chủ nhiệm và sơ đồ chỗ ngồi</p></div></div>
+      <div class="card">
+        <div id="homeroomClasses" class="classes"></div>
+      </div>
+    </section>
+
+    <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TÌM KIẾM THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày</h2><p>Dành cho BGH & Giáo viên chủ nhiệm theo dõi trực quan</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
+      
+      <!-- BỘ LỌC HÀNG NGÀY -->
       <div class="card" style="margin-bottom: 18px;">
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <h3>📅 1. Lọc vi phạm theo Ngày</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
           <input type="date" id="adminLogDate" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
           <select id="adminLogClass" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
-          <button class="save" onclick="loadAdminLog()">Tải nhật ký</button>
+          <button class="save" onclick="loadAdminLog()">Tải nhật ký ngày</button>
         </div>
       </div>
+
+      <!-- BỘ LỌC THEO TUẦN -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h3>🗓️ 2. Tra cứu lỗi của Lớp trong Tuần hiện tại (Thứ 2 - Chủ Nhật)</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+          <select id="weeklyLogClass" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <button class="save" onclick="loadWeeklyLog()">Tra cứu vi phạm tuần này</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="table-wrap">
           <table class="ranking">
             <thead>
               <tr>
-                <th>Thời gian</th>
+                <th>Ngày / Thời gian</th>
                 <th>Buổi</th>
                 <th>Lớp</th>
                 <th>Mã HS</th>
                 <th>Họ và Tên</th>
-                <th>Nội dung ghi nhận</th>
+                <th>Nội dung vi phạm</th>
                 <th>Điểm trừ</th>
-                <th>Trạng thái</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
             <tbody id="adminLogTableBody">
-              <tr><td colspan="8" style="text-align:center; padding: 20px;">Vui lòng chọn ngày và lớp để xem nhật ký.</td></tr>
+              <tr><td colspan="8" style="text-align:center; padding: 20px;">Vui lòng chọn điều kiện tìm kiếm.</td></tr>
             </tbody>
           </table>
         </div>
@@ -133,16 +154,6 @@
     <!-- TAB HỖ TRỢ -->
     <section id="support" class="panel">
       <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Khắc phục</h2><p>Quản lý và ghi nhận xử lý vi phạm thi đua</p></div></div>
-      
-      <div class="card" style="margin-bottom: 18px; padding: 12px 20px; background: #fff5f5; border: 1px solid #fed7d7;">
-        <div style="display: flex; align-items: center; gap: 10px; color: #c53030; font-weight: 700;">
-          <span style="white-space: nowrap;">🚨 HỌC SINH VI PHẠM TỪ 4 LỖI TRỞ LÊN:</span>
-          <marquee id="marqueeViolations" behavior="scroll" direction="left" scrollamount="6" style="font-weight: 600;">
-            Đang tải danh sách vi phạm...
-          </marquee>
-        </div>
-      </div>
-
       <div class="card">
         <h3>⚠️ Bảng thống kê học sinh vi phạm nghiêm trọng (Từ 4 lỗi)</h3>
         <div class="table-wrap">
@@ -192,39 +203,31 @@
       </div>
     </section>
   </main>
-  <footer>Made by Huycomf</footer>
+  
+  <!-- FOOTER THAY ĐỔI -->
+  <footer>
+    <a href="https://huycomf2020.github.io/giao_vien/index.html" target="_blank">🔗 Thêm tài nguyên Giáo viên</a>
+  </footer>
 </div>
 
-<div id="ruleModal" class="modal">
-  <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
-    <h3 id="ruleModalTitle">📜 Chọn các lỗi vi phạm</h3>
-    <p id="ruleStudentTarget" style="margin: 5px 0 12px; color: var(--cyan); font-weight: 700;"></p>
-    <div id="ruleListContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;"></div>
+<!-- POPUP THÔNG TIN GVCN & SƠ ĐỒ LỚP -->
+<div id="homeroomModal" class="modal">
+  <div class="modal-card" style="width: min(850px, calc(100% - 24px));">
+    <h3 id="hrClassTitle">🏫 Thông tin Lớp</h3>
+    <div style="margin: 12px 0; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <p style="margin: 0 0 6px;"><b>👤 Giáo viên chủ nhiệm:</b> <span id="hrTeacher" style="color: var(--cyan); font-weight: 700;">—</span></p>
+      <p style="margin: 0;"><b>📞 Số điện thoại:</b> <span id="hrPhone" style="font-weight: 700;">—</span></p>
+    </div>
+    <h4>📌 Sơ đồ chỗ ngồi học sinh</h4>
+    <div style="height: 420px; width: 100%; border: 1px solid #dce8ee; border-radius: 14px; overflow: hidden; margin-top: 8px;">
+      <iframe id="hrSeatingFrame" style="width:100%; height:100%; border:0;" src="about:blank"></iframe>
+    </div>
     <div class="modal-actions" style="margin-top: 15px;">
-      <button class="secondary" onclick="$('#ruleModal').classList.remove('open')">Đóng</button>
-      <button class="save" onclick="applySelectedViolations()">Xác nhận chọn</button>
+      <button class="secondary" onclick="$('#homeroomModal').classList.remove('open')">Đóng</button>
     </div>
   </div>
 </div>
 
-<div id="supportPasswordModal" class="modal">
-  <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
-    <h3>🔐 Xác minh Bí thư Đoàn</h3>
-    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh để truy cập khu vực Hỗ trợ & Khắc phục.</p>
-    <div class="assistant-modal-body" style="margin: 15px 0;">
-      <div style="flex:1;">
-        <input id="supportPassword" type="password" placeholder="Mật khẩu Bí thư">
-      </div>
-      <img src="images/thaynam.png" alt="Trợ lý Thầy Nam" class="assistant-img" onerror="this.src='https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png'">
-    </div>
-    <div class="modal-actions">
-      <button class="secondary" id="cancelSupportLogin">Đóng</button>
-      <button class="save" id="loginSupport">Xác nhận vào</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL ĐĂNG NHẬP KHI BẤM CHỌN LỚP CỤ THỂ -->
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
@@ -242,8 +245,7 @@
 
 <script>
   const API_URL='https://script.google.com/macros/s/AKfycbySKeKg_sNYRlvTPx2VK44RR2iUr9fs53a1T0i-MTZWkrlwsvH8zvQ6TwL2Qi6lmJZjMg/exec';
-  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',pendingClass:'',students:[],chart:null};
-  let activeStudentForModal = null;
+  const state={data:null,token:'',assignedClass:'',userEmail:'',students:[],chart:null};
 
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   function server(fn,...args){
@@ -263,44 +265,55 @@
       state.data=await server('getBootstrapData');
       renderRules();
       renderClasses();
+      renderHomeroomClasses();
       renderCompetition(state.data.competition);
       setupAdminClassSelect();
       const c=state.data.current;
       $('#sessionText').textContent=c.date;
       $('#periodBadge').textContent=(c.period==='Sáng'?'🌤️ ':'🌇 ')+c.period;
       $('#adminLogDate').value = c.isoDate;
-    }catch(e){
-      toast(e.message);
-    }
+    }catch(e){ toast(e.message); }
   }
   
-  $$('.nav button').forEach(btn=>btn.onclick=()=>{
-    const target = btn.dataset.page;
-    if(target==='support' && !state.supportToken){
-      $('#supportPasswordModal').classList.add('open');
-      $('#supportPassword').focus();
-      return;
-    }
-    openPage(target);
-  });
+  $$('.nav button').forEach(btn=>btn.onclick=()=>{ openPage(btn.dataset.page); });
 
   function openPage(id){
     $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
     $$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
-    if(id === 'support') {
-      loadViolationsData();
-      const mq = $('#marqueeViolations'); if(mq&&mq.start) mq.start();
-    }
     if(id === 'adminLog') loadAdminLog();
   }
   
-  // BẤM VÀO NÚT CHỌN LỚP SẼ BẬT KHU VỰC ĐĂNG NHẬP DÀNH RIÊNG CHO LỚP ĐÓ
+  function renderClasses(filter=''){
+    const q=filter.toUpperCase().trim();
+    $('#classes').innerHTML=state.data.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" onclick="onSelectClassBtn('${c}')">${c}</button>`).join('');
+  }
+
+  function renderHomeroomClasses(){
+    $('#homeroomClasses').innerHTML=state.data.classes.map(c=>`<button class="class-btn" onclick="openHomeroomModal('${c}')">🏫 Lớp ${c}</button>`).join('');
+  }
+
+  async function openHomeroomModal(clsName) {
+    $('#hrClassTitle').textContent = `🏫 Thông tin & Sơ đồ Lớp ${clsName}`;
+    $('#hrTeacher').textContent = 'Đang tải...';
+    $('#hrPhone').textContent = 'Đang tải...';
+    $('#hrSeatingFrame').src = 'about:blank';
+    $('#homeroomModal').classList.add('open');
+
+    try {
+      const info = await server('getClassInfo', clsName);
+      $('#hrTeacher').textContent = info.teacher;
+      $('#hrPhone').textContent = info.phone;
+      $('#hrSeatingFrame').src = info.seatingUrl;
+    } catch(e) {
+      toast(e.message);
+    }
+  }
+
   function onSelectClassBtn(clsName) {
     if (state.token && state.assignedClass === clsName) {
       loadClass(clsName);
       return;
     }
-    state.pendingClass = clsName;
     $('#modalClassTitle').textContent = `🔐 Đăng nhập Điểm danh Lớp ${clsName}`;
     $('#classEmail').value = `${clsName.toLowerCase()}@thptlocninh.edu.vn`;
     $('#password').value = '';
@@ -322,31 +335,15 @@
       
       $('#passwordModal').classList.remove('open');
       toast(`Đăng nhập thành công (${state.assignedClass})`);
-      $('#userLoginBadge').textContent = `👤 Tải khoản: ${state.userEmail}`;
-      
+      $('#userLoginBadge').textContent = `👤 Tài khoản: ${state.userEmail}`;
       loadClass(state.assignedClass);
-    }catch(e){
-      toast(e.message);
-    }
+    }catch(e){ toast(e.message); }
   };
-  $('#password').onkeydown=e=>{if(e.key==='Enter')$('#login').click()};
 
-  $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
-  $('#loginSupport').onclick=async()=>{try{const r=await server('verifySupportPassword',$('#supportPassword').value);if(!r.valid)throw new Error('Mật khẩu Bí thư Đoàn không đúng.');state.supportToken=r.token;$('#supportPasswordModal').classList.remove('open');openPage('support');toast('Đã mở khu vực Hỗ trợ')}catch(e){toast(e.message)}};
-  $('#supportPassword').onkeydown=e=>{if(e.key==='Enter')$('#loginSupport').click()};
-  
-  function renderRules(){const list=state.data.rules||[];$('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}${r.note?`<small>${esc(r.note)}</small>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung.</div>'}
-  
-  function renderClasses(filter=''){
-    const q=filter.toUpperCase().trim();
-    $('#classes').innerHTML=state.data.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" data-class="${c}">${c}</button>`).join('');
-    $$('.class-btn').forEach(b=>b.onclick=()=>onSelectClassBtn(b.dataset.class));
-  }
-  $('#classSearch').oninput=e=>renderClasses(e.target.value);
-  
   function setupAdminClassSelect() {
-    const sel = $('#adminLogClass');
-    sel.innerHTML = '<option value="ALL">-- Tất cả các lớp --</option>' + state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    const opts = '<option value="ALL">-- Tất cả các lớp --</option>' + state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    $('#adminLogClass').innerHTML = opts;
+    $('#weeklyLogClass').innerHTML = state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
   }
 
   async function loadClass(cls){
@@ -361,14 +358,8 @@
 
       const alertBox = $('#sessionAlertBox');
       if (res.lastSession) {
-        if (res.lastSession.isNoViolation) {
-          alertBox.innerHTML = `<div class="sessionAlert" style="background:#e6fffa; border-color:#38b2ac; color:#234e52;">✅ Lớp đã được điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (Không có vi phạm). Nếu lưu lại sẽ ghi đè bản mới.</div>`;
-        } else {
-          alertBox.innerHTML = `<div class="sessionAlert">⚠️ Lớp đã điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (${res.lastSession.count} vi phạm). Cập nhật lại sẽ ghi đè bản cũ.</div>`;
-        }
-      } else {
-        alertBox.innerHTML = '';
-      }
+        alertBox.innerHTML = `<div class="sessionAlert">⚠️ Lớp đã điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (${res.lastSession.count} vi phạm). Cập nhật lại sẽ tự ghi đè bản cũ.</div>`;
+      } else { alertBox.innerHTML = ''; }
 
       renderStudents();
     }catch(e){
@@ -376,242 +367,120 @@
       $('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>';
     }
   }
-  
+
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
-    const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
-    
     $('#students').innerHTML=state.students.map(s=>{
-      if (s.status === 'Có mặt') s.status = '';
-      
-      const selectedList = s.status ? s.status.split(', ').map(x=>x.trim()) : [];
-      const hasBaseStatus = (st) => selectedList.includes(st);
-      
-      const customRules = selectedList.filter(x => !baseStatuses.includes(x));
-      const hasCustomRule = customRules.length > 0;
-      
+      const st = s.status || 'Có mặt';
       return `
         <div class="student" data-row="${s.row}">
           <b>${esc(s.stt)}</b>
-          <div class="student-name">
-            <b>${esc(s.name)}</b>
-            <small>${esc(s.code)}</small>
-          </div>
+          <div class="student-name"><b>${esc(s.name)}</b><small>${esc(s.code)}</small></div>
           <div class="statuses">
-            <button class="status ${hasBaseStatus('Vắng có phép')?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng có phép', 1)">Vắng có phép</button>
-            <button class="status ${hasBaseStatus('Vắng không phép')?'selected':''}" onclick="toggleStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
-            <button class="status ${hasBaseStatus('Đi trễ')?'selected':''}" onclick="toggleStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
-            <button class="status rule-btn ${hasCustomRule?'selected':''}" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
-              ${hasCustomRule ? esc(customRules.join(', ')) : 'Vi phạm'}
-            </button>
+            <button class="status ${st==='Có mặt'?'selected':''}" onclick="setStatus('${s.row}', 'Có mặt', 0)">Có mặt</button>
+            <button class="status ${st==='Vắng có phép'?'selected':''}" onclick="setStatus('${s.row}', 'Vắng có phép', 1)">Vắng có phép</button>
+            <button class="status ${st==='Vắng không phép'?'selected':''}" onclick="setStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
+            <button class="status ${st==='Đi trễ'?'selected':''}" onclick="setStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
           </div>
         </div>
       `;
     }).join('');
   }
 
-  function toggleStatus(rowId, statusName, defaultDeduction) {
+  function setStatus(rowId, statusName, deduction) {
     const student = state.students.find(s => s.row == rowId);
     if (!student) return;
-    
-    let currentList = student.status ? student.status.split(', ').map(x=>x.trim()).filter(Boolean) : [];
-    
-    if (currentList.includes(statusName)) {
-      currentList = currentList.filter(x => x !== statusName);
-      student.deduction = Math.max(0, (student.deduction || 0) - defaultDeduction);
-    } else {
-      currentList.push(statusName);
-      student.deduction = (student.deduction || 0) + defaultDeduction;
-    }
-    
-    student.status = currentList.join(', ');
+    student.status = statusName;
+    student.deduction = deduction;
     renderStudents();
-  }
-
-  async function openRuleModal(rowId, studentName) {
-    activeStudentForModal = state.students.find(s => s.row == rowId);
-    $('#ruleStudentTarget').textContent = `Học sinh: ${studentName}`;
-    $('#ruleModal').classList.add('open');
-    $('#ruleListContainer').innerHTML = '<div class="loader"></div>';
-    
-    try {
-      const rules = await server('getRulesDetail');
-      if(!rules.length) {
-        $('#ruleListContainer').innerHTML = '<div class="empty">Chưa có danh mục quy định trong sheet quy_dinh.</div>';
-        return;
-      }
-
-      const currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()) : [];
-
-      $('#ruleListContainer').innerHTML = rules.map((r) => {
-        const isChecked = currentList.includes(r.content);
-        return `
-          <label class="rule-checkbox-item">
-            <input type="checkbox" class="chk-rule" data-content="${esc(r.content)}" data-deduction="${r.deduction}" ${isChecked ? 'checked' : ''}>
-            <div class="rule-text-content"><b>${esc(r.content)}</b></div>
-            <span class="rule-badge">-${r.deduction} điểm</span>
-          </label>
-        `;
-      }).join('');
-    } catch(e) {
-      toast(e.message);
-    }
-  }
-
-  function applySelectedViolations() {
-    if (!activeStudentForModal) return;
-    
-    const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
-    let currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()).filter(x => baseStatuses.includes(x)) : [];
-    
-    let totalDeduction = 0;
-    if (currentList.includes('Vắng có phép')) totalDeduction += 1;
-    if (currentList.includes('Vắng không phép')) totalDeduction += 3;
-    if (currentList.includes('Đi trễ')) totalDeduction += 2;
-
-    const selectedBoxes = $$('.chk-rule:checked');
-    selectedBoxes.forEach(chk => {
-      currentList.push(chk.dataset.content);
-      totalDeduction += Number(chk.dataset.deduction) || 0;
-    });
-
-    activeStudentForModal.status = currentList.join(', ');
-    activeStudentForModal.deduction = totalDeduction;
-
-    $('#ruleModal').classList.remove('open');
-    renderStudents();
-    toast(`Đã cập nhật các vi phạm (-${totalDeduction}đ)`);
   }
 
   $('#saveAttendance').onclick=async()=>{
     const btn=$('#saveAttendance');
-    btn.disabled=true;
-    btn.textContent='Đang lưu...';
+    btn.disabled=true; btn.textContent='Đang lưu...';
     try{
       const r=await server('saveAttendance',{
         className:state.className,
-        students:state.students.map(s=>({row:s.row, name:s.name, code:s.code, status:s.status, deduction:s.deduction}))
+        students:state.students.map(s=>({code:s.code, name:s.name, status:s.status, deduction:s.deduction}))
       },state.token);
       
-      if(r.isClean) {
-        toast(`Đã ghi nhận điểm danh: Lớp ${state.className} KHÔNG CÓ VI PHẠM!`);
-      } else {
-        toast(`Đã ghi nhận điểm danh thành công (${r.count} trường hợp)`);
-      }
-      
+      toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
       loadClass(state.className);
-      init();
-    }catch(e){
-      toast(e.message);
-    }finally{
-      btn.disabled=false;
-      btn.textContent='Lưu điểm danh';
-    }
+    }catch(e){ toast(e.message); }
+    finally{ btn.disabled=false; btn.textContent='Lưu điểm danh'; }
   };
 
-  $$('.periods button').forEach(btn=>btn.onclick=async()=>{$$('.periods button').forEach(b=>b.classList.toggle('active',b===btn));try{renderCompetition(await server('getCompetitionData',btn.dataset.period))}catch(e){toast(e.message)}});
+  async function loadAdminLog() {
+    const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    try {
+      const logs = await server('getDailyLogForAdmin', d, c);
+      renderLogTable(logs);
+    } catch(e) { toast(e.message); }
+  }
+
+  async function loadWeeklyLog() {
+    const c = $('#weeklyLogClass').value;
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    try {
+      const logs = await server('getWeeklyViolations', c);
+      renderLogTable(logs);
+    } catch(e) { toast(e.message); }
+  }
+
+  function renderLogTable(logs) {
+    if(!logs || logs.length === 0) {
+      $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 20px;">Không có dữ liệu vi phạm.</td></tr>';
+      return;
+    }
+    $('#adminLogTableBody').innerHTML = logs.map(r => `
+      <tr>
+        <td><small>${esc(r.date || r.time)}</small></td>
+        <td><b>${esc(r.period)}</b></td>
+        <td><b>${esc(r.className)}</b></td>
+        <td><small>${esc(r.code)}</small></td>
+        <td><b>${esc(r.name)}</b></td>
+        <td>${esc(r.status)}</td>
+        <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
+        <td>
+          ${r.sessionKey && state.token ? `<button class="btn-del" onclick="deleteWrongEntry('${esc(r.sessionKey)}', '${esc(r.code)}', '${esc(r.name)}')">Xóa lỗi</button>` : '—'}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function deleteWrongEntry(sessionKey, code, name) {
+    if (confirm(`Xác nhận xóa lỗi cho học sinh ${name} (nhập nhầm)?`)) {
+      try {
+        toast("Đang xóa lỗi nhập nhầm...");
+        await server('removeViolation', { sessionKey, code }, state.token);
+        toast("Đã xóa lỗi thành công!");
+        loadWeeklyLog();
+      } catch(e) { toast(e.message); }
+    }
+  }
+
+  $$('.periods button').forEach(btn=>btn.onclick=async()=>{
+    $$('.periods button').forEach(b=>b.classList.toggle('active',b===btn));
+    try{ renderCompetition(await server('getCompetitionData',btn.dataset.period)) }catch(e){ toast(e.message) }
+  });
   
   function renderCompetition(rows=[]){
     const medals=['🥇','🥈','🥉'];
     $('#podium').innerHTML=rows.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.className)}</b><span>Hạng ${r.rank} • <strong>${r.total} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có dữ liệu thi đua.</div>';
-    
     $('#ranking').innerHTML=rows.map(r=>`<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.className)}</b></td><td>${r.total}</td></tr>`).join('');
     
-    const g10 = rows.filter(r => r.className.startsWith('10A'));
-    const g11 = rows.filter(r => r.className.startsWith('11A'));
-    const g12 = rows.filter(r => r.className.startsWith('12A'));
-
     const renderGradeTable = (list) => list.map((r, i) => `<tr><td><span class="badge">#${i+1}</span></td><td><b>${esc(r.className)}</b></td><td>${r.total}</td></tr>`).join('');
-
-    $('#rankingGrade10').innerHTML = renderGradeTable(g10);
-    $('#rankingGrade11').innerHTML = renderGradeTable(g11);
-    $('#rankingGrade12').innerHTML = renderGradeTable(g12);
+    $('#rankingGrade10').innerHTML = renderGradeTable(rows.filter(r => r.className.startsWith('10A')));
+    $('#rankingGrade11').innerHTML = renderGradeTable(rows.filter(r => r.className.startsWith('11A')));
+    $('#rankingGrade12').innerHTML = renderGradeTable(rows.filter(r => r.className.startsWith('12A')));
 
     const top=rows.slice(0,15);
     if(state.chart)state.chart.destroy();
     state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
   }
 
-  async function loadAdminLog() {
-    const d = $('#adminLogDate').value;
-    const c = $('#adminLogClass').value;
-    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;"><div class="loader"></div></td></tr>';
-    
-    try {
-      const logs = await server('getDailyLogForAdmin', d, c);
-      if(!logs || logs.length === 0) {
-        $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 20px;">Không có dữ liệu điểm danh trong ngày này.</td></tr>';
-        return;
-      }
-
-      $('#adminLogTableBody').innerHTML = logs.map(r => `
-        <tr>
-          <td><small>${esc(r.time)}</small></td>
-          <td><b>${esc(r.period)}</b></td>
-          <td><b>${esc(r.className)}</b></td>
-          <td><small>${esc(r.code)}</small></td>
-          <td><b>${esc(r.name)}</b></td>
-          <td>${r.status.includes('không vi phạm') || r.status.includes('Không vi phạm') ? '<span style="color:#10b981; font-weight:700;">✅ Lớp không vi phạm</span>' : esc(r.status)}</td>
-          <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
-          <td>${r.statusLabel === '—' ? '<span style="color:#10b981; font-weight:700;">—</span>' : (r.isResolved ? `<span style="color:#10b981; font-weight:700;">✅ ${r.statusLabel}</span>` : `<span style="color:#dc2626; font-weight:700;">❌ ${r.statusLabel}</span>`)}</td>
-        </tr>
-      `).join('');
-    } catch(e) {
-      toast(e.message);
-    }
-  }
-
-  async function loadViolationsData() {
-    try {
-      const res = await server('getViolationsSummary');
-      
-      if (res.marqueeList && res.marqueeList.length > 0) {
-        $('#marqueeViolations').textContent = res.marqueeList
-          .map(s => `${s.name} (${s.className}: ${s.count} lỗi -${s.totalDeduction}đ)`)
-          .join('   •   ');
-      } else {
-        $('#marqueeViolations').textContent = '🎉 Tuyệt vời: Tất cả học sinh vi phạm nghiêm trọng đều đã được xử lý khắc phục!';
-      }
-
-      if (res.allErrors && res.allErrors.length > 0) {
-        $('#violationTableBody').innerHTML = res.allErrors.map(s => `
-          <tr>
-            <td><b>${esc(s.className)}</b></td>
-            <td><small>${esc(s.code)}</small></td>
-            <td><b>${esc(s.name)}</b></td>
-            <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${s.count} lần</span></td>
-            <td><strong style="color:#dc2626;">-${s.totalDeduction}đ</strong></td>
-            <td><small>${esc(s.errors.join('; '))}</small></td>
-            <td>
-              <button class="btn-resolve" onclick="confirmResolveDirect('${esc(s.key)}', '${esc(s.name)}')">
-                ✨ ${s.maxFixCount > 0 ? `Đã KP (Lần ${s.maxFixCount}) - Bấm KP tiếp` : 'Ghi nhận khắc phục'}
-              </button>
-            </td>
-          </tr>
-        `).join('');
-      } else {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm từ 4 lỗi trở lên trong kỳ này.</td></tr>';
-      }
-    } catch(e) {
-      console.error(e);
-    }
-  }
-
-  async function confirmResolveDirect(targetKey, studentName) {
-    if(confirm(`Xác nhận ghi nhận khắc phục lỗi cho học sinh ${studentName}?`)) {
-      try {
-        toast("Đang ghi nhận khắc phục...");
-        const res = await server('resolveViolation', targetKey);
-        if (res.ok) {
-          toast(res.message);
-          await init();
-          loadViolationsData();
-        }
-      } catch(e) {
-        toast(e.message);
-      }
-    }
-  }
+  function renderRules(){ const list=state.data.rules||[]; $('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung.</div>'; }
 
   init();
 </script>
