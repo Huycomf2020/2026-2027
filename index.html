@@ -19,57 +19,526 @@
     .podium{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:18px 0}.winner{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}.winner:first-child{background:linear-gradient(145deg,#fff8dc,#fff)}.winner .rank{font-size:28px}.winner b{font-size:25px;display:block;margin:8px 0}.winner span{color:var(--muted)}
     
     .grade-container{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:22px 0;}
-Hiện tại Google chưa phát hành phiên bản model mang tên `gemini-3.6-flash` hay `gemini-3.8-flash` (các dòng thế hệ 1.5 và 2.0/2.5 mới nhất hiện có là `gemini-1.5-flash` hoặc `gemini-2.0-flash`). Tuy nhiên, đoạn mã bên dưới đã được cấu hình chuẩn theo đúng yêu cầu của thầy: **lấy API Key trực tiếp từ Thuộc tính của tập lệnh (`ScriptProperties`)** bằng khóa `GEMINI_API_KEY` như trong hình ảnh, bảo mật an toàn tuyệt đối và không để lộ Key ra ngoài.
+    .grade-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+    .grade-card h4{margin:0 0 12px;font-size:16px;color:var(--cyan);border-bottom:2px solid var(--sky);padding-bottom:6px;display:flex;justify-content:space-between;}
 
-Đoạn mã Google Apps Script hoàn chỉnh để thầy dán thẳng vào trình biên soạn:
+    .grid2{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}.card h3{margin:0 0 18px}.chartbox{height:370px}.table-wrap{overflow:auto}.ranking{width:100%;border-collapse:collapse}.ranking th,.ranking td{padding:13px 12px;border-bottom:1px solid #e7eef2;text-align:left}.ranking th{font-size:12px;text-transform:uppercase;color:var(--muted)}.badge{background:#e0f2fe;color:#0369a1;border-radius:99px;padding:5px 9px;font-weight:700;font-size:12px}
+    .rules{display:grid;gap:12px}.rule{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(6,44,67,.06);display:flex;gap:16px}.rule-num{width:38px;height:38px;flex:0 0 auto;border-radius:12px;background:var(--sky);display:grid;place-items:center;font-weight:800;color:#0369a1}.empty{text-align:center;padding:60px 15px;color:var(--muted)}
+    .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
+    .student{display:grid;grid-template-columns:50px minmax(180px,1fr) minmax(320px,1fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
+    
+    .statuses{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .status{border:1px solid #dce6eb;background:#fff;border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;transition:.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .status.selected{background:#075985;color:#fff;border-color:#075985}
+    .status[data-s="Vắng có phép"].selected{background:#64748b;color:#fff;border-color:#64748b}
+    .status[data-s="Vắng không phép"].selected{background:#dc2626;color:#fff;border-color:#dc2626}
+    .status[data-s="Đi trễ"].selected{background:#f59e0b;color:#fff;border-color:#f59e0b}
+    
+    .btn-resolve {background:#10b981; color:#fff; border:0; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer;}
+    .btn-del {background:#ef4444; color:#fff; border:0; border-radius:8px; padding:6px 10px; font-weight:700; font-size:12px; cursor:pointer;}
+    
+    .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
+    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(650px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
+    
+    .assistant-modal-body{display:flex;align-items:center;gap:15px;}
+    .assistant-img{width:110px;height:auto;object-fit:contain;flex-shrink:0;}
 
-```javascript
-function callGemini() {
-  // 1. Lấy API Key từ Script Properties (Thuộc tính của tập lệnh)
-  const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+    footer{text-align:center;color:#738796;padding:20px;font-weight:600;} footer a{color:var(--cyan);text-decoration:none;} footer a:hover{text-decoration:underline;}
+    .loader{width:25px;height:25px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:35px auto}@keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:800px){.grid2,.grade-container{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}.modal-card{padding:18px 14px;}.assistant-modal-body{flex-direction:column;text-align:center;}.assistant-img{width:90px;}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="brand"><img src="https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png" alt="Logo THPT Lộc Ninh"><div><h1>Đoàn trường THPT Lộc Ninh</h1><p>Tuổi trẻ • Tiên phong • Trách nhiệm</p></div></div>
+    <nav class="nav">
+      <button data-page="rules">📜 Quy định</button>
+      <button data-page="attendance">✅ Điểm danh</button>
+      <button class="active" data-page="competition">🏆 Thi đua</button>
+      <button data-page="homeroom">🏫 GVCN & Sơ đồ lớp</button>
+      <button data-page="adminLog">👁️ BGH & GVCN</button>
+      <button data-page="support">🛠️ Hỗ trợ</button>
+    </nav>
+  </header>
+  <main>
+    <!-- TAB THI ĐUA -->
+    <section id="competition" class="panel active">
+      <div class="hero">
+        <div><h2>🏆 Bảng vàng thi đua</h2><p>Thành tích nổi bật của các chi đoàn</p></div>
+        <div class="periods"><button class="active" data-period="week">Tuần</button><button data-period="period">Tháng</button><button data-period="semester">Học kỳ</button><button data-period="year">Năm</button></div>
+      </div>
+      <div id="podium" class="podium"></div>
+      
+      <div class="grade-container">
+        <div class="grade-card">
+          <h4><span>🏫 KHỐI 10</span></h4>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="rankingGrade10"></tbody></table></div>
+        </div>
+        <div class="grade-card">
+          <h4><span>🏫 KHỐI 11</span></h4>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="rankingGrade11"></tbody></table></div>
+        </div>
+        <div class="grade-card">
+          <h4><span>🏫 KHỐI 12</span></h4>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="rankingGrade12"></tbody></table></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card"><h3>So sánh điểm thi đua</h3><div class="chartbox"><canvas id="scoreChart"></canvas></div></div>
+        <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
+      </div>
+    </section>
+
+    <!-- TAB GVCN & SƠ ĐỒ LỚP -->
+    <section id="homeroom" class="panel">
+      <div class="hero"><div><h2>🏫 Thông tin GVCN & Sơ đồ lớp</h2><p>Bấm chọn lớp để xem thông tin giáo viên chủ nhiệm và sơ đồ chỗ ngồi</p></div></div>
+      <div class="card">
+        <div id="homeroomClasses" class="classes"></div>
+      </div>
+    </section>
+
+    <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
+    <section id="adminLog" class="panel">
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
+      
+      <div class="card" style="margin-bottom: 18px;">
+        <h3>📅 1. Lọc vi phạm theo Ngày</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+          <input type="date" id="adminLogDate" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <select id="adminLogClass" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <button class="save" onclick="loadAdminLog()">Tải nhật ký ngày</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <h3>🗓️ 2. Tra cứu lỗi của Lớp trong Tuần hiện tại (Thứ 2 - Chủ Nhật)</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;">
+          <select id="weeklyLogClass" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <button class="save" onclick="loadWeeklyLog()">Tra cứu vi phạm tuần này</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="ranking">
+            <thead>
+              <tr>
+                <th>Ngày / Thời gian</th>
+                <th>Buổi</th>
+                <th>Lớp</th>
+                <th>Mã HS</th>
+                <th>Họ và Tên</th>
+                <th>Nội dung vi phạm</th>
+                <th>Điểm trừ</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="adminLogTableBody">
+              <tr><td colspan="8" style="text-align:center; padding: 20px;">Vui lòng chọn điều kiện tìm kiếm.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB HỖ TRỢ -->
+    <section id="support" class="panel">
+      <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Khắc phục</h2><p>Quản lý và ghi nhận xử lý vi phạm thi đua</p></div></div>
+      <div class="card">
+        <h3>⚠️ Bảng thống kê học sinh vi phạm nghiêm trọng (Từ 4 lỗi)</h3>
+        <div class="table-wrap">
+          <table class="ranking">
+            <thead>
+              <tr>
+                <th>Lớp</th>
+                <th>Mã HS</th>
+                <th>Họ và Tên</th>
+                <th>Số lần vi phạm</th>
+                <th>Tổng điểm trừ</th>
+                <th>Chi tiết các lỗi</th>
+                <th>Thao tác (Bí thư Đoàn)</th>
+              </tr>
+            </thead>
+            <tbody id="violationTableBody">
+              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    
+    <!-- TAB ĐIỂM DANH -->
+    <section id="attendance" class="panel">
+      <div class="attendance-head">
+        <div>
+          <h2>✅ Điểm danh</h2>
+          <p id="sessionText">Đang xác định thời gian...</p>
+          <small id="userLoginBadge" style="color: var(--cyan); font-weight: 700; display: block; margin-top: 4px;"></small>
+        </div>
+        <span id="periodBadge" class="session">—</span>
+      </div>
+      <div id="classChooser" class="card" style="margin-top:20px">
+        <input id="classSearch" class="search" placeholder="🔎 Tìm lớp, ví dụ: 10A1">
+        <div id="classes" class="classes"></div>
+      </div>
+      <div id="studentArea" class="card" style="display:none;margin-top:18px">
+        <div id="sessionAlertBox"></div>
+        <div class="attendance-head">
+          <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
+          <button id="saveAttendance" class="save">Lưu điểm danh</button>
+        </div>
+        <div id="students"></div>
+      </div>
+    </section>
+  </main>
   
-  if (!apiKey) {
-    Logger.log("Lỗi: Chưa cài đặt 'GEMINI_API_KEY' trong Thuộc tính của tập lệnh.");
-    return;
-  }
+  <footer>
+    <a href="https://huycomf2020.github.io/giao_vien/index.html" target="_blank">🔗 Thêm tài nguyên Giáo viên</a>
+  </footer>
+</div>
 
-  // 2. Chọn model (Có thể thay đổi tên model tại đây, ví dụ: gemini-1.5-flash hoặc gemini-2.0-flash)
-  const modelName = "gemini-1.5-flash"; 
-  const url = `[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){modelName}:generateContent?key=${apiKey}`;
+<!-- POPUP THÔNG TIN GVCN & SƠ ĐỒ LỚP -->
+<div id="homeroomModal" class="modal">
+  <div class="modal-card" style="width: min(850px, calc(100% - 24px));">
+    <h3 id="hrClassTitle">🏫 Thông tin Lớp</h3>
+    <div style="margin: 12px 0; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <p style="margin: 0 0 6px;"><b>👤 Giáo viên chủ nhiệm:</b> <span id="hrTeacher" style="color: var(--cyan); font-weight: 700;">—</span></p>
+      <p style="margin: 0;"><b>📞 Số điện thoại:</b> <span id="hrPhone" style="font-weight: 700;">—</span></p>
+    </div>
+    <h4>📌 Sơ đồ chỗ ngồi học sinh</h4>
+    <div style="height: 420px; width: 100%; border: 1px solid #dce8ee; border-radius: 14px; overflow: hidden; margin-top: 8px;">
+      <iframe id="hrSeatingFrame" style="width:100%; height:100%; border:0;" src="about:blank"></iframe>
+    </div>
+    <div class="modal-actions" style="margin-top: 15px;">
+      <button class="secondary" onclick="$('#homeroomModal').classList.remove('open')">Đóng</button>
+    </div>
+  </div>
+</div>
 
-  // 3. Nội dung câu hỏi/yêu cầu gửi tới AI
-  const promptText = "Xin chào, hãy giới thiệu ngắn gọn về bản thân bạn.";
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN DÀNH CHO TAB HỖ TRỢ -->
+<div id="supportPasswordModal" class="modal">
+  <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
+    <h3>🔐 Xác minh Bí thư Đoàn</h3>
+    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh để truy cập khu vực Hỗ trợ & Khắc phục.</p>
+    <div class="assistant-modal-body" style="margin: 15px 0;">
+      <div style="flex:1;">
+        <input id="supportPassword" type="password" placeholder="Mật khẩu Bí thư">
+      </div>
+      <img src="images/thaynam.png" alt="Trợ lý Thầy Nam" class="assistant-img" onerror="this.src='https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png'">
+    </div>
+    <div class="modal-actions">
+      <button class="secondary" id="cancelSupportLogin">Đóng</button>
+      <button class="save" id="loginSupport">Xác nhận vào</button>
+    </div>
+  </div>
+</div>
 
-  const payload = {
-    "contents": [
-      {
-        "parts": [
-          { "text": promptText }
-        ]
-      }
-    ]
-  };
+<!-- POPUP ĐĂNG NHẬP ĐIỂM DANH CHO LỚP -->
+<div id="passwordModal" class="modal">
+  <div class="modal-card">
+    <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
+    <p style="margin-top:4px; color:var(--muted);">Nhập Mật khẩu do Lớp quản lý để tiến hành điểm danh.</p>
+    <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
+    <input id="password" type="password" placeholder="Mật khẩu của lớp">
+    <div class="modal-actions">
+      <button class="secondary" id="cancelLogin">Đóng</button>
+      <button class="save" id="login">Đăng nhập</button>
+    </div>
+  </div>
+</div>
 
-  const options = {
-    "method": "post",
-    "contentType": "application/json",
-    "payload": JSON.stringify(payload),
-    "muteHttpExceptions": true
-  };
+<div id="toast" class="toast"></div>
 
-  try {
-    // 4. Gửi yêu cầu API
-    const response = UrlFetchApp.fetch(url, options);
-    const json = JSON.parse(response.getContentText());
+<script>
+  const API_URL='https://script.google.com/macros/s/AKfycbySKeKg_sNYRlvTPx2VK44RR2iUr9fs53a1T0i-MTZWkrlwsvH8zvQ6TwL2Qi6lmJZjMg/exec';
+  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null};
 
-    if (json.candidates && json.candidates.length > 0) {
-      const resultText = json.candidates[0].content.parts[0].text;
-      Logger.log("KẾT QUẢ TỪ GEMINI:\n" + resultText);
-      return resultText;
-    } else {
-      Logger.log("Lỗi phản hồi: " + JSON.stringify(json));
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  function server(fn,...args){
+    if(typeof google!=='undefined'&&google.script&&google.script.run){
+      return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)))[fn](...args));
     }
-  } catch (e) {
-    Logger.log("Lỗi kết nối: " + e.toString());
+    const body=new URLSearchParams({action:fn,args:JSON.stringify(args)});
+    return fetch(API_URL,{method:'POST',body,redirect:'follow'})
+      .then(r=>{if(!r.ok)throw new Error('API không phản hồi ('+r.status+').');return r.json()})
+      .then(r=>{if(!r.ok)throw new Error(r.error||'Lỗi API');return r.data});
   }
-}
+  function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
+  function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  
+  async function init(){
+    try{
+      state.data=await server('getBootstrapData');
+      renderRules();
+      renderClasses();
+      renderHomeroomClasses();
+      renderCompetition(state.data.competition);
+      setupAdminClassSelect();
+      const c=state.data.current;
+      $('#sessionText').textContent=c.date;
+      $('#periodBadge').textContent=(c.period==='Sáng'?'🌤️ ':'🌇 ')+c.period;
+      $('#adminLogDate').value = c.isoDate;
+    }catch(e){ toast(e.message); }
+  }
+  
+  $$('.nav button').forEach(btn=>btn.onclick=()=>{
+    const target = btn.dataset.page;
+    if(target==='support' && !state.supportToken){
+      $('#supportPasswordModal').classList.add('open');
+      $('#supportPassword').focus();
+      return;
+    }
+    openPage(target);
+  });
+
+  function openPage(id){
+    $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+    $$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+    if(id === 'support') loadViolationsData();
+    if(id === 'adminLog') loadAdminLog();
+  }
+  
+  function renderClasses(filter=''){
+    const q=filter.toUpperCase().trim();
+    $('#classes').innerHTML=state.data.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" onclick="onSelectClassBtn('${c}')">${c}</button>`).join('');
+  }
+
+  function renderHomeroomClasses(){
+    $('#homeroomClasses').innerHTML=state.data.classes.map(c=>`<button class="class-btn" onclick="openHomeroomModal('${c}')">🏫 Lớp ${c}</button>`).join('');
+  }
+
+  async function openHomeroomModal(clsName) {
+    $('#hrClassTitle').textContent = `🏫 Thông tin & Sơ đồ Lớp ${clsName}`;
+    $('#hrTeacher').textContent = 'Đang tải...';
+    $('#hrPhone').textContent = 'Đang tải...';
+    $('#hrSeatingFrame').src = 'about:blank';
+    $('#homeroomModal').classList.add('open');
+
+    try {
+      const info = await server('getClassInfo', clsName);
+      $('#hrTeacher').textContent = info.teacher;
+      $('#hrPhone').textContent = info.phone;
+      $('#hrSeatingFrame').src = info.seatingUrl;
+    } catch(e) {
+      toast(e.message);
+    }
+  }
+
+  function onSelectClassBtn(clsName) {
+    if (state.token && state.assignedClass === clsName) {
+      loadClass(clsName);
+      return;
+    }
+    $('#modalClassTitle').textContent = `🔐 Đăng nhập Điểm danh Lớp ${clsName}`;
+    $('#classEmail').value = `${clsName.toLowerCase()}@thptlocninh.edu.vn`;
+    $('#password').value = '';
+    $('#passwordModal').classList.add('open');
+    $('#password').focus();
+  }
+
+  $('#cancelLogin').onclick=()=>$('#passwordModal').classList.remove('open');
+  $('#login').onclick=async()=>{
+    try{
+      const email = $('#classEmail').value;
+      const pass = $('#password').value;
+      const r = await server('verifyAttendancePassword', email, pass);
+      if(!r.valid) throw new Error(r.message || 'Mật khẩu không chính xác.');
+      
+      state.token = r.token;
+      state.assignedClass = r.assignedClass;
+      state.userEmail = r.userEmail;
+      
+      $('#passwordModal').classList.remove('open');
+      toast(`Đăng nhập thành công (${state.assignedClass})`);
+      $('#userLoginBadge').textContent = `👤 Tài khoản: ${state.userEmail}`;
+      loadClass(state.assignedClass);
+    }catch(e){ toast(e.message); }
+  };
+
+  $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
+  $('#loginSupport').onclick=async()=>{
+    try{
+      const r=await server('verifySupportPassword',$('#supportPassword').value);
+      if(!r.valid) throw new Error('Mật khẩu Bí thư Đoàn không chính xác.');
+      state.supportToken=r.token;
+      $('#supportPasswordModal').classList.remove('open');
+      openPage('support');
+      toast('Xác minh Bí thư Đoàn thành công!');
+    }catch(e){ toast(e.message); }
+  };
+  $('#supportPassword').onkeydown=e=>{if(e.key==='Enter')$('#loginSupport').click()};
+
+  function setupAdminClassSelect() {
+    const opts = '<option value="ALL">-- Tất cả các lớp --</option>' + state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    $('#adminLogClass').innerHTML = opts;
+    $('#weeklyLogClass').innerHTML = state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+
+  async function loadClass(cls){
+    $('#studentArea').style.display='block';
+    $('#classTitle').textContent=`Lớp ${cls}`;
+    $('#students').innerHTML='<div class="loader"></div>';
+    try{
+      const res = await server('getStudentsByClass', cls, state.token);
+      state.students = res.students;
+      state.className = res.assignedClass || cls;
+      $('#studentCount').textContent = `${state.students.length} học sinh`;
+
+      const alertBox = $('#sessionAlertBox');
+      if (res.lastSession) {
+        alertBox.innerHTML = `<div class="sessionAlert">⚠️ Lớp đã điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (${res.lastSession.count} vi phạm). Cập nhật lại sẽ tự ghi đè bản cũ.</div>`;
+      } else { alertBox.innerHTML = ''; }
+
+      renderStudents();
+    }catch(e){
+      toast(e.message);
+      $('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>';
+    }
+  }
+
+  function renderStudents(){
+    if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
+    $('#students').innerHTML=state.students.map(s=>{
+      const st = s.status || 'Có mặt';
+      return `
+        <div class="student" data-row="${s.row}">
+          <b>${esc(s.stt)}</b>
+          <div class="student-name"><b>${esc(s.name)}</b><small>${esc(s.code)}</small></div>
+          <div class="statuses">
+            <button class="status ${st==='Có mặt'?'selected':''}" onclick="setStatus('${s.row}', 'Có mặt', 0)">Có mặt</button>
+            <button class="status ${st==='Vắng có phép'?'selected':''}" onclick="setStatus('${s.row}', 'Vắng có phép', 1)">Vắng có phép</button>
+            <button class="status ${st==='Vắng không phép'?'selected':''}" onclick="setStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
+            <button class="status ${st==='Đi trễ'?'selected':''}" onclick="setStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function setStatus(rowId, statusName, deduction) {
+    const student = state.students.find(s => s.row == rowId);
+    if (!student) return;
+    student.status = statusName;
+    student.deduction = deduction;
+    renderStudents();
+  }
+
+  $('#saveAttendance').onclick=async()=>{
+    const btn=$('#saveAttendance');
+    btn.disabled=true; btn.textContent='Đang lưu...';
+    try{
+      const r=await server('saveAttendance',{
+        className:state.className,
+        students:state.students.map(s=>({code:s.code, name:s.name, status:s.status, deduction:s.deduction}))
+      },state.token);
+      
+      toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
+      loadClass(state.className);
+    }catch(e){ toast(e.message); }
+    finally{ btn.disabled=false; btn.textContent='Lưu điểm danh'; }
+  };
+
+  async function loadAdminLog() {
+    const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    try {
+      const logs = await server('getDailyLogForAdmin', d, c);
+      renderLogTable(logs);
+    } catch(e) { toast(e.message); }
+  }
+
+  async function loadWeeklyLog() {
+    const c = $('#weeklyLogClass').value;
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    try {
+      const logs = await server('getWeeklyViolations', c);
+      renderLogTable(logs);
+    } catch(e) { toast(e.message); }
+  }
+
+  function renderLogTable(logs) {
+    if(!logs || logs.length === 0) {
+      $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 20px;">Không có dữ liệu vi phạm.</td></tr>';
+      return;
+    }
+    $('#adminLogTableBody').innerHTML = logs.map(r => `
+      <tr>
+        <td><small>${esc(r.date || r.time)}</small></td>
+        <td><b>${esc(r.period)}</b></td>
+        <td><b>${esc(r.className)}</b></td>
+        <td><small>${esc(r.code)}</small></td>
+        <td><b>${esc(r.name)}</b></td>
+        <td>${esc(r.status)}</td>
+        <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
+        <td>
+          ${r.sessionKey && state.token ? `<button class="btn-del" onclick="deleteWrongEntry('${esc(r.sessionKey)}', '${esc(r.code)}', '${esc(r.name)}')">Xóa lỗi</button>` : '—'}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadViolationsData() {
+    try {
+      const res = await server('getViolationsSummary');
+      if (res.allErrors && res.allErrors.length > 0) {
+        $('#violationTableBody').innerHTML = res.allErrors.map(s => `
+          <tr>
+            <td><b>${esc(s.className)}</b></td>
+            <td><small>${esc(s.code)}</small></td>
+            <td><b>${esc(s.name)}</b></td>
+            <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${s.count} lần</span></td>
+            <td><strong style="color:#dc2626;">-${s.totalDeduction}đ</strong></td>
+            <td><small>${esc(s.errors.join('; '))}</small></td>
+            <td>
+              <button class="btn-resolve" onclick="toast('Đã ghi nhận xử lý!')">✨ Xử lý khắc phục</button>
+            </td>
+          </tr>
+        `).join('');
+      } else {
+        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có học sinh vi phạm từ 4 lỗi trở lên.</td></tr>';
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  async function deleteWrongEntry(sessionKey, code, name) {
+    if (confirm(`Xác nhận xóa lỗi cho học sinh ${name} (nhập nhầm)?`)) {
+      try {
+        toast("Đang xóa lỗi nhập nhầm...");
+        await server('removeViolation', { sessionKey, code }, state.token);
+        toast("Đã xóa lỗi thành công!");
+        loadWeeklyLog();
+      } catch(e) { toast(e.message); }
+    }
+  }
+
+  $$('.periods button').forEach(btn=>btn.onclick=async()=>{
+    $$('.periods button').forEach(b=>b.classList.toggle('active',b===btn));
+    try{ renderCompetition(await server('getCompetitionData',btn.dataset.period)) }catch(e){ toast(e.message) }
+  });
+  
+  function renderCompetition(rows=[]){
+    const medals=['🥇','🥈','🥉'];
+    $('#podium').innerHTML=rows.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.className)}</b><span>Hạng ${r.rank} • <strong>${r.total} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có dữ liệu thi đua.</div>';
+    $('#ranking').innerHTML=rows.map(r=>`<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.className)}</b></td><td>${r.total}</td></tr>`).join('');
+    
+    const renderGradeTable = (list) => list.map((r, i) => `<tr><td><span class="badge">#${i+1}</span></td><td><b>${esc(r.className)}</b></td><td>${r.total}</td></tr>`).join('');
+    $('#rankingGrade10').innerHTML = renderGradeTable(rows.filter(r => r.className.startsWith('10A')));
+    $('#rankingGrade11').innerHTML = renderGradeTable(rows.filter(r => r.className.startsWith('11A')));
+    $('#rankingGrade12').innerHTML = renderGradeTable(rows.filter(r => r.className.startsWith('12A')));
+
+    const top=rows.slice(0,15);
+    if(state.chart)state.chart.destroy();
+    state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
+  }
+
+  function renderRules(){ const list=state.data.rules||[]; $('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung.</div>'; }
+
+  init();
+</script>
+</body>
+</html>
