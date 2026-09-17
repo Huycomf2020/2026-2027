@@ -303,7 +303,6 @@
       return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)))[fn](...args));
     }
     // GitHub Pages gọi Apps Script bằng JSONP để tránh CORS/"Failed to fetch".
-    // Các tệp lớn vẫn dùng POST vì không thể đưa base64 vào URL.
     if(!/^upload(WeeklyReport|SeatingChart)$/.test(fn)) return jsonpServer(fn,args);
     let lastError;
     for(let attempt=0;attempt<3;attempt++){
@@ -487,19 +486,17 @@
     }
   }
 
-  // HÀM RENDER HỌC SINH ĐA LỰA CHỌN ĐÃ KHÔI PHỤC NÚT VI PHẠM
+  // HÀM RENDER HỌC SINH TÁCH BIỆT TRẠNG THÁI RIÊNG BIỆT CHO TỪNG EM
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
     const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
     
     $('#students').innerHTML=state.students.map(s=>{
-      // Reset sạch nếu học sinh có trạng thái 'Có mặt'
       if (s.status === 'Có mặt') s.status = '';
       
       const selectedList = s.status ? s.status.split(', ').map(x=>x.trim()).filter(Boolean) : [];
       const hasBaseStatus = (st) => selectedList.includes(st);
       
-      // Lọc chính xác các lỗi riêng ngoài 3 lỗi cơ bản
       const customRules = selectedList.filter(x => !baseStatuses.includes(x));
       const hasCustomRule = customRules.length > 0;
       
