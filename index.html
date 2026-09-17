@@ -26,7 +26,6 @@
     .rules{display:grid;gap:12px}.rule{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(6,44,67,.06);display:flex;gap:16px}.rule-num{width:38px;height:38px;flex:0 0 auto;border-radius:12px;background:var(--sky);display:grid;place-items:center;font-weight:800;color:#0369a1}.empty{text-align:center;padding:60px 15px;color:var(--muted)}
     .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
     
-    /* GIAO DIỆN ĐIỂM DANH ĐA LỰA CHỌN NÂNG CẤP */
     .student{display:grid;grid-template-columns:50px minmax(180px,1.2fr) minmax(340px,2fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
     .statuses{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
     .status{border:1px solid #dce6eb;background:#fff;border-radius:10px;padding:9px 4px;font-size:12px;font-weight:600;transition:.2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;}
@@ -302,7 +301,6 @@
     if(typeof google!=='undefined'&&google.script&&google.script.run){
       return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)))[fn](...args));
     }
-    // GitHub Pages gọi Apps Script bằng JSONP để tránh CORS/"Failed to fetch".
     if(!/^upload(WeeklyReport|SeatingChart)$/.test(fn)) return jsonpServer(fn,args);
     let lastError;
     for(let attempt=0;attempt<3;attempt++){
@@ -486,7 +484,6 @@
     }
   }
 
-  // HÀM RENDER HỌC SINH TÁCH BIỆT TRẠNG THÁI RIÊNG BIỆT CHO TỪNG EM
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
     const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
@@ -519,6 +516,7 @@
       `;
     }).join('');
   }
+
   function toggleStatus(rowId, statusName, defaultDeduction) {
     const student = state.students.find(s => s.row == rowId);
     if (!student) return;
@@ -538,7 +536,6 @@
   }
 
   async function openRuleModal(rowId, studentName) {
-    // Gán chính xác học sinh theo rowId
     activeStudentForModal = state.students.find(s => String(s.row) === String(rowId));
     if (!activeStudentForModal) return;
 
@@ -587,7 +584,6 @@
       totalDeduction += Number(chk.dataset.deduction) || 0;
     });
 
-    // Chỉ cập nhật duy nhất cho học sinh đang chọn
     activeStudentForModal.status = currentList.join(', ');
     activeStudentForModal.deduction = totalDeduction;
 
@@ -595,6 +591,35 @@
     renderStudents();
     toast(`Đã cập nhật vi phạm cho ${activeStudentForModal.name} (-${totalDeduction}đ)`);
   }
+
+  $('#saveAttendance').onclick=async()=>{
+    const btn=$('#saveAttendance');
+    btn.disabled=true; btn.textContent='Đang lưu...';
+    try{
+      const reqId = 'REQ-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+      const r=await server('saveAttendance',{
+        className: state.className,
+        requestId: reqId,
+        totalCount: state.students.length,
+        students: state.students.filter(s => s.status && s.status !== 'Có mặt').map(s => ({
+          code: s.code || '',
+          name: s.name || '',
+          status: s.status || '',
+          deduction: s.deduction || 0
+        }))
+      }, state.token);
+      
+      toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
+      loadClass(state.className);
+    }catch(e){ 
+      toast(e.message || 'Lỗi khi lưu điểm danh'); 
+    }
+    finally{ 
+      btn.disabled=false; 
+      btn.textContent='Lưu điểm danh'; 
+    }
+  };
+
   async function loadAdminLog() {
     const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
     const accessToken=state.supportToken||state.token;if(!accessToken){toast('Vui lòng đăng nhập lớp hoặc khu vực Hỗ trợ.');return}
