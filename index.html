@@ -493,11 +493,13 @@
     const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
     
     $('#students').innerHTML=state.students.map(s=>{
+      // Reset sạch nếu học sinh có trạng thái 'Có mặt'
       if (s.status === 'Có mặt') s.status = '';
       
-      const selectedList = s.status ? s.status.split(', ').map(x=>x.trim()) : [];
+      const selectedList = s.status ? s.status.split(', ').map(x=>x.trim()).filter(Boolean) : [];
       const hasBaseStatus = (st) => selectedList.includes(st);
       
+      // Lọc chính xác các lỗi riêng ngoài 3 lỗi cơ bản
       const customRules = selectedList.filter(x => !baseStatuses.includes(x));
       const hasCustomRule = customRules.length > 0;
       
@@ -520,7 +522,6 @@
       `;
     }).join('');
   }
-
   function toggleStatus(rowId, statusName, defaultDeduction) {
     const student = state.students.find(s => s.row == rowId);
     if (!student) return;
