@@ -302,6 +302,9 @@
     if(typeof google!=='undefined'&&google.script&&google.script.run){
       return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)))[fn](...args));
     }
+    // GitHub Pages gọi Apps Script bằng JSONP để tránh CORS/"Failed to fetch".
+    // Các tệp lớn vẫn dùng POST vì không thể đưa base64 vào URL.
+    if(!/^upload(WeeklyReport|SeatingChart)$/.test(fn)) return jsonpServer(fn,args);
     let lastError;
     for(let attempt=0;attempt<3;attempt++){
       const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
@@ -316,6 +319,27 @@
       finally{clearTimeout(timer);}
     }
     throw lastError;
+  }
+
+  function jsonpServer(fn,args){
+    return new Promise((resolve,reject)=>{
+      const callback='__gas_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+      const script=document.createElement('script');
+      const timer=setTimeout(()=>finish(new Error('API quá thời gian phản hồi.')),30000);
+      let done=false;
+      function finish(error,value){
+        if(done)return;done=true;clearTimeout(timer);delete window[callback];script.remove();
+        error?reject(error):resolve(value);
+      }
+      window[callback]=result=>{
+        if(!result||result.ok!==true)return finish(new Error((result&&result.error)||'Lỗi API'));
+        finish(null,result.data);
+      };
+      script.onerror=()=>finish(new Error('Không kết nối được Apps Script. Hãy triển khai lại Web App với quyền “Bất kỳ ai”.'));
+      const query=new URLSearchParams({action:fn,args:JSON.stringify(args),callback,_:Date.now()});
+      script.src=API_URL+'?'+query.toString();
+      document.head.appendChild(script);
+    });
   }
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
@@ -577,7 +601,8 @@
       const r=await server('saveAttendance',{
         className:state.className,
         requestId:`${state.className}-${Date.now()}-${crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)}`,
-        students:state.students.map(s=>({code:s.code, name:s.name, status:s.status || 'Có mặt', deduction:s.deduction || 0}))
+        totalCount:state.students.length,
+        students:state.students.filter(s=>s.status&&s.status!=='Có mặt').map(s=>({code:s.code,name:s.name,status:s.status,deduction:s.deduction||0}))
       },state.token);
       
       toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
