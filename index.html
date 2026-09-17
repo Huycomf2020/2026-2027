@@ -538,7 +538,10 @@
   }
 
   async function openRuleModal(rowId, studentName) {
-    activeStudentForModal = state.students.find(s => s.row == rowId);
+    // Gán chính xác học sinh theo rowId
+    activeStudentForModal = state.students.find(s => String(s.row) === String(rowId));
+    if (!activeStudentForModal) return;
+
     $('#ruleStudentTarget').textContent = `Học sinh: ${studentName}`;
     $('#ruleModal').classList.add('open');
     $('#ruleListContainer').innerHTML = '<div class="loader"></div>';
@@ -584,31 +587,14 @@
       totalDeduction += Number(chk.dataset.deduction) || 0;
     });
 
+    // Chỉ cập nhật duy nhất cho học sinh đang chọn
     activeStudentForModal.status = currentList.join(', ');
     activeStudentForModal.deduction = totalDeduction;
 
     $('#ruleModal').classList.remove('open');
     renderStudents();
-    toast(`Đã cập nhật các vi phạm (-${totalDeduction}đ)`);
+    toast(`Đã cập nhật vi phạm cho ${activeStudentForModal.name} (-${totalDeduction}đ)`);
   }
-
-  $('#saveAttendance').onclick=async()=>{
-    const btn=$('#saveAttendance');
-    btn.disabled=true; btn.textContent='Đang lưu...';
-    try{
-      const r=await server('saveAttendance',{
-        className:state.className,
-        requestId:`${state.className}-${Date.now()}-${crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)}`,
-        totalCount:state.students.length,
-        students:state.students.filter(s=>s.status&&s.status!=='Có mặt').map(s=>({code:s.code,name:s.name,status:s.status,deduction:s.deduction||0}))
-      },state.token);
-      
-      toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
-      loadClass(state.className);
-    }catch(e){ toast(e.message); }
-    finally{ btn.disabled=false; btn.textContent='Lưu điểm danh'; }
-  };
-
   async function loadAdminLog() {
     const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
     const accessToken=state.supportToken||state.token;if(!accessToken){toast('Vui lòng đăng nhập lớp hoặc khu vực Hỗ trợ.');return}
