@@ -179,7 +179,7 @@
       </div>
       <div class="card" style="margin-top:18px">
         <h3>📤 Nhập điểm Sổ đầu bài hàng tuần</h3>
-        <p>Chọn file Excel hoặc PDF có các cột Tuần, Lớp, Điểm SĐB. Hệ thống dùng Gemini 3.8 Flash để đọc và cập nhật sheet <b>diem_sdb</b>.</p>
+        <p>Chọn file Excel hoặc PDF có các cột Tuần, Lớp, Điểm SĐB. Hệ thống dùng Gemini AI Flash để đọc và cập nhật sheet <b>diem_sdb</b>.</p>
         <div class="upload-box">
           <label><b>Tuần mặc định</b></label>
           <input id="sdbWeek" type="number" min="1" max="53" placeholder="Ví dụ: 5">
@@ -293,17 +293,18 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  const API_URL='https://script.google.com/macros/s/AKfycbySKeKg_sNYRlvTPx2VK44RR2iUr9fs53a1T0i-MTZWkrlwsvH8zvQ6TwL2Qi6lmJZjMg/exec';
-  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:''};
+  // CẬP NHẬT URL WEB APP MỚI NHẤT
+  const API_URL = 'https://script.google.com/macros/s/AKfycbznjz40DTRGi66PHPJfJo-z8VueCXg-6MM-a_rW_H9zSAnvD5Gz3T07cWzXkFjUeThT/exec';
+  const state = {data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:''};
   let activeStudentForModal = null;
 
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+  // HÀM KẾT NỐI HYBRID GIÚP GIAO DIỆN CHẠY TRÊN GITHUB PAGES KHÔNG BỊ LỖI CORS / REDIRECT
   async function server(fn,...args){
     if(typeof google!=='undefined'&&google.script&&google.script.run){
       return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)))[fn](...args));
     }
-    // GitHub Pages gọi Apps Script bằng JSONP để tránh CORS/"Failed to fetch".
-    // Các tệp lớn vẫn dùng POST vì không thể đưa base64 vào URL.
     if(!/^upload(WeeklyReport|SeatingChart)$/.test(fn)) return jsonpServer(fn,args);
     let lastError;
     for(let attempt=0;attempt<3;attempt++){
@@ -335,12 +336,13 @@
         if(!result||result.ok!==true)return finish(new Error((result&&result.error)||'Lỗi API'));
         finish(null,result.data);
       };
-      script.onerror=()=>finish(new Error('Không kết nối được Apps Script. Hãy triển khai lại Web App với quyền “Bất kỳ ai”.'));
+      script.onerror=()=>finish(new Error('Không kết nối được Apps Script. Hãy kiểm tra URL Web App hoặc triển khai lại quyền "Bất kỳ ai".'));
       const query=new URLSearchParams({action:fn,args:JSON.stringify(args),callback,_:Date.now()});
       script.src=API_URL+'?'+query.toString();
       document.head.appendChild(script);
     });
   }
+
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
   
@@ -487,7 +489,6 @@
     }
   }
 
-  // HÀM RENDER HỌC SINH ĐA LỰA CHỌN ĐÃ KHÔI PHỤC NÚT VI PHẠM
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
     const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
