@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Cổng lượng hóa thành tích cán bộ, giáo viên, nhân viên THPT Lộc Ninh — năm học 2026–2027">
+  <title>LƯỢNG HÓA THPT LỘC NINH - TP. ĐỒNG NAI</title>
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#062c43;--navy2:#075985;--cyan:#0891b2;--sky:#e0f2fe;--gold:#f59e0b;--ink:#102a3a;--muted:#637889;--line:#dce8ee;--card:#fff;--bg:#f4f8fb;--danger:#dc2626;--success:#059669;--radius:22px;--shadow:0 16px 45px rgba(6,44,67,.10)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 90% 0,#cffafe 0,transparent 28%),var(--bg);font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);font-size:16px}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.65}.shell{min-height:100vh;display:flex;flex-direction:column}
+    .top{background:linear-gradient(120deg,#041f30,#075985 70%,#0e7490);color:#fff;padding:22px clamp(18px,5vw,70px);box-shadow:0 10px 35px rgba(2,32,49,.2)}
+    .brand{max-width:1250px;margin:auto;display:flex;align-items:center;gap:16px}.school-logo{width:74px;height:74px;flex:0 0 74px;object-fit:contain;filter:drop-shadow(0 7px 13px rgba(0,0,0,.22))}.brand h1{font-size:clamp(19px,3vw,31px);line-height:1.25;margin:0;font-weight:800}.brand p{margin:6px 0 0;color:#bae6fd;font-size:.84rem;letter-spacing:.08em;text-transform:uppercase}
+    .nav{max-width:1250px;margin:20px auto -45px;display:flex;gap:8px;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);padding:8px;border:1px solid rgba(255,255,255,.18);border-radius:18px;width:max-content;flex-wrap:wrap}.nav button{border:0;border-radius:13px;background:transparent;color:#dff7ff;font-weight:700;padding:12px 18px;transition:.2s}.nav button:hover,.nav button.active{color:var(--navy);background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.14)}
+    main{width:min(1250px,calc(100% - 30px));margin:58px auto 40px;flex:1}.panel{display:none}.panel.active{display:block;animation:rise .28s ease}@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+    .hero{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.eyebrow{display:block;color:var(--cyan);font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}.hero h2{font-size:clamp(26px,4vw,42px);line-height:1.15;margin:0;color:var(--navy)}.hero p{margin:8px 0 0;color:var(--muted)}
+    .card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}.card-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.card h3{margin:0;font-size:1.1rem}.status{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:#ecfeff;color:#0e7490;font-weight:700;font-size:.78rem}.status::before{content:'';width:8px;height:8px;border-radius:50%;background:#06b6d4}.status.error{background:#fef2f2;color:#b91c1c}.status.error::before{background:#ef4444}
+    .rules{display:grid;gap:12px}.rule{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(6,44,67,.06);display:grid;grid-template-columns:42px 1fr auto;align-items:start;gap:15px}.rule-num{width:42px;height:42px;border-radius:13px;background:var(--sky);display:grid;place-items:center;font-weight:800;color:#0369a1}.rule strong{display:block;margin:1px 0 5px}.rule p{margin:0;color:var(--muted);line-height:1.6}.points{white-space:nowrap;background:#ecfdf5;color:#047857;padding:6px 10px;border-radius:999px;font-weight:800;font-size:.8rem}
+    .podium{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:18px 0 22px}.winner{background:#fff;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden;min-height:150px}.winner::after{content:attr(data-rank);position:absolute;right:12px;bottom:-24px;font-size:7rem;font-weight:800;color:rgba(8,145,178,.07)}.winner.gold{background:linear-gradient(145deg,#fff7d6,#fff)}.winner .medal{font-size:1.8rem}.winner b{font-size:1.25rem;display:block;margin:8px 0 4px;padding-right:34px}.winner span{color:var(--muted)}.winner strong{display:block;color:var(--cyan);font-size:1.55rem;margin-top:10px}
+    .table-wrap{overflow:auto}.ranking{width:100%;border-collapse:collapse;min-width:620px}.ranking th,.ranking td{padding:14px 12px;border-bottom:1px solid #e7eef2;text-align:left}.ranking th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.ranking tbody tr{transition:.18s}.ranking tbody tr:hover{background:#f8fcfe}.rank-pill{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#edf5f8;color:var(--navy);font-weight:800}.score{font-weight:800;color:var(--cyan)}
+    .empty,.loading{text-align:center;padding:56px 16px;color:var(--muted)}.loader{width:27px;height:27px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 13px}@keyframes spin{to{transform:rotate(360deg)}}.retry{border:0;background:#e0f2fe;color:#0369a1;border-radius:12px;padding:10px 15px;font-weight:800;margin-top:12px}
+    .achievement-layout{display:grid;grid-template-columns:minmax(285px,.78fr) minmax(0,1.45fr);gap:18px;align-items:start}.tree-card{position:sticky;top:18px}.userbar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#ecfeff;border:1px solid #bae6fd;padding:12px 14px;border-radius:14px;margin-bottom:16px}.userbar strong{display:block}.userbar small{color:var(--muted)}.link-btn{border:0;background:transparent;color:#0369a1;font-weight:700;padding:6px}
+    .tree{display:grid;gap:9px}.tree-group{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff}.tree-head{width:100%;border:0;background:#f8fbfc;color:var(--navy);padding:14px;display:flex;gap:10px;text-align:left;font-weight:800;line-height:1.4}.tree-head .chev{margin-left:auto;transition:.2s}.tree-group.open .chev{transform:rotate(90deg)}.tree-children{display:none;padding:7px}.tree-group.open .tree-children{display:grid;gap:5px}.tree-item{width:100%;border:0;background:transparent;text-align:left;color:#435d6d;padding:11px 12px;border-radius:10px;line-height:1.45}.tree-item:hover,.tree-item.active{background:var(--sky);color:#0369a1;font-weight:700}
+    .detail-placeholder{min-height:470px;display:grid;place-items:center;text-align:center;color:var(--muted);padding:40px}.detail-placeholder svg{width:88px;height:88px;margin-bottom:12px}.detail h3{font-size:1.3rem;line-height:1.45;margin:0 0 8px}.detail .path{color:var(--muted);margin:0 0 22px}.score-box{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,#062c43,#075985);color:#fff;border-radius:18px;padding:18px;margin:18px 0}.score-box .score-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.13);display:grid;place-items:center;font-size:1.4rem}.score-box small{display:block;color:#bae6fd;margin-bottom:3px}.score-box strong{font-size:1.5rem}.upload{border:2px dashed #bae6fd;border-radius:18px;background:#f0f9ff;padding:22px;margin-top:18px}.upload label{display:block;font-weight:800;margin-bottom:5px}.upload p{color:var(--muted);font-size:.88rem;margin:4px 0 15px;line-height:1.5}.file-picker{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.file-picker input{max-width:100%}.selected-file{font-size:.85rem;color:#0e7490;margin-top:10px;word-break:break-all}.save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 20px;font-weight:800;box-shadow:0 8px 22px #bae6fd}.save-row{display:flex;justify-content:flex-end;margin-top:20px}.records{margin-top:22px}.records h4{margin:0 0 12px}.record-list{display:grid;gap:9px}.record{display:grid;grid-template-columns:1fr auto;gap:10px;padding:13px 14px;border:1px solid var(--line);border-radius:13px}.record small{display:block;color:var(--muted);margin-top:4px}.record .record-score{font-weight:800;color:var(--success)}
+    .modal{position:fixed;inset:0;background:rgba(3,27,41,.68);backdrop-filter:blur(7px);display:none;place-items:center;z-index:50;padding:16px}.modal.open{display:grid}.modal-card{width:min(480px,100%);background:#fff;border-radius:24px;padding:25px;box-shadow:0 30px 90px rgba(0,0,0,.28)}.modal-icon{width:52px;height:52px;border-radius:16px;background:var(--sky);display:grid;place-items:center;font-size:1.55rem;margin-bottom:14px}.modal h3{margin:0;font-size:1.35rem}.modal .intro{color:var(--muted);line-height:1.55;margin:7px 0 18px}.field{margin:12px 0}.field label{display:block;font-size:.86rem;font-weight:700;margin-bottom:6px}.field input{width:100%;padding:13px 14px;border:1px solid #d6e1e7;border-radius:13px;outline:none}.field input:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.password-line{display:flex;justify-content:flex-end}.forgot{border:0;background:transparent;color:#0369a1;font-size:.85rem;font-weight:700;padding:4px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:17px}.secondary{border:0;background:#edf3f6;color:var(--ink);padding:11px 16px;border-radius:12px;font-weight:700}.help-phone{display:none;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;padding:12px 13px;border-radius:12px;margin-top:10px;font-weight:700}.help-phone.show{display:block}
+    .toast{position:fixed;right:22px;bottom:22px;max-width:min(440px,calc(100% - 44px));background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:80}.toast.show{transform:none;opacity:1}.toast.bad{background:#991b1b}footer{text-align:center;color:#738796;padding:22px;font-weight:600;font-size:.86rem}
+    @media(max-width:850px){.achievement-layout{grid-template-columns:1fr}.tree-card{position:static}.podium{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 7px}.rule{grid-template-columns:42px 1fr}.rule .points{grid-column:2}.school-logo{width:58px;height:58px;flex-basis:58px}.detail-placeholder{min-height:300px}}
+    @media(max-width:520px){main{width:min(100% - 20px,1250px)}.top{padding-inline:12px}.nav button{font-size:.82rem}.card{padding:16px;border-radius:18px}.modal-card{padding:20px}.brand{gap:11px}.brand p{font-size:.7rem}.winner{min-height:130px}.rule{padding:15px}.userbar{align-items:flex-start}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <img class="school-logo" src="https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png" alt="Logo Trường THPT Lộc Ninh">
+      <div><h1>LƯỢNG HÓA THPT LỘC NINH - TP. ĐỒNG NAI</h1><p>Năm học 2026–2027</p></div>
+    </div>
+    <nav class="nav" aria-label="Điều hướng chính">
+      <button class="active" data-page="rules">📜 Quy định</button>
+      <button data-page="ranking">🏆 Bảng xếp hạng</button>
+      <button data-page="achievements">🎖️ Thành tích</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="rules" class="panel active">
+      <div class="hero"><div><span class="eyebrow">Tiêu chí lượng hóa</span><h2>Quy định</h2><p>Các nội dung, tiêu chí và điểm cộng áp dụng trong năm học.</p></div></div>
+      <div id="rulesList" class="rules"><div class="card loading"><div class="loader"></div>Đang tải dữ liệu từ bảng <b>diem_thi_dua</b>…</div></div>
+    </section>
+
+    <section id="ranking" class="panel">
+      <div class="hero"><div><span class="eyebrow">Ghi nhận đóng góp</span><h2>Bảng vàng thành tích</h2><p>Xếp hạng cán bộ, giáo viên, nhân viên theo tổng điểm lượng hóa.</p></div><span id="dataStatus" class="status">Đang đồng bộ</span></div>
+      <div id="podium" class="podium"></div>
+      <div class="card">
+        <div class="card-title"><h3>Bảng xếp hạng toàn trường</h3><span id="memberCount" class="status">0 cá nhân</span></div>
+        <div class="table-wrap"><table class="ranking"><thead><tr><th>Thứ hạng</th><th>Họ và tên</th><th>Tổ / bộ phận</th><th>Thành tích</th><th>Tổng điểm</th></tr></thead><tbody id="rankingBody"><tr><td colspan="5" class="loading"><div class="loader"></div>Đang tổng hợp xếp hạng…</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="achievements" class="panel">
+      <div class="hero"><div><span class="eyebrow">Hồ sơ cá nhân</span><h2>Kho thành tích</h2><p>Chọn tiêu chí, tải minh chứng và xác nhận để ghi nhận điểm.</p></div></div>
+      <div class="achievement-layout">
+        <aside class="card tree-card">
+          <div id="userBar" class="userbar"><div><strong>Chưa đăng nhập</strong><small>Vui lòng xác thực tài khoản</small></div><button class="link-btn" id="loginAgain">Đăng nhập</button></div>
+          <div class="card-title"><h3>Danh mục tiêu chí</h3><span class="status">6 nhóm</span></div>
+          <div id="criteriaTree" class="tree"><div class="loading"><div class="loader"></div>Đang tải danh mục…</div></div>
+        </aside>
+        <article id="criterionDetail" class="card detail-placeholder">
+          <div><svg viewBox="0 0 96 96" aria-hidden="true"><rect x="14" y="10" width="68" height="76" rx="14" fill="#e0f2fe"/><path d="M31 33h34M31 47h34M31 61h22" stroke="#0891b2" stroke-width="6" stroke-linecap="round"/><circle cx="70" cy="69" r="16" fill="#075985"/><path d="m63 69 5 5 9-11" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Chọn một nội dung bên trái</h3><p>Thông tin điểm và khu vực tải minh chứng sẽ xuất hiện tại đây.</p></div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer>THPT Lộc Ninh • Hệ thống lượng hóa năm học 2026–2027</footer>
+</div>
+
+<div id="loginModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="modal-card">
+    <div class="modal-icon">🔐</div><h3 id="loginTitle">Đăng nhập Thành tích</h3><p class="intro">Sử dụng email và mật khẩu đã đăng ký trong danh sách cán bộ, giáo viên, nhân viên.</p>
+    <form id="loginForm">
+      <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" placeholder="ten@thptlocninh.edu.vn" required></div>
+      <div class="field"><label for="password">Mật khẩu</label><input id="password" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu" required></div>
+      <div class="password-line"><button id="forgotPassword" class="forgot" type="button">Quên mật khẩu?</button></div>
+      <div id="helpPhone" class="help-phone">☎ Hỗ trợ đổi mật khẩu: <a href="tel:0907218089">0907 218 089</a></div>
+      <div class="modal-actions"><button id="closeLogin" class="secondary" type="button">Đóng</button><button id="loginButton" class="save" type="submit">Đăng nhập</button></div>
+    </form>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const API_URL='https://script.google.com/macros/s/AKfycbzw4ybKD7ck9A4k0j5GX1MSk8Sb0sqjeV7P1eoAaVZdMtRQfeJm37UGs3tTtf6V1Oig/exec';
+  const DRIVE_FOLDER_ID='1t-pd9-xQD1hST9LZxHcEGJP8C8fcB8RG';
+  /* Đổi tên hành động tại đây nếu Apps Script đang dùng tên hàm khác. */
+  const ACTIONS={bootstrap:'getBootstrapData',login:'verifyAchievementAccount',profile:'getAchievementProfile',save:'saveAchievement'};
+  const state={token:'',user:null,rules:[],criteria:[],records:[],ranking:[],selected:null,loaded:false};
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const keyNorm=v=>String(v??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  const pick=(obj,keys,fallback='')=>{if(!obj)return fallback;for(const k of keys)if(obj[k]!==undefined&&obj[k]!==null&&obj[k]!=='')return obj[k];const objectKeys=Object.keys(obj);for(const wanted of keys){const match=objectKeys.find(k=>keyNorm(k)===keyNorm(wanted));if(match&&obj[match]!==undefined&&obj[match]!==null&&obj[match]!=='')return obj[match]}return fallback};
+  function toast(message,bad=false){const el=$('#toast');el.textContent=message;el.classList.toggle('bad',bad);el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3600)}
+
+  function api(action,...args){
+    return new Promise((resolve,reject)=>{
+      const callback='__lh_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2),script=document.createElement('script');
+      const timer=setTimeout(()=>finish(new Error('Không thể đọc Apps Script. Web App cần có doGet hỗ trợ JSONP hoặc CORS cho GitHub Pages.')),25000);let done=false;
+      function finish(error,value){if(done)return;done=true;clearTimeout(timer);delete window[callback];script.remove();error?reject(error):resolve(value)}
+      window[callback]=result=>{if(result&&result.ok===false)return finish(new Error(result.error||'Yêu cầu không thành công.'));finish(null,result&&Object.prototype.hasOwnProperty.call(result,'data')?result.data:result)};
+      script.onerror=()=>finish(new Error('Không kết nối được Apps Script. Hãy triển khai lại Web App và chọn quyền truy cập “Bất kỳ ai”.'));
+      script.src=API_URL+'?'+new URLSearchParams({action,args:JSON.stringify(args),callback,_:Date.now()});document.head.appendChild(script);
+    });
+  }
+
+  function postApi(action,...args){
+    return new Promise((resolve,reject)=>{
+      const requestId='lh_'+Date.now()+'_'+Math.random().toString(36).slice(2),frame=document.createElement('iframe'),form=document.createElement('form');
+      frame.name='lh_frame_'+requestId;frame.hidden=true;form.method='POST';form.action=API_URL;form.target=frame.name;form.hidden=true;
+      const fields={action,args:JSON.stringify(args),requestId};Object.entries(fields).forEach(([name,value])=>{const input=document.createElement('input');input.type='hidden';input.name=name;input.value=value;form.appendChild(input)});
+      document.body.append(frame,form);form.submit();let attempts=0;
+      const timer=setInterval(async()=>{try{const result=await api('getAsyncResult',requestId);if(result&&result.pending){if(++attempts<80)return;throw new Error('Máy chủ xử lý quá thời gian.')}clearInterval(timer);form.remove();frame.remove();result&&result.ok===false?reject(new Error(result.error||'Yêu cầu không thành công.')):resolve(result&&Object.prototype.hasOwnProperty.call(result,'data')?result.data:result)}catch(error){if(++attempts>=80){clearInterval(timer);form.remove();frame.remove();reject(error)}}},1000);
+    });
+  }
+
+  async function hashPassword(value){
+    if(!window.crypto?.subtle)throw new Error('Trình duyệt không hỗ trợ đăng nhập an toàn.');
+    const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(bytes)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function arrayFrom(data,keys){for(const k of keys)if(Array.isArray(data?.[k]))return data[k];return []}
+  function normalizeRule(r,i){const rawPoint=pick(r,['points','diem','điểm','diem_cong','điểm cộng','diem_tru','điểm trừ','deduction','mức trừ'],0);return{id:pick(r,['id','ma','code'],i+1),title:pick(r,['title','content','ten','noi_dung','nội dung','nội_dung','quy định','tieu_chi','tiêu chí'],'Chưa đặt tên'),description:pick(r,['description','mo_ta','mô tả','mô_tả','ghi_chu','ghi chú'],''),points:Number(String(rawPoint).replace(',','.').replace(/[^0-9.\-]/g,''))||0}}
+  function normalizeRank(r,i){return{name:pick(r,['name','ho_ten','họ_tên','Họ và tên','hoten'],`Cá nhân ${i+1}`),unit:pick(r,['unit','to','tổ','bo_phan','bộ_phận','department'],'—'),count:Number(pick(r,['count','so_thanh_tich','số_thành_tích'],0))||0,score:Number(pick(r,['score','total','tong_diem','tổng_điểm','diem'],0))||0}}
+  function normalizeCriterion(c,i){const rawPoint=pick(c,['points','diem','điểm','diem_cong','điểm cộng','mức điểm','điểm tối đa'],0);return{id:String(pick(c,['id','ma','code','mã tiêu chí'],`criterion-${i+1}`)),group:pick(c,['group','nhom','nhóm','muc_lon','mục lớn','mục_lớn','nhóm tiêu chí','nội dung lớn'],'Tiêu chí lượng hóa'),title:pick(c,['title','content','ten','nội dung','noi_dung','nội_dung','nội dung lượng hóa','tieu_chi','tiêu chí','thành tích'],'Chưa đặt tên'),points:Number(String(rawPoint).replace(',','.').replace(/[^0-9.\-]/g,''))||0,evidence:!['không','khong','no','false','0'].includes(String(pick(c,['evidence','minh_chung','minh chứng','minh_chứng'],true)).toLowerCase())}}
+  function groupCriteria(items){const map=new Map;items.forEach(item=>{if(!map.has(item.group))map.set(item.group,[]);map.get(item.group).push(item)});return [...map].map(([title,children],i)=>({title,id:'group-'+i,children}))}
+
+  async function loadBootstrap(){
+    $('#dataStatus').className='status';$('#dataStatus').textContent='Đang đồng bộ';
+    try{
+      const data=await api(ACTIONS.bootstrap);
+      state.rules=arrayFrom(data,['rules','diem_thi_dua','regulations']).map(normalizeRule);
+      state.ranking=arrayFrom(data,['ranking','bang_xep_hang','leaderboard','achievements']).map(normalizeRank).sort((a,b)=>b.score-a.score);
+      const rawCriteria=arrayFrom(data,['criteria','bang_luong_hoa','quantification']);state.criteria=rawCriteria.map(normalizeCriterion);
+      state.loaded=true;renderRules();renderRanking();renderTree();$('#dataStatus').textContent='Đã đồng bộ';
+    }catch(error){
+      state.loaded=false;renderLoadError(error.message);$('#dataStatus').className='status error';$('#dataStatus').textContent='Chưa kết nối';
+    }
+  }
+  function renderLoadError(message){
+    const content=`<div class="card empty"><b>Chưa tải được dữ liệu</b><p>${esc(message)}</p><button class="retry" onclick="loadBootstrap()">Thử lại</button></div>`;
+    $('#rulesList').innerHTML=content;$('#rankingBody').innerHTML=`<tr><td colspan="5">${content}</td></tr>`;$('#podium').innerHTML='';
+    $('#criteriaTree').innerHTML=`<div class="empty"><b>Chưa tải được danh mục</b><p>${esc(message)}</p><button class="retry" onclick="loadBootstrap()">Thử lại</button></div>`;
+  }
+  function renderRules(){
+    if(!state.rules.length){$('#rulesList').innerHTML='<div class="card empty">Chưa có quy định trong bảng <b>diem_thi_dua</b>.</div>';return}
+    $('#rulesList').innerHTML=state.rules.map((r,i)=>`<article class="rule"><div class="rule-num">${String(i+1).padStart(2,'0')}</div><div><strong>${esc(r.title)}</strong>${r.description?`<p>${esc(r.description)}</p>`:''}</div><span class="points">${r.points>0?'+':''}${r.points} điểm</span></article>`).join('');
+  }
+  function renderRanking(){
+    const top=state.ranking.slice(0,3),medals=['🥇','🥈','🥉'],classes=['gold','',''];
+    $('#podium').innerHTML=top.length?top.map((p,i)=>`<article class="winner ${classes[i]}" data-rank="${i+1}"><span class="medal">${medals[i]}</span><b>${esc(p.name)}</b><span>${esc(p.unit)}</span><strong>${p.score.toLocaleString('vi-VN')} điểm</strong></article>`).join(''):'<div class="card empty" style="grid-column:1/-1">Chưa có dữ liệu xếp hạng.</div>';
+    $('#memberCount').textContent=`${state.ranking.length} cá nhân`;
+    $('#rankingBody').innerHTML=state.ranking.length?state.ranking.map((p,i)=>`<tr><td><span class="rank-pill">${i+1}</span></td><td><b>${esc(p.name)}</b></td><td>${esc(p.unit)}</td><td>${p.count}</td><td class="score">${p.score.toLocaleString('vi-VN')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">Chưa có dữ liệu xếp hạng.</td></tr>';
+  }
+  function renderTree(){
+    const groups=groupCriteria(state.criteria);
+    if(!groups.length){$('#criteriaTree').innerHTML='<div class="empty">Chưa có tiêu chí trong bảng <b>bang_luong_hoa</b>.</div>';return}
+    $('#criteriaTree').innerHTML=groups.map((g,i)=>`<div class="tree-group ${i===0?'open':''}"><button class="tree-head" type="button"><span>${roman(i+1)}.</span><span>${esc(g.title.replace(/^([IVX]+\.?\s*)/i,''))}</span><span class="chev">›</span></button><div class="tree-children">${g.children.map(c=>`<button class="tree-item" type="button" data-id="${esc(c.id)}">${esc(c.title)}</button>`).join('')}</div></div>`).join('');
+    $$('.tree-head').forEach(btn=>btn.onclick=()=>btn.closest('.tree-group').classList.toggle('open'));
+    $$('.tree-item').forEach(btn=>btn.onclick=()=>selectCriterion(btn.dataset.id,btn));
+  }
+  function roman(n){return ['I','II','III','IV','V','VI'][n-1]||n}
+  function selectCriterion(id,button){state.selected=state.criteria.find(c=>c.id===id);$$('.tree-item').forEach(b=>b.classList.toggle('active',b===button));renderDetail()}
+  function renderDetail(){
+    const c=state.selected;if(!c)return;
+    const records=state.records.filter(r=>String(pick(r,['criterionId','criterion_id','ma_tieu_chi'],''))===c.id);
+    $('#criterionDetail').className='card detail';
+    $('#criterionDetail').innerHTML=`<span class="eyebrow">Nội dung đang chọn</span><h3>${esc(c.title)}</h3><p class="path">${esc(c.group)}</p><div class="score-box"><div class="score-icon">✦</div><div><small>Điểm cộng của tiêu chí</small><strong>${c.points>0?'+':''}${c.points} điểm</strong></div></div><div class="upload"><label for="evidenceFile">Tải minh chứng ${c.evidence?'':'(không bắt buộc)'}</label><p>PDF, Word hoặc ảnh; tối đa 10 MB. Tên tệp sẽ tự thêm họ tên ở phía trước và lưu vào thư mục minh chứng của trường.</p><div class="file-picker"><input id="evidenceFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,application/pdf,image/*"></div><div id="selectedFile" class="selected-file">Chưa chọn tệp.</div></div><div class="save-row"><button id="confirmAchievement" class="save">✓ Xác nhận thành tích</button></div><div class="records"><h4>Đã lưu ở tiêu chí này</h4><div class="record-list">${records.length?records.map(r=>`<div class="record"><div><b>${esc(pick(r,['fileName','ten_file'],'Minh chứng'))}</b><small>${esc(pick(r,['createdAt','ngay_tao','date'],'Đã ghi nhận'))}</small></div><span class="record-score">+${c.points}</span></div>`).join(''):'<div class="empty" style="padding:18px">Chưa có minh chứng đã lưu.</div>'}</div></div>`;
+    $('#evidenceFile').onchange=e=>{$('#selectedFile').textContent=e.target.files[0]?e.target.files[0].name:'Chưa chọn tệp.'};$('#confirmAchievement').onclick=saveAchievement;
+  }
+
+  function openLogin(){
+    $('#loginModal').classList.add('open');setTimeout(()=>$('#email').focus(),60)
+  }
+  function closeLogin(){if(!state.user)openPage('rules');$('#loginModal').classList.remove('open')}
+  async function login(event){
+    event.preventDefault();const btn=$('#loginButton'),email=$('#email').value.trim(),password=$('#password').value;
+    btn.disabled=true;btn.textContent='Đang xác thực…';
+    try{
+      const result=await api(ACTIONS.login,email,await hashPassword(password));
+      if(!result||result.valid===false)throw new Error(result?.message||'Email hoặc mật khẩu không chính xác.');
+      state.token=pick(result,['token','accessToken'],'');state.user={name:pick(result,['name','ho_ten','họ_tên'],email.split('@')[0]),email:pick(result,['email'],email),unit:pick(result,['unit','to','tổ','bo_phan'],'')};
+      $('#loginModal').classList.remove('open');renderUser();await loadProfile();toast('Đăng nhập thành công.');
+    }catch(error){toast(error.message,true)}finally{btn.disabled=false;btn.textContent='Đăng nhập'}
+  }
+  function renderUser(){
+    $('#userBar').innerHTML=`<div><strong>${esc(state.user.name)}</strong><small>${esc(state.user.unit||state.user.email)}</small></div><button class="link-btn" id="logout">Đăng xuất</button>`;$('#logout').onclick=()=>{state.token='';state.user=null;state.records=[];renderUser();openPage('rules');toast('Đã đăng xuất.')}
+  }
+  async function loadProfile(){
+    try{const data=await api(ACTIONS.profile,state.token);const criteria=arrayFrom(data,['criteria','bang_luong_hoa','quantification']);if(criteria.length){state.criteria=criteria.map(normalizeCriterion);renderTree()}state.records=arrayFrom(data,['records','achievements','thanh_tich']);if(state.selected)renderDetail()}catch(error){toast(error.message,true)}
+  }
+  function fileToBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader;reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Không đọc được tệp.'));reader.readAsDataURL(file)})}
+  function safeFileName(name){return name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^a-zA-Z0-9._-]+/g,'_')}
+  async function saveAchievement(){
+    if(!state.user)return openLogin();const c=state.selected,file=$('#evidenceFile').files[0];
+    if(c.evidence&&!file)return toast('Vui lòng chọn tệp minh chứng.',true);if(file&&file.size>10*1024*1024)return toast('Tệp vượt quá 10 MB.',true);
+    const btn=$('#confirmAchievement');btn.disabled=true;btn.textContent='Đang lưu…';
+    try{
+      let fileData=null;if(file){const prefix=safeFileName(state.user.name);fileData={name:`${prefix}_${safeFileName(file.name)}`,originalName:file.name,mimeType:file.type||'application/octet-stream',base64:await fileToBase64(file)}}
+      const payload={criterionId:c.id,criterionTitle:c.title,group:c.group,points:c.points,file:fileData,driveFolderId:DRIVE_FOLDER_ID};
+      const result=await postApi(ACTIONS.save,payload,state.token);state.records.push(result||{criterionId:c.id,fileName:fileData?.name||'Không có tệp',createdAt:new Date().toLocaleString('vi-VN')});renderDetail();toast('Đã lưu thành tích và cộng điểm.');loadBootstrap();
+    }catch(error){toast(error.message,true)}finally{if($('#confirmAchievement')){$('#confirmAchievement').disabled=false;$('#confirmAchievement').textContent='✓ Xác nhận thành tích'}}
+  }
+
+  function openPage(id){
+    if(id==='achievements'&&!state.user){openLogin();return}
+    $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));window.scrollTo({top:0,behavior:'smooth'})
+  }
+  $$('.nav button').forEach(btn=>btn.onclick=()=>openPage(btn.dataset.page));
+  $('#loginForm').onsubmit=login;$('#closeLogin').onclick=closeLogin;$('#loginAgain').onclick=openLogin;
+  $('#forgotPassword').onclick=()=>$('#helpPhone').classList.toggle('show');
+  $('#loginModal').onclick=e=>{if(e.target===$('#loginModal')&&state.user)$('#loginModal').classList.remove('open')};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.user)$('#loginModal').classList.remove('open')});
+  loadBootstrap();
+</script>
+</body>
+</html>
