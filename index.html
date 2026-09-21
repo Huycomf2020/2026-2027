@@ -74,8 +74,14 @@
     <!-- TAB THI ĐUA -->
     <section id="competition" class="panel active">
       <div class="hero">
-        <div><h2>🏆 Bảng vàng thi đua</h2><p>Thành tích nổi bật của các chi đoàn (Công thức Chuẩn hóa 2026)</p></div>
-        <div class="periods"><button class="active" data-period="week">Tuần</button><button data-period="period">Tháng</button><button data-period="semester">Học kỳ</button><button data-period="year">Năm</button></div>
+        <div>
+          <h2>🏆 Bảng vàng thi đua</h2>
+          <p>Thành tích nổi bật của các chi đoàn (Công thức Chuẩn hóa 2026)</p>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="save" onclick="downloadCompetitionPdf()" style="padding: 10px 16px; font-size: 13px; background: linear-gradient(120deg,#dc2626,#991b1b);">📄 Xuất Báo cáo PDF</button>
+          <div class="periods"><button class="active" data-period="week">Tuần</button><button data-period="period">Tháng</button><button data-period="semester">Học kỳ</button><button data-period="year">Năm</button></div>
+        </div>
       </div>
       <div id="podium" class="podium"></div>
       
@@ -293,7 +299,7 @@
 
 <script>
   const API_URL='https://script.google.com/macros/s/AKfycbznjz40DTRGi66PHPJfJo-z8VueCXg-6MME0w0Uffi0MDOKopf2IR02wXA1fJNasEF51w/exec';
-  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:''};
+  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:'',currentPeriod:'week'};
   let activeStudentForModal = null;
 
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -611,6 +617,8 @@
       
       toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
       loadClass(state.className);
+      // Cập nhật lại Bảng thi đua lập tức
+      renderCompetition(await server('getCompetitionData', state.currentPeriod));
     }catch(e){ 
       toast(e.message || 'Lỗi khi lưu điểm danh'); 
     }
@@ -619,6 +627,20 @@
       btn.textContent='Lưu điểm danh'; 
     }
   };
+
+  async function downloadCompetitionPdf() {
+    try {
+      toast("Đang khởi tạo tệp Báo cáo PDF...");
+      const pdf = await server('exportCompetitionPdf', state.currentPeriod);
+      if (pdf.ok) {
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,' + pdf.base64;
+        link.download = pdf.filename;
+        link.click();
+        toast("Tải báo cáo PDF thành công!");
+      }
+    } catch(e) { toast(e.message); }
+  }
 
   async function loadAdminLog() {
     const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
@@ -669,7 +691,7 @@
   $('#uploadSdbBtn').onclick=async()=>{
     const file=$('#sdbFile').files[0];if(!file){toast('Vui lòng chọn file Excel hoặc PDF.');return}
     const btn=$('#uploadSdbBtn'),status=$('#sdbUploadStatus');btn.disabled=true;btn.textContent='Đang phân tích...';status.textContent='Đang gửi file và nhận diện dữ liệu...';
-    try{const base64=await fileToBase64(file);const r=await server('uploadWeeklyReport',{name:file.name,mimeType:file.type||'application/octet-stream',base64,week:Number($('#sdbWeek').value)||0},state.supportToken);status.textContent=`✅ Đã cập nhật ${r.rows} dòng vào diem_sdb.`;toast('Nhập điểm SĐB thành công');}
+    try{const base64=await fileToBase64(file);const r=await server('uploadWeeklyReport',{name:file.name,mimeType:file.type||'application/octet-stream',base64,week:Number($('#sdbWeek').value)||0},state.supportToken);status.textContent=`✅ Đã cập nhật ${r.rows} dòng vào diem_sdb.`;toast('Nhập điểm SĐB thành công');renderCompetition(await server('getCompetitionData', state.currentPeriod));}
     catch(e){status.textContent='❌ '+e.message;toast(e.message)}finally{btn.disabled=false;btn.textContent='Tải và nhập điểm SĐB'}
   };
 
@@ -703,12 +725,14 @@
         await server('removeViolation', { sessionKey, code }, state.supportToken || state.token);
         toast("Đã xóa lỗi thành công!");
         loadWeeklyLog();
+        renderCompetition(await server('getCompetitionData', state.currentPeriod));
       } catch(e) { toast(e.message); }
     }
   }
 
-  $$('.periods button').forEach(btn=>btn.onclick=async()=>{
-    $$('.periods button').forEach(b=>b.classList.toggle('active',b===btn));
+  $$('.periods button').forEach(btn=>btn.onclick=async()=>{$$
+('.periods button').forEach(b=>b.classList.toggle('active',b===btn));
+    state.currentPeriod = btn.dataset.period;
     try{ renderCompetition(await server('getCompetitionData',btn.dataset.period)) }catch(e){ toast(e.message) }
   });
   
