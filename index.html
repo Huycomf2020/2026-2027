@@ -375,12 +375,12 @@
       const currentWeekVal = state.data && state.data.competition && state.data.competition[0] ? state.data.competition[0].week : weeks[0].week;
       $('#competitionWeekSelect').value = currentWeekVal;
       $('#weeklyLogWeekSelect').value = currentWeekVal;
-      state.selectedWeek = currentWeekVal;
+      state.selectedWeek = Number(currentWeekVal);
     }
   }
 
   async function onWeekFilterChange() {
-    state.selectedWeek = $('#competitionWeekSelect').value;     try {       renderCompetition(await server('getCompetitionData', state.currentPeriod, state.selectedWeek));     } catch(e) { toast(e.message); }   }    $$('.nav button').forEach(btn=>btn.onclick=()=>{
+    state.selectedWeek = Number($('#competitionWeekSelect').value);     try {       renderCompetition(await server('getCompetitionData', state.currentPeriod, state.selectedWeek));     } catch(e) { toast(e.message); }   }    $$('.nav button').forEach(btn=>btn.onclick=()=>{
     const target = btn.dataset.page;
     if(target==='support' && !state.supportToken){
       $('#supportPasswordModal').classList.add('open');
