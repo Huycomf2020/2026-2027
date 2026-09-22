@@ -200,7 +200,7 @@
       </div>
     </section>
 
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -255,7 +255,7 @@
   </div>
 </div>
 
-<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH (0ms KHÔNG CHỜ API) -->
+<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH (TỐC ĐỘ 0ms SUPABASE) -->
 <div id="ruleModal" class="modal">
   <div class="modal-card" style="width: min(650px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
     <h3 id="ruleModalTitle">📜 Chọn các lỗi vi phạm nội quy</h3>
@@ -309,7 +309,7 @@
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const API_URL='https://script.google.com/macros/s/AKfycbznjz40DTRGi66PHPJfJo-z8VueCXg-6MME0w0Uffi0MDOKopf2IR02wXA1fJNasEF51w/exec';
-  const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:'',currentPeriod:'week',selectedWeek:null};
+  const state={data:null,supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:'',currentPeriod:'week',selectedWeek:null};
   let activeStudentForModal = null;
 
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -360,7 +360,7 @@
   async function init(){
     try{
       state.data=await server('getBootstrapData');
-      renderRules();
+      await loadSupabaseRules();
       renderClasses();
       renderHomeroomClasses();
       setupWeekDropdowns(state.data.weeks);
@@ -371,6 +371,21 @@
       $('#periodBadge').textContent=(c.period==='Sáng'?'🌤️ ':'🌇 ')+c.period;
       $('#adminLogDate').value = c.isoDate;
     }catch(e){ toast(e.message); }
+  }
+
+  // LẤY QUY ĐỊNH TỪ SUPABASE (SIÊU TỐC 0ms & REALTIME)
+  async function loadSupabaseRules() {
+    try {
+      const { data, error } = await supabaseClient.from('rules').select('*').order('stt', { ascending: true });
+      if (!error && data && data.length > 0) {
+        state.supabaseRules = data;
+      } else {
+        state.supabaseRules = state.data && state.data.rules ? state.data.rules : [];
+      }
+    } catch(e) {
+      state.supabaseRules = state.data && state.data.rules ? state.data.rules : [];
+    }
+    renderRules();
   }
 
   function setupWeekDropdowns(weeks = []) {
@@ -517,7 +532,6 @@
 
   function renderStudents(){
     if(!state.students.length){$('#students').innerHTML='<div class="empty">Chưa có học sinh trong lớp này.</div>';return}
-    const baseStatuses = ['Vắng có phép', 'Vắng không phép', 'Đi trễ'];
     
     $('#students').innerHTML=state.students.map(s=>{
       if (s.status === 'Có mặt') s.status = '';
@@ -525,7 +539,7 @@
       const selectedList = s.status ? s.status.split(', ').map(x=>x.trim()).filter(Boolean) : [];
       const hasBaseStatus = (st) => selectedList.includes(st);
       
-      const customRules = selectedList.filter(x => !baseStatuses.includes(x));
+      const customRules = selectedList.filter(x => !['Vắng có phép', 'Vắng không phép', 'Đi trễ'].includes(x));
       const hasCustomRule = customRules.length > 0;
       
       return `
@@ -540,7 +554,7 @@
             <button class="status ${hasBaseStatus('Vắng không phép')?'selected':''}" data-s="Vắng không phép" onclick="toggleStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
             <button class="status ${hasBaseStatus('Đi trễ')?'selected':''}" data-s="Đi trễ" onclick="toggleStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
             <button class="status rule-btn ${hasCustomRule?'selected':''}" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
-              ${hasCustomRule ? esc(customRules.join(', ')) : 'Vi phạm'}
+              ${hasCustomRule ? esc(customRules.join(', ')) : 'Vi phạm khác'}
             </button>
           </div>
         </div>
@@ -566,7 +580,7 @@
     renderStudents();
   }
 
-  // ĐỌC DỰ LIỆU QUY ĐỊNH LỘC TỪ LOCAL (TỐC ĐỘ 0ms - KHÔNG GỌI API)
+  // ĐỌC BẢNG 41 QUY ĐỊNH TỨC THÌ (0ms TỪ SUPABASE)
   function openRuleModal(rowId, studentName) {
     activeStudentForModal = state.students.find(s => String(s.row) === String(rowId));
     if (!activeStudentForModal) return;
@@ -574,7 +588,7 @@
     $('#ruleStudentTarget').textContent = `Học sinh: ${studentName}`;
     $('#ruleModal').classList.add('open');
     
-    const rules = (state.data && state.data.rules) ? state.data.rules : [];
+    const rules = state.supabaseRules || [];
     if(!rules.length) {
       $('#ruleListContainer').innerHTML = '<div class="empty">Chưa có danh mục quy định trong hệ thống.</div>';
       return;
@@ -584,11 +598,12 @@
 
     $('#ruleListContainer').innerHTML = rules.map((r) => {
       const deductionVal = Number(r.deduction) || 0;
-      const isChecked = currentList.includes(r.content);
+      const contentStr = r.content;
+      const isChecked = currentList.includes(contentStr);
       return `
         <label class="rule-checkbox-item">
-          <input type="checkbox" class="chk-rule" data-content="${esc(r.content)}" data-deduction="${deductionVal}" ${isChecked ? 'checked' : ''}>
-          <div class="rule-text-content"><b>${esc(r.content)}</b></div>
+          <input type="checkbox" class="chk-rule" data-content="${esc(contentStr)}" data-deduction="${deductionVal}" ${isChecked ? 'checked' : ''}>
+          <div class="rule-text-content"><b>${esc(r.stt ? r.stt + '. ' : '')}${esc(contentStr)}</b></div>
           <span class="rule-badge">-${deductionVal}đ</span>
         </label>
       `;
@@ -620,7 +635,7 @@
     toast(`Đã cập nhật vi phạm cho ${activeStudentForModal.name} (-${totalDeduction}đ)`);
   }
 
-  // NÂNG CẤP LƯU ĐIỂM DANH QUA SUPABASE (TỐC ĐỘ < 100MS)
+  // LƯU ĐIỂM DANH QUA SUPABASE (<100ms)
   $('#saveAttendance').onclick=async()=>{
     const btn=$('#saveAttendance');
     btn.disabled=true; btn.textContent='⚡ Đang lưu Supabase...';
@@ -645,14 +660,12 @@
         user_email: state.userEmail || 'Lớp trưởng'
       };
 
-      // 1. Lưu cực nhanh vào Supabase
       const { data, error } = await supabaseClient.from('class_log').insert([payload]);
       if (error) throw new Error(error.message);
 
       toast(`⚡ Lưu điểm danh siêu tốc thành công! (${violations.length} vi phạm)`);
       loadClass(state.className);
       
-      // 2. Gửi đồng bộ ngầm về Google Sheets
       server('saveAttendance',{
         className: state.className,
         totalCount: state.students.length,
@@ -701,7 +714,6 @@
     } catch(e) { toast(e.message); }
   }
 
-  // TẢI BÁO CÁO NHẬT KÝ TỪ SUPABASE (TỐC ĐỘ CỰC NHANH)
   async function loadAdminLog() {
     const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
     $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
@@ -832,7 +844,10 @@
     state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.className),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
   }
 
-  function renderRules(){ const list=state.data.rules||[]; $('#rulesList').innerHTML=list.length?list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction?`<p>Điểm trừ: <strong>${esc(r.deduction)}</strong></p>`:''}</div></article>`).join(''):'<div class="card empty">Chưa có nội dung.</div>'; }
+  function renderRules(){ 
+    const list = state.supabaseRules || []; 
+    $('#rulesList').innerHTML = list.length ? list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction!==undefined?`<p>Điểm trừ: <strong>-${esc(r.deduction)}đ</strong></p>`:''}</div></article>`).join('') : '<div class="card empty">Chưa có nội dung.</div>'; 
+  }
 
   init();
 </script>
