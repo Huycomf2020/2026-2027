@@ -476,7 +476,6 @@
   $('#login').onclick=async()=>{
     const email = $('#classEmail').value.trim();
     const pass = $('#password').value.trim();
-    const targetCls = state.targetLoginClass;
 
     if(!pass) { toast("Vui lòng nhập mật khẩu!"); return; }
 
@@ -484,7 +483,6 @@
     btn.disabled = true; btn.textContent = '⚡ Đang kiểm tra...';
 
     try {
-      // Đối chiếu tài khoản trên Supabase
       const { data, error } = await supabaseClient
         .from('class_users')
         .select('*')
@@ -531,25 +529,54 @@
     $('#weeklyLogClass').innerHTML = state.data.classes.map(c => `<option value="${c}">${c}</option>`).join('');
   }
 
+  // TẢI DANH SÁCH HỌC SINH TỰ SUPABASE (SIÊU TỐC < 50ms)
   async function loadClass(cls){
-    $('#studentArea').style.display='block';
-    $('#classTitle').textContent=`Lớp ${cls}`;
-    $('#students').innerHTML='<div class="loader"></div>';
-    try{
-      const res = await server('getStudentsByClass', cls, state.token);
-      state.students = res.students;
-      state.className = res.assignedClass || cls;
+    $('#studentArea').style.display = 'block';
+    $('#classTitle').textContent = `Lớp ${cls}`;
+    $('#students').innerHTML = '<div class="loader"></div>';
+    
+    try {
+      const { data: studentList, error } = await supabaseClient
+        .from('students')
+        .select('*')
+        .eq('class_name', cls)
+        .order('stt', { ascending: true });
+
+      if (error) throw error;
+
+      state.students = (studentList || []).map(s => ({
+        row: s.id,
+        stt: s.stt,
+        code: s.code,
+        name: s.name,
+        status: '',
+        deduction: 0
+      }));
+
+      state.className = cls;
       $('#studentCount').textContent = `${state.students.length} học sinh`;
 
+      const { data: lastLog } = await supabaseClient
+        .from('class_log')
+        .select('*')
+        .eq('class_name', cls)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
       const alertBox = $('#sessionAlertBox');
-      if (res.lastSession) {
-        alertBox.innerHTML = `<div class="sessionAlert">⚠️ Lớp đã điểm danh Buổi ${res.lastSession.period} lúc <b>${res.lastSession.time}</b> (${res.lastSession.count} vi phạm). Cập nhật lại sẽ tự ghi đè bản cũ.</div>`;
-      } else { alertBox.innerHTML = ''; }
+      if (lastLog && lastLog.length > 0) {
+        const log = lastLog[0];
+        const logTime = new Date(log.created_at).toLocaleTimeString('vi-VN');
+        alertBox.innerHTML = `<div class="sessionAlert">⚠️ Lớp đã điểm danh Buổi ${log.period} lúc <b>${logTime}</b> (${log.violation_count} vi phạm). Cập nhật lại sẽ tự ghi đè bản cũ.</div>`;
+      } else { 
+        alertBox.innerHTML = ''; 
+      }
 
       renderStudents();
-    }catch(e){
-      toast(e.message);
-      $('#students').innerHTML='<div class="empty">Không thể tải danh sách.</div>';
+
+    } catch(e) {
+      toast(e.message || "Không thể tải danh sách học sinh.");
+      $('#students').innerHTML = '<div class="empty">Không thể tải danh sách.</div>';
     }
   }
 
