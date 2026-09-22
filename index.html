@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- THÊM SDK SUPABASE CLIENT -->
+  <!-- SDK SUPABASE CLIENT -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{--navy:#062c43;--cyan:#0891b2;--sky:#e0f2fe;--gold:#f59e0b;--ink:#102a3a;--muted:#637889;--card:#fff;--bg:#f4f8fb;--danger:#dc2626;--radius:22px;--shadow:0 16px 45px rgba(6,44,67,.10)}
@@ -255,7 +255,7 @@
   </div>
 </div>
 
-<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH -->
+<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH (0ms KHÔNG CHỜ API) -->
 <div id="ruleModal" class="modal">
   <div class="modal-card" style="width: min(650px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
     <h3 id="ruleModalTitle">📜 Chọn các lỗi vi phạm nội quy</h3>
@@ -566,36 +566,33 @@
     renderStudents();
   }
 
-  async function openRuleModal(rowId, studentName) {
+  // ĐỌC DỰ LIỆU QUY ĐỊNH LỘC TỪ LOCAL (TỐC ĐỘ 0ms - KHÔNG GỌI API)
+  function openRuleModal(rowId, studentName) {
     activeStudentForModal = state.students.find(s => String(s.row) === String(rowId));
     if (!activeStudentForModal) return;
 
     $('#ruleStudentTarget').textContent = `Học sinh: ${studentName}`;
     $('#ruleModal').classList.add('open');
-    $('#ruleListContainer').innerHTML = '<div class="loader"></div>';
     
-    try {
-      const rules = await server('getRulesDetail');
-      if(!rules.length) {
-        $('#ruleListContainer').innerHTML = '<div class="empty">Chưa có danh mục quy định trong sheet quy_dinh.</div>';
-        return;
-      }
-
-      const currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()) : [];
-
-      $('#ruleListContainer').innerHTML = rules.map((r) => {
-        const isChecked = currentList.includes(r.content);
-        return `
-          <label class="rule-checkbox-item">
-            <input type="checkbox" class="chk-rule" data-content="${esc(r.content)}" data-deduction="${r.deduction}" ${isChecked ? 'checked' : ''}>
-            <div class="rule-text-content"><b>${esc(r.content)}</b></div>
-            <span class="rule-badge">-${r.deduction}đ</span>
-          </label>
-        `;
-      }).join('');
-    } catch(e) {
-      toast(e.message);
+    const rules = (state.data && state.data.rules) ? state.data.rules : [];
+    if(!rules.length) {
+      $('#ruleListContainer').innerHTML = '<div class="empty">Chưa có danh mục quy định trong hệ thống.</div>';
+      return;
     }
+
+    const currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()) : [];
+
+    $('#ruleListContainer').innerHTML = rules.map((r) => {
+      const deductionVal = Number(r.deduction) || 0;
+      const isChecked = currentList.includes(r.content);
+      return `
+        <label class="rule-checkbox-item">
+          <input type="checkbox" class="chk-rule" data-content="${esc(r.content)}" data-deduction="${deductionVal}" ${isChecked ? 'checked' : ''}>
+          <div class="rule-text-content"><b>${esc(r.content)}</b></div>
+          <span class="rule-badge">-${deductionVal}đ</span>
+        </label>
+      `;
+    }).join('');
   }
 
   function applySelectedViolations() {
