@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- THÊM SDK SUPABASE CLIENT -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{--navy:#062c43;--cyan:#0891b2;--sky:#e0f2fe;--gold:#f59e0b;--ink:#102a3a;--muted:#637889;--card:#fff;--bg:#f4f8fb;--danger:#dc2626;--radius:22px;--shadow:0 16px 45px rgba(6,44,67,.10)}
     *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 90% 0,#cffafe 0,transparent 28%),var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--ink)}
@@ -118,7 +120,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -143,7 +145,7 @@
           <table class="ranking">
             <thead>
               <tr>
-                <th>Ngày / Thời gian</th>
+                <th>Thời gian</th>
                 <th>Buổi</th>
                 <th>Lớp</th>
                 <th>Mã HS</th>
@@ -218,7 +220,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">Lưu điểm danh</button>
+          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
         </div>
         <div id="students"></div>
       </div>
@@ -301,6 +303,11 @@
 <div id="toast" class="toast"></div>
 
 <script>
+  // KHỞI TẠO SUPABASE CLIENT
+  const SUPABASE_URL = 'https://pkuhkuyumrvrcseqlble.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
   const API_URL='https://script.google.com/macros/s/AKfycbznjz40DTRGi66PHPJfJo-z8VueCXg-6MME0w0Uffi0MDOKopf2IR02wXA1fJNasEF51w/exec';
   const state={data:null,token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,homeroomClass:'',currentPeriod:'week',selectedWeek:null};
   let activeStudentForModal = null;
@@ -616,32 +623,53 @@
     toast(`Đã cập nhật vi phạm cho ${activeStudentForModal.name} (-${totalDeduction}đ)`);
   }
 
+  // NÂNG CẤP LƯU ĐIỂM DANH QUA SUPABASE (TỐC ĐỘ < 100MS)
   $('#saveAttendance').onclick=async()=>{
     const btn=$('#saveAttendance');
-    btn.disabled=true; btn.textContent='Đang lưu...';
+    btn.disabled=true; btn.textContent='⚡ Đang lưu Supabase...';
     try{
-      const reqId = 'REQ-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-      const r=await server('saveAttendance',{
-        className: state.className,
-        requestId: reqId,
-        totalCount: state.students.length,
-        students: state.students.filter(s => s.status && s.status !== 'Có mặt').map(s => ({
-          code: s.code || '',
-          name: s.name || '',
-          status: s.status || '',
-          deduction: s.deduction || 0
-        }))
-      }, state.token);
-      
-      toast(`Lưu điểm danh thành công! (${r.violations} vi phạm)`);
+      const currentSession = state.data.current;
+      const violations = state.students.filter(s => s.status && s.status !== 'Có mặt').map(s => ({
+        code: s.code || '',
+        name: s.name || '',
+        status: s.status || '',
+        deduction: s.deduction || 0
+      }));
+
+      const payload = {
+        session_key: `${currentSession.isoDate}|${currentSession.period}|${state.className}`,
+        class_name: state.className,
+        period: currentSession.period,
+        week: Number(state.selectedWeek || 1),
+        school_year: "2026-2027",
+        total_count: state.students.length,
+        violation_count: violations.length,
+        violations_json: violations,
+        user_email: state.userEmail || 'Lớp trưởng'
+      };
+
+      // 1. Lưu cực nhanh vào Supabase
+      const { data, error } = await supabaseClient.from('class_log').insert([payload]);
+      if (error) throw new Error(error.message);
+
+      toast(`⚡ Lưu điểm danh siêu tốc thành công! (${violations.length} vi phạm)`);
       loadClass(state.className);
-      renderCompetition(await server('getCompetitionData', state.currentPeriod, state.selectedWeek));
+      
+      // 2. Gửi đồng bộ ngầm về Google Sheets
+      server('saveAttendance',{
+        className: state.className,
+        totalCount: state.students.length,
+        students: violations
+      }, state.token).then(() => {
+        renderCompetition(server('getCompetitionData', state.currentPeriod, state.selectedWeek));
+      }).catch(err => console.log('Đồng bộ ngầm GAS:', err));
+
     }catch(e){ 
       toast(e.message || 'Lỗi khi lưu điểm danh'); 
     }
     finally{ 
       btn.disabled=false; 
-      btn.textContent='Lưu điểm danh'; 
+      btn.textContent='⚡ Lưu điểm danh (Supabase)'; 
     }
   };
 
@@ -676,23 +704,46 @@
     } catch(e) { toast(e.message); }
   }
 
+  // TẢI BÁO CÁO NHẬT KÝ TỪ SUPABASE (TỐC ĐỘ CỰC NHANH)
   async function loadAdminLog() {
     const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
-    const accessToken=state.supportToken||state.token;if(!accessToken){toast('Vui lòng đăng nhập lớp hoặc khu vực Hỗ trợ.');return}
     $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
-      const logs = await server('getDailyLogForAdmin', d, c, accessToken);
+      let query = supabaseClient.from('class_log').select('*').order('created_at', { ascending: false });
+      if (c && c !== 'ALL') query = query.eq('class_name', c);
+      
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const filtered = data.filter(r => r.created_at && r.created_at.startsWith(d));
+      const logs = [];
+
+      filtered.forEach(r => {
+        const list = r.violations_json || [];
+        if (list.length === 0) {
+          logs.push({ date: new Date(r.created_at).toLocaleTimeString('vi-VN'), period: r.period, className: r.class_name, code: '—', name: 'Tập thể lớp', status: 'Không vi phạm', deduction: 0 });
+        } else {
+          list.forEach(s => logs.push({ date: new Date(r.created_at).toLocaleTimeString('vi-VN'), period: r.period, className: r.class_name, code: s.code, name: s.name, status: s.status, deduction: s.deduction }));
+        }
+      });
+
       renderLogTable(logs);
     } catch(e) { toast(e.message); }
   }
 
   async function loadWeeklyLog() {
     const c = $('#weeklyLogClass').value;
-    const w = $('#weeklyLogWeekSelect').value;
-    const accessToken=state.supportToken||state.token;if(!accessToken){toast('Vui lòng đăng nhập lớp hoặc khu vực Hỗ trợ.');return}
+    const w = Number($('#weeklyLogWeekSelect').value);
     $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
-      const logs = await server('getWeeklyViolations', c, accessToken, w);
+      const { data, error } = await supabaseClient.from('class_log').select('*').eq('class_name', c).eq('week', w).order('created_at', { ascending: false });
+      if (error) throw error;
+
+      const logs = [];
+      data.forEach(r => {
+        (r.violations_json || []).forEach(s => logs.push({ date: new Date(r.created_at).toLocaleDateString('vi-VN'), period: r.period, className: r.class_name, code: s.code, name: s.name, status: s.status, deduction: s.deduction }));
+      });
+
       renderLogTable(logs);
     } catch(e) { toast(e.message); }
   }
@@ -704,16 +755,14 @@
     }
     $('#adminLogTableBody').innerHTML = logs.map(r => `
       <tr>
-        <td><small>${esc(r.date || r.time)}</small></td>
+        <td><small>${esc(r.date)}</small></td>
         <td><b>${esc(r.period)}</b></td>
         <td><b>${esc(r.className)}</b></td>
         <td><small>${esc(r.code)}</small></td>
         <td><b>${esc(r.name)}</b></td>
         <td>${esc(r.status)}</td>
         <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
-        <td>
-          ${r.appeal&&r.appeal.status==='Chờ xử lý'?`<span class="appeal-pending">🔴 Đang khiếu nại</span>`:r.sessionKey&&state.token?`<button class="btn-appeal" onclick="appealViolation('${esc(r.sessionKey)}','${esc(r.className)}','${esc(r.code)}','${esc(r.name)}','${esc(r.status)}','${Number(r.deduction)||0}')">Khiếu nại</button> ${state.supportToken?`<button class="btn-del" onclick="deleteWrongEntry('${esc(r.sessionKey)}','${esc(r.code)}','${esc(r.name)}')">Xóa lỗi</button>`:''}`:'—'}
-        </td>
+        <td>—</td>
       </tr>
     `).join('');
   }
