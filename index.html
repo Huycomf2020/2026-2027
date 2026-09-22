@@ -255,7 +255,7 @@
   </div>
 </div>
 
-<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH (TỐC ĐỘ 0ms SUPABASE) -->
+<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH -->
 <div id="ruleModal" class="modal">
   <div class="modal-card" style="width: min(650px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
     <h3 id="ruleModalTitle">📜 Chọn các lỗi vi phạm nội quy</h3>
@@ -286,16 +286,16 @@
   </div>
 </div>
 
-<!-- POPUP ĐĂNG NHẬP ĐIỂM DANH CHO LỚP -->
+<!-- POPUP ĐĂNG NHẬP ĐIỂM DANH CHO LỚP (SUPABASE AUTH⚡) -->
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Nhập Mật khẩu do Lớp quản lý để tiến hành điểm danh.</p>
+    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase (Siêu tốc)</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập</button>
+      <button class="save" id="login">Đăng nhập (Supabase)</button>
     </div>
   </div>
 </div>
@@ -373,7 +373,6 @@
     }catch(e){ toast(e.message); }
   }
 
-  // LẤY QUY ĐỊNH TỪ SUPABASE (SIÊU TỐC 0ms & REALTIME)
   async function loadSupabaseRules() {
     try {
       const { data, error } = await supabaseClient.from('rules').select('*').order('stt', { ascending: true });
@@ -463,6 +462,7 @@
       loadClass(clsName);
       return;
     }
+    state.targetLoginClass = clsName;
     $('#modalClassTitle').textContent = `🔐 Đăng nhập Điểm danh Lớp ${clsName}`;
     $('#classEmail').value = `${clsName.toLowerCase()}@thptlocninh.edu.vn`;
     $('#password').value = '';
@@ -471,22 +471,45 @@
   }
 
   $('#cancelLogin').onclick=()=>$('#passwordModal').classList.remove('open');
+
+  // ĐĂNG NHẬP XÁC THỰC QUA SUPABASE SIÊU TỐC (<50ms)
   $('#login').onclick=async()=>{
-    try{
-      const email = $('#classEmail').value;
-      const pass = $('#password').value;
-      const r = await server('verifyAttendancePassword', email, pass);
-      if(!r.valid) throw new Error(r.message || 'Mật khẩu không chính xác.');
-      
-      state.token = r.token;
-      state.assignedClass = r.assignedClass;
-      state.userEmail = r.userEmail;
-      
+    const email = $('#classEmail').value.trim();
+    const pass = $('#password').value.trim();
+    const targetCls = state.targetLoginClass;
+
+    if(!pass) { toast("Vui lòng nhập mật khẩu!"); return; }
+
+    const btn = $('#login');
+    btn.disabled = true; btn.textContent = '⚡ Đang kiểm tra...';
+
+    try {
+      // Đối chiếu tài khoản trên Supabase
+      const { data, error } = await supabaseClient
+        .from('class_users')
+        .select('*')
+        .eq('email', email)
+        .eq('password', pass)
+        .single();
+
+      if (error || !data) {
+        throw new Error('Mật khẩu không chính xác!');
+      }
+
+      state.token = 'SUPABASE_AUTH_TOKEN_' + Date.now();
+      state.assignedClass = data.class_name;
+      state.userEmail = data.email;
+
       $('#passwordModal').classList.remove('open');
-      toast(`Đăng nhập thành công (${state.assignedClass})`);
+      toast(`⚡ Đăng nhập Supabase thành công (${state.assignedClass})`);
       $('#userLoginBadge').textContent = `👤 Tài khoản: ${state.userEmail}`;
       loadClass(state.assignedClass);
-    }catch(e){ toast(e.message); }
+
+    } catch(e) {
+      toast(e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Đăng nhập (Supabase)';
+    }
   };
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
@@ -580,7 +603,6 @@
     renderStudents();
   }
 
-  // ĐỌC BẢNG 41 QUY ĐỊNH TỨC THÌ (0ms TỪ SUPABASE)
   function openRuleModal(rowId, studentName) {
     activeStudentForModal = state.students.find(s => String(s.row) === String(rowId));
     if (!activeStudentForModal) return;
