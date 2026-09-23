@@ -597,14 +597,22 @@
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
   
-  // KIỂM TRA MẬT KHẨU BÍ THƯ BẢO MẬT TRỰC TIẾP TỪ BẢNG SUPABASE admin_auth
+  // XÁC THỰC BÍ THƯ ĐOÀN KHÔNG BỊ RLS CHẶN
   $('#loginSupport').onclick=async()=>{
     const passInput = $('#supportPassword').value.trim();
     if(!passInput) { toast("Vui lòng nhập mật khẩu Bí thư!"); return; }
 
+    const btn = $('#loginSupport');
+    btn.disabled = true; btn.textContent = 'Đang kiểm tra...';
+
     try {
-      const { data, error } = await supabaseClient.from('admin_auth').select('password').eq('id', 1).single();
-      if(error || !data || data.password !== passInput) {
+      const { data, error } = await supabaseClient.from('admin_auth').select('*');
+      if(error || !data || data.length === 0) {
+        throw new Error('Chưa cấu hình bảng mật khẩu trên Supabase.');
+      }
+
+      const adminRow = data.find(item => String(item.password).trim() === passInput);
+      if(!adminRow) {
         toast('Mật khẩu không chính xác!');
         return;
       }
@@ -616,6 +624,8 @@
       toast('Xác minh Bí thư Đoàn thành công!');
     } catch(e) {
       toast('Lỗi xác thực: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Xác nhận vào';
     }
   };
 
