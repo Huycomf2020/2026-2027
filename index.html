@@ -255,14 +255,13 @@
   </div>
 </div>
 
-<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (SUPABASE AUTH) -->
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN -->
 <div id="supportPasswordModal" class="modal">
   <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
     <h3>🔐 Xác minh Bí thư Đoàn</h3>
-    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh để truy cập khu vực Hỗ trợ.</p>
+    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh mật khẩu để truy cập khu vực Hỗ trợ.</p>
     <div class="assistant-modal-body" style="margin: 15px 0;">
       <div style="flex:1;">
-        <input id="supportEmail" type="email" value="bithu@thptlocninh.edu.vn" placeholder="Email Bí thư" style="background:#f1f5f9; margin-bottom:8px;">
         <input id="supportPassword" type="password" placeholder="Mật khẩu Bí thư">
       </div>
       <img src="images/thaynam.png" alt="Trợ lý Thầy Nam" class="assistant-img" onerror="this.src='https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png'">
@@ -292,7 +291,7 @@
 
 <script>
   const SUPABASE_URL = 'https://pkuhkuyumrvrcseqlble.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6InBub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, currentRealWeek: 2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
@@ -600,9 +599,8 @@
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
   
-  // XÁC THỰC BÍ THƯ ĐOÀN QUA SUPABASE AUTH
+  // XÁC THỰC BÍ THƯ ĐOÀN KHÔNG BỊ RLS CHẶN
   $('#loginSupport').onclick=async()=>{
-    const emailInput = $('#supportEmail').value.trim();
     const passInput = $('#supportPassword').value.trim();
     if(!passInput) { toast("Vui lòng nhập mật khẩu Bí thư!"); return; }
 
@@ -610,22 +608,24 @@
     btn.disabled = true; btn.textContent = 'Đang kiểm tra...';
 
     try {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: emailInput,
-        password: passInput
-      });
-
-      if (error || !data.session) {
-        throw new Error('Mật khẩu không chính xác!');
+      const { data, error } = await supabaseClient.from('admin_auth').select('*');
+      if(error || !data || data.length === 0) {
+        throw new Error('Chưa cấu hình bảng mật khẩu trên Supabase.');
       }
 
-      state.supportToken = data.session.access_token;
+      const adminRow = data.find(item => String(item.password).trim() === passInput);
+      if(!adminRow) {
+        toast('Mật khẩu không chính xác!');
+        return;
+      }
+
+      state.supportToken = 'SUPPORT_TOKEN';
       $('#supportPasswordModal').classList.remove('open');
       $('#supportPassword').value = '';
       openPage('support');
       toast('Xác minh Bí thư Đoàn thành công!');
     } catch(e) {
-      toast(e.message || 'Lỗi xác thực!');
+      toast('Lỗi xác thực: ' + e.message);
     } finally {
       btn.disabled = false; btn.textContent = 'Xác nhận vào';
     }
