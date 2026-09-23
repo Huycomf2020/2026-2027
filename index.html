@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SUPABASE & SHEETJS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
@@ -86,7 +85,7 @@
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
           <select id="competitionWeekSelect" onchange="loadSupabaseCompetition()" style="padding: 9px 12px; border-radius: 12px; border: 1px solid #dce8ee; font-weight: 700; color: var(--navy); outline: none; background: #fff;"></select>
-          <button class="save" onclick="downloadCompetitionExcel()" style="padding: 10px 14px; font-size: 13px; background: linear-gradient(120deg,#16a34a,#15803d);">📊 Excel</button>
+          <button class="save" onclick="downloadCompetitionExcel()" style="padding: 10px 14px; font-size: 13px; background: linear-gradient(120deg,#16a34a,#15803d);">📊 Xuất Excel</button>
         </div>
       </div>
       <div id="podium" class="podium"></div>
@@ -257,7 +256,7 @@
   </div>
 </div>
 
-<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN -->
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (MẬT KHẨU CHUẨN: Bithu@26) -->
 <div id="supportPasswordModal" class="modal">
   <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
     <h3>🔐 Xác minh Bí thư Đoàn</h3>
@@ -293,7 +292,7 @@
 
 <script>
   const SUPABASE_URL = 'https://pkuhkuyumrvrcseqlble.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
@@ -307,6 +306,7 @@
     try{
       await loadSupabaseRules();
       renderClasses();
+      renderHomeroomClasses();
       setupWeekDropdowns();
       await loadSupabaseCompetition();
       setupAdminClassSelect();
@@ -326,7 +326,6 @@
     $('#weeklyLogWeekSelect').value = state.selectedWeek;
   }
 
-  // TẢI BẢNG THI ĐUA TỪ SUPABASE REALTIME
   async function loadSupabaseCompetition() {
     state.selectedWeek = Number($('#competitionWeekSelect').value) || 2;
     try {
@@ -351,7 +350,6 @@
     renderRules();
   }
 
-  // NÚT GỠ LỖI CỦA ĐOÀN TRƯỜNG TRONG TAB HỖ TRỢ ➔ TÍCH XANH REALTIME
   async function resolveViolationLog(logId, currentResolvedStatus) {
     const newStatus = !currentResolvedStatus;
     try {
@@ -370,7 +368,6 @@
     }
   }
 
-  // TẢI DANH SÁCH LƯỢT ĐIỂM DANH DÀNH CHO ĐOÀN TRƯỜNG XỬ LÝ GỠ LỖI
   async function loadSupportLog() {
     $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
@@ -415,7 +412,6 @@
     }
   }
 
-  // LƯU ĐIỂM SĐB DÁN HÀNG LOẠT LÊN SUPABASE
   async function savePastedSdbData() {
     const rawText = $('#sdbPasteArea').value.trim();
     if (!rawText) { toast("Vui lòng dán dữ liệu vào ô!"); return; }
@@ -583,7 +579,8 @@
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
   $('#loginSupport').onclick=async()=>{
-    if($('#supportPassword').value === '123456') {
+    // CẬP NHẬT MẬT KHẨU CHUẨN XÁC: Bithu@26
+    if($('#supportPassword').value === 'Bithu@26') {
       state.supportToken = 'SUPPORT_TOKEN';
       $('#supportPasswordModal').classList.remove('open');
       openPage('support');
@@ -592,6 +589,8 @@
       toast('Mật khẩu không chính xác!');
     }
   };
+
+  $('#supportPassword').onkeydown=e=>{if(e.key==='Enter')$('#loginSupport').click()};
 
   function setupAdminClassSelect() {
     const opts = '<option value="ALL">-- Tất cả các lớp --</option>' + state.classes.map(c => `<option value="${c}">${c}</option>`).join('');
