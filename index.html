@@ -121,7 +121,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -163,11 +163,10 @@
       </div>
     </section>
 
-    <!-- TAB HỖ TRỢ & THỐNG KÊ VI PHẠM + XỬ LÝ KHẮC PHỤC -->
+    <!-- TAB HỖ TRỢ & THỐNG KÊ VI PHẠM + XỬ LÝ KHẮC PHỤC 3 LẦN -->
     <section id="support" class="panel">
       <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Xử lý Khắc phục</h2><p>Dành riêng cho Đoàn trường thống kê và xử lý vi phạm</p></div></div>
       
-      <!-- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM -->
       <div class="card" style="margin-bottom: 18px;">
         <h3>⚠️ Bảng thống kê học sinh vi phạm</h3>
         <div class="table-wrap">
@@ -180,35 +179,12 @@
                 <th>Số lần vi phạm</th>
                 <th>Tổng điểm trừ</th>
                 <th>Chi tiết các lỗi</th>
+                <th>Số lần khắc phục</th>
                 <th>Thao tác (Bí thư Đoàn)</th>
               </tr>
             </thead>
             <tbody id="violationTableBody">
-              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM (ĐOÀN TRƯỜNG) -->
-      <div class="card" style="margin-bottom: 18px;">
-        <h3>📑 Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường)</h3>
-        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Xác nhận các lượt khiếu nại hoặc lỗi điểm danh nhầm từ các Lớp trưởng:</p>
-        <div class="table-wrap">
-          <table class="ranking">
-            <thead>
-              <tr>
-                <th>Thời gian</th>
-                <th>Tuần</th>
-                <th>Lớp</th>
-                <th>Người điểm danh</th>
-                <th>Số lỗi vi phạm</th>
-                <th>Trạng thái xử lý</th>
-                <th>Thao tác Đoàn trường</th>
-              </tr>
-            </thead>
-            <tbody id="supportLogTableBody">
-              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu nhật ký...</td></tr>
+              <tr><td colspan="8" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
             </tbody>
           </table>
         </div>
@@ -221,7 +197,7 @@
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
-          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu</button>
+          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
         </div>
       </div>
 
@@ -229,12 +205,12 @@
         <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
         <div class="upload-box">
           <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
-          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file</button>
+          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
         </div>
       </div>
     </section>
 
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -254,7 +230,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
+          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
         </div>
         <div id="students"></div>
       </div>
@@ -302,12 +278,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Khi quên mật khẩu, hay liên hệ Bí thư nhé</p>
+    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập</button>
+      <button class="save" id="login">Đăng nhập (Supabase)</button>
     </div>
   </div>
 </div>
@@ -316,7 +292,7 @@
 
 <script>
   const SUPABASE_URL = 'https://pkuhkuyumrvrcseqlble.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6InBub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, currentRealWeek: 2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
@@ -384,13 +360,11 @@
   }
 
   async function loadViolationsData() {
-    $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
-    $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
+    $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
-      const { data, error } = await supabaseClient.from('class_log').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabaseClient.from('class_log').select('*');
       if (error) throw error;
 
-      // 1. Render Bảng thống kê học sinh vi phạm
       const studentMap = {};
       (data || []).forEach(log => {
         const violations = log.violations_json || [];
@@ -416,53 +390,30 @@
 
       const list = Object.values(studentMap);
       if (list.length === 0) {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
-      } else {
-        $('#violationTableBody').innerHTML = list.map((item) => {
-          let rCount = item.resolvedCount || 0;
-          let btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã xử lý (Lần ${rCount}/3)`;
-          if(rCount >= 3) btnText = '🔒 Đã tối đa 3 lần';
-
-          return `
-            <tr>
-              <td><b>${esc(item.className)}</b></td>
-              <td><small>${esc(item.code)}</small></td>
-              <td><b>${esc(item.name)}</b></td>
-              <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${item.count} lần</span></td>
-              <td><strong style="color:#dc2626;">-${item.totalDeduction}đ</strong></td>
-              <td><small>${esc(item.errors.join('; '))}</small></td>
-              <td>
-                <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}', ${rCount})">${btnText}</button>
-              </td>
-            </tr>
-          `;
-        }).join('');
+        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
+        return;
       }
 
-      // 2. Render Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường)
-      if (!data || data.length === 0) {
-        $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có dữ liệu nhật ký.</td></tr>';
-      } else {
-        $('#supportLogTableBody').innerHTML = data.map(log => {
-          const logTime = new Date(log.created_at).toLocaleString('vi-VN');
-          const vCount = (log.violations_json || []).length;
-          const isResolved = log.resolved_count > 0;
-          const statusBadge = isResolved ? '<span class="badge" style="background:#d1fae5; color:#065f46;">✨ Đã xử lý (Lần ' + log.resolved_count + ')</span>' : '<span class="badge" style="background:#e0f2fe; color:#0369a1;">Đang tính điểm</span>';
-          const actionBtn = isResolved ? `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleRevertLog('${log.id}')">Hoàn tác</button>` : `<button class="btn-remove-error" style="background:#dc2626;" onclick="handleResolveLog('${log.id}')">Xử lý</button>`;
+      $('#violationTableBody').innerHTML = list.map((item) => {
+        let rCount = item.resolvedCount || 0;
+        let btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã xử lý (Lần ${rCount}/3)`;
+        if(rCount >= 3) btnText = '🔒 Đã tối đa 3 lần';
 
-          return `
-            <tr>
-              <td><small>${esc(logTime)}</small></td>
-              <td><b>Tuần ${log.week || 2}</b></td>
-              <td><b>${esc(log.class_name)}</b></td>
-              <td><small>${esc(log.user_email || 'Lớp trưởng')}</small></td>
-              <td><b>${vCount} vi phạm</b></td>
-              <td>${statusBadge}</td>
-              <td>${actionBtn}</td>
-            </tr>
-          `;
-        }).join('');
-      }
+        return `
+          <tr>
+            <td><b>${esc(item.className)}</b></td>
+            <td><small>${esc(item.code)}</small></td>
+            <td><b>${esc(item.name)}</b></td>
+            <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${item.count} lần</span></td>
+            <td><strong style="color:#dc2626;">-${item.totalDeduction}đ</strong></td>
+            <td><small>${esc(item.errors.join('; '))}</small></td>
+            <td><span class="badge" style="background:${rCount > 0 ? '#d1fae5' : '#f1f5f9'}; color:${rCount > 0 ? '#065f46' : '#64748b'}; font-weight:800;">${rCount} lần</span></td>
+            <td>
+              <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}', ${rCount})">${btnText}</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
 
     } catch(e) {
       toast("Lỗi tải thống kê vi phạm: " + e.message);
@@ -485,32 +436,10 @@
           await supabaseClient.from('class_log').update({ resolved_count: nextCount }).eq('id', log.id);
         }
       }
-      toast(`✅ Đã ghi nhận xử lý khắc phục Lần ${nextCount}/3 cho ${studentName}!`);
+      toast(`✅ Đã ghi nhận xử lý khắc phục Lần ${nextCount}/3 cho ${studentName}! Điểm thi đua giữ nguyên.`);
       loadViolationsData();
     } catch(e) {
       toast("Lỗi xử lý: " + e.message);
-    }
-  }
-
-  async function handleResolveLog(logId) {
-    try {
-      const { error } = await supabaseClient.from('class_log').update({ resolved_count: 1 }).eq('id', logId);
-      if (error) throw error;
-      toast("✅ Đã xử lý bản ghi điểm danh thành công!");
-      loadViolationsData();
-    } catch(e) {
-      toast("Lỗi: " + e.message);
-    }
-  }
-
-  async function handleRevertLog(logId) {
-    try {
-      const { error } = await supabaseClient.from('class_log').update({ resolved_count: 0 }).eq('id', logId);
-      if (error) throw error;
-      toast("Đã hoàn tác trạng thái!");
-      loadViolationsData();
-    } catch(e) {
-      toast("Lỗi: " + e.message);
     }
   }
 
@@ -540,7 +469,7 @@
     }
 
     const btn = $('#btnSavePastedSdb');
-    btn.disabled = true; btn.textContent = '⚡ Đang lưu ...';
+    btn.disabled = true; btn.textContent = '⚡ Đang lưu lên Supabase...';
 
     try {
       const { error } = await supabaseClient.from('diem_sdb').upsert(records, { onConflict: 'week,class_name' });
@@ -552,7 +481,7 @@
     } catch(e) {
       toast("Lỗi lưu SĐB: " + e.message);
     } finally {
-      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu';
+      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu dán lên Supabase';
     }
   }
 
@@ -883,7 +812,7 @@
     }
     finally{ 
       btn.disabled=false; 
-      btn.textContent='⚡ Lưu điểm danh'; 
+      btn.textContent='⚡ Lưu điểm danh (Supabase)'; 
     }
   };
 
