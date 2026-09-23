@@ -81,7 +81,7 @@
       <div class="hero">
         <div>
           <h2>🏆 Bảng vàng thi đua</h2>
-          <p>Thành tích nổi bật của các chi đoàn (Supabase Realtime ⚡)</p>
+          <p>Thành tích nổi bật của các chi đoàn (Realtime ⚡)</p>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
           <select id="competitionWeekSelect" onchange="loadSupabaseCompetition()" style="padding: 9px 12px; border-radius: 12px; border: 1px solid #dce8ee; font-weight: 700; color: var(--navy); outline: none; background: #fff;"></select>
@@ -122,7 +122,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime)</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -195,7 +195,7 @@
       <div class="card">
         <h3>📊 Dán hàng loạt Điểm Sổ Đầu Bài (Copy từ Excel/Sheets)</h3>
         <div class="upload-box">
-          <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây:
+          <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây (kiểu Ctrl A và Ctril V ấy thầy Minh):
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
@@ -232,7 +232,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
+          <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
         </div>
         <div id="students"></div>
       </div>
@@ -279,12 +279,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase (Siêu tốc)</p>
+    <p style="margin-top:4px; color:var(--muted);">Lớp nào quên mật khẩu, liên hệ thầy Nam bí thư nhé</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập (Supabase)</button>
+      <button class="save" id="login">Đăng nhập</button>
     </div>
   </div>
 </div>
