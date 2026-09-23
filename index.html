@@ -255,13 +255,14 @@
   </div>
 </div>
 
-<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN -->
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (SUPABASE AUTH) -->
 <div id="supportPasswordModal" class="modal">
   <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
     <h3>🔐 Xác minh Bí thư Đoàn</h3>
-    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh mật khẩu để truy cập khu vực Hỗ trợ.</p>
+    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh để truy cập khu vực Hỗ trợ.</p>
     <div class="assistant-modal-body" style="margin: 15px 0;">
       <div style="flex:1;">
+        <input id="supportEmail" type="email" value="bithu@thptlocninh.edu.vn" placeholder="Email Bí thư" style="background:#f1f5f9; margin-bottom:8px;">
         <input id="supportPassword" type="password" placeholder="Mật khẩu Bí thư">
       </div>
       <img src="images/thaynam.png" alt="Trợ lý Thầy Nam" class="assistant-img" onerror="this.src='https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png'">
@@ -599,8 +600,9 @@
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
   
-  // XÁC THỰC BÍ THƯ ĐOÀN KHÔNG BỊ RLS CHẶN
+  // XÁC THỰC BÍ THƯ ĐOÀN QUA SUPABASE AUTH
   $('#loginSupport').onclick=async()=>{
+    const emailInput = $('#supportEmail').value.trim();
     const passInput = $('#supportPassword').value.trim();
     if(!passInput) { toast("Vui lòng nhập mật khẩu Bí thư!"); return; }
 
@@ -608,24 +610,22 @@
     btn.disabled = true; btn.textContent = 'Đang kiểm tra...';
 
     try {
-      const { data, error } = await supabaseClient.from('admin_auth').select('*');
-      if(error || !data || data.length === 0) {
-        throw new Error('Chưa cấu hình bảng mật khẩu trên Supabase.');
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: emailInput,
+        password: passInput
+      });
+
+      if (error || !data.session) {
+        throw new Error('Mật khẩu không chính xác!');
       }
 
-      const adminRow = data.find(item => String(item.password).trim() === passInput);
-      if(!adminRow) {
-        toast('Mật khẩu không chính xác!');
-        return;
-      }
-
-      state.supportToken = 'SUPPORT_TOKEN';
+      state.supportToken = data.session.access_token;
       $('#supportPasswordModal').classList.remove('open');
       $('#supportPassword').value = '';
       openPage('support');
       toast('Xác minh Bí thư Đoàn thành công!');
     } catch(e) {
-      toast('Lỗi xác thực: ' + e.message);
+      toast(e.message || 'Lỗi xác thực!');
     } finally {
       btn.disabled = false; btn.textContent = 'Xác nhận vào';
     }
