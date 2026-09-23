@@ -121,7 +121,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -179,12 +179,11 @@
                 <th>Số lần vi phạm</th>
                 <th>Tổng điểm trừ</th>
                 <th>Chi tiết các lỗi</th>
-                <th>Số lần khắc phục</th>
                 <th>Thao tác (Bí thư Đoàn)</th>
               </tr>
             </thead>
             <tbody id="violationTableBody">
-              <tr><td colspan="8" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
+              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
             </tbody>
           </table>
         </div>
@@ -197,7 +196,7 @@
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
-          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu</button>
+          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
         </div>
       </div>
 
@@ -205,12 +204,12 @@
         <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
         <div class="upload-box">
           <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
-          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file</button>
+          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
         </div>
       </div>
     </section>
 
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -230,7 +229,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
+          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
         </div>
         <div id="students"></div>
       </div>
@@ -255,7 +254,7 @@
   </div>
 </div>
 
-<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN  -->
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (SUPABASE AUTH) -->
 <div id="supportPasswordModal" class="modal">
   <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
     <h3>🔐 Xác minh Bí thư Đoàn</h3>
@@ -278,12 +277,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Quên hoặc lộ mật khẩu, hãy kiên hệ Bí thư</p>
+    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập</button>
+      <button class="save" id="login">Đăng nhập (Supabase)</button>
     </div>
   </div>
 </div>
@@ -360,7 +359,7 @@
   }
 
   async function loadViolationsData() {
-    $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
       const { data, error } = await supabaseClient.from('class_log').select('*');
       if (error) throw error;
@@ -390,7 +389,7 @@
 
       const list = Object.values(studentMap);
       if (list.length === 0) {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
+        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
         return;
       }
 
@@ -407,7 +406,6 @@
             <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${item.count} lần</span></td>
             <td><strong style="color:#dc2626;">-${item.totalDeduction}đ</strong></td>
             <td><small>${esc(item.errors.join('; '))}</small></td>
-            <td><span class="badge" style="background:${rCount > 0 ? '#d1fae5' : '#f1f5f9'}; color:${rCount > 0 ? '#065f46' : '#64748b'}; font-weight:800;">${rCount} lần</span></td>
             <td>
               <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}', ${rCount})">${btnText}</button>
             </td>
@@ -469,7 +467,7 @@
     }
 
     const btn = $('#btnSavePastedSdb');
-    btn.disabled = true; btn.textContent = '⚡ Đang lưu...';
+    btn.disabled = true; btn.textContent = '⚡ Đang lưu lên Supabase...';
 
     try {
       const { error } = await supabaseClient.from('diem_sdb').upsert(records, { onConflict: 'week,class_name' });
@@ -481,7 +479,7 @@
     } catch(e) {
       toast("Lỗi lưu SĐB: " + e.message);
     } finally {
-      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu';
+      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu dán lên Supabase';
     }
   }
 
@@ -777,7 +775,7 @@
 
   $('#saveAttendance').onclick=async()=>{
     const btn=$('#saveAttendance');
-    btn.disabled=true; btn.textContent='⚡ Đang lưu...';
+    btn.disabled=true; btn.textContent='⚡ Đang lưu Supabase...';
     try{
       const now = new Date();
       const violations = state.students.filter(s => s.status && s.status !== 'Có mặt').map(s => ({
@@ -812,7 +810,7 @@
     }
     finally{ 
       btn.disabled=false; 
-      btn.textContent='⚡ Lưu điểm danh'; 
+      btn.textContent='⚡ Lưu điểm danh (Supabase)'; 
     }
   };
 
