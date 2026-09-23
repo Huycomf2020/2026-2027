@@ -43,9 +43,8 @@
     .rule-text-content{flex:1;font-size:13px;}
     .rule-badge{background:#fee2e2;color:#dc2626;font-weight:700;padding:3px 8px;border-radius:6px;font-size:12px;}
 
-    .btn-resolve-ok {background:#10b981; color:#fff; border:0; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:4px;}
-    .btn-remove-error {background:#dc2626; color:#fff; border:0; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer;}
-    .btn-remove-error:hover {background:#b91c1c;}
+    .btn-remove-error {background:#10b981; color:#fff; border:0; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer;}
+    .btn-remove-error:hover {background:#059669;}
 
     .upload-box{border:2px dashed #bae6fd;border-radius:16px;padding:18px;background:#f0f9ff;margin-top:16px}
     .upload-box textarea{width:100%;height:140px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;margin:10px 0;font-family:monospace;font-size:13px;}
@@ -81,7 +80,7 @@
       <div class="hero">
         <div>
           <h2>🏆 Bảng vàng thi đua</h2>
-          <p>Thành tích nổi bật của các chi đoàn (Realtime ⚡)</p>
+          <p id="realtimeInfo">Đang cập nhật thời gian thực...</p>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
           <select id="competitionWeekSelect" onchange="loadSupabaseCompetition()" style="padding: 9px 12px; border-radius: 12px; border: 1px solid #dce8ee; font-weight: 700; color: var(--navy); outline: none; background: #fff;"></select>
@@ -122,7 +121,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime)</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -154,39 +153,37 @@
                 <th>Họ và Tên</th>
                 <th>Nội dung vi phạm</th>
                 <th>Điểm trừ</th>
-                <th>Trạng thái</th>
               </tr>
             </thead>
             <tbody id="adminLogTableBody">
-              <tr><td colspan="8" style="text-align:center; padding: 20px;">Vui lòng chọn điều kiện tìm kiếm.</td></tr>
+              <tr><td colspan="7" style="text-align:center; padding: 20px;">Vui lòng chọn điều kiện tìm kiếm.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- TAB HỖ TRỢ & BẢNG XỬ LÝ GỠ LỖI CỦA ĐOÀN TRƯỜNG -->
+    <!-- TAB HỖ TRỢ & THỐNG KÊ VI PHẠM + XỬ LÝ KHẮC PHỤC 3 LẦN -->
     <section id="support" class="panel">
-      <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Duyệt Gỡ Lỗi</h2><p>Dành riêng cho BGH & Đoàn trường nạp dữ liệu và xử lý khiếu nại</p></div></div>
+      <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Xử lý Khắc phục</h2><p>Dành riêng cho Đoàn trường thống kê và xử lý vi phạm</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
-        <h3>📋 Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường)</h3>
-        <p style="color:var(--muted); font-size:13px; margin-top:-5px;">Xác nhận các lượt khiếu nại hoặc lỗi điểm danh nhầm từ các Lớp trưởng:</p>
+        <h3>⚠️ Bảng thống kê học sinh vi phạm</h3>
         <div class="table-wrap">
           <table class="ranking">
             <thead>
               <tr>
-                <th>Thời gian</th>
-                <th>Tuần</th>
                 <th>Lớp</th>
-                <th>Người điểm danh</th>
-                <th>Số lỗi vi phạm</th>
-                <th>Trạng thái xử lý</th>
-                <th>Thao tác Đoàn trường</th>
+                <th>Mã HS</th>
+                <th>Họ và Tên</th>
+                <th>Số lần vi phạm</th>
+                <th>Tổng điểm trừ</th>
+                <th>Chi tiết các lỗi</th>
+                <th>Thao tác (Bí thư Đoàn)</th>
               </tr>
             </thead>
-            <tbody id="supportLogTableBody">
-              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang tải danh sách điểm danh...</td></tr>
+            <tbody id="violationTableBody">
+              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu vi phạm...</td></tr>
             </tbody>
           </table>
         </div>
@@ -195,7 +192,7 @@
       <div class="card">
         <h3>📊 Dán hàng loạt Điểm Sổ Đầu Bài (Copy từ Excel/Sheets)</h3>
         <div class="upload-box">
-          <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây (kiểu Ctrl A và Ctril V ấy thầy Minh):
+          <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây:
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
@@ -232,7 +229,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
+          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
         </div>
         <div id="students"></div>
       </div>
@@ -244,7 +241,7 @@
   </footer>
 </div>
 
-<!-- POPUP CHỌN LỖI VI PHẠM TỪ QUY ĐỊNH -->
+<!-- POPUP CHỌN LỖI VI PHẠM -->
 <div id="ruleModal" class="modal">
   <div class="modal-card" style="width: min(650px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
     <h3 id="ruleModalTitle">📜 Chọn các lỗi vi phạm nội quy</h3>
@@ -257,11 +254,11 @@
   </div>
 </div>
 
-<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (MẬT KHẨU: Bithu@26) -->
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (BẢO MẬT TỪ SUPABASE) -->
 <div id="supportPasswordModal" class="modal">
   <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
     <h3>🔐 Xác minh Bí thư Đoàn</h3>
-    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh để truy cập khu vực Hỗ trợ & Khắc phục.</p>
+    <p style="margin-top:4px; color:var(--muted);">Vui lòng xác minh để truy cập khu vực Hỗ trợ.</p>
     <div class="assistant-modal-body" style="margin: 15px 0;">
       <div style="flex:1;">
         <input id="supportPassword" type="password" placeholder="Mật khẩu Bí thư">
@@ -279,12 +276,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Lớp nào quên mật khẩu, liên hệ thầy Nam bí thư nhé</p>
+    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập</button>
+      <button class="save" id="login">Đăng nhập (Supabase)</button>
     </div>
   </div>
 </div>
@@ -296,7 +293,7 @@
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
+  const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, currentRealWeek: 2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
 
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -309,12 +306,21 @@
       renderClasses();
       renderHomeroomClasses();
       setupWeekDropdowns();
+      
+      const now = new Date();
+      const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+      const dayName = days[now.getDay()];
+      const dateStr = now.toLocaleDateString('vi-VN');
+      const timeStr = now.toLocaleTimeString('vi-VN');
+      const periodStr = now.getHours() < 12 ? 'Buổi Sáng' : 'Buổi Chiều';
+      
+      $('#realtimeInfo').textContent = `${dayName}, ${dateStr} - ${timeStr} (${periodStr}) • Tuần ${state.currentRealWeek}`;
+      $('#sessionText').textContent = `${dayName}, ${dateStr}`;
+      $('#periodBadge').textContent = (now.getHours() < 12 ? '🌤️ ' : '🌇 ') + periodStr;
+      $('#adminLogDate').value = now.toISOString().split('T')[0];
+
       await loadSupabaseCompetition();
       setupAdminClassSelect();
-      const now = new Date();
-      $('#sessionText').textContent = now.toLocaleDateString('vi-VN');
-      $('#periodBadge').textContent = now.getHours() < 12 ? '🌤️ Sáng' : '🌇 Chiều';
-      $('#adminLogDate').value = now.toISOString().split('T')[0];
     }catch(e){ toast(e.message); }
   }
 
@@ -351,65 +357,86 @@
     renderRules();
   }
 
-  async function resolveViolationLog(logId, currentResolvedStatus) {
-    const newStatus = !currentResolvedStatus;
+  async function loadViolationsData() {
+    $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
-      const { error } = await supabaseClient
-        .from('class_log')
-        .update({ resolved: newStatus })
-        .eq('id', logId);
-
+      const { data, error } = await supabaseClient.from('class_log').select('*');
       if (error) throw error;
 
-      toast(newStatus ? "✅ Đã gỡ lỗi vi phạm thành công!" : "⚠️ Đã khôi phục lại điểm trừ vi phạm.");
-      loadSupportLog();
-      loadSupabaseCompetition();
-    } catch(e) {
-      toast("Lỗi gỡ lỗi: " + e.message);
-    }
-  }
+      const studentMap = {};
+      (data || []).forEach(log => {
+        const violations = log.violations_json || [];
+        violations.forEach(v => {
+          if (!v.name || v.name === 'Tập thể lớp') return;
+          const key = log.class_name + '_' + v.name;
+          if (!studentMap[key]) {
+            studentMap[key] = {
+              className: log.class_name,
+              code: v.code || '—',
+              name: v.name,
+              count: 0,
+              totalDeduction: 0,
+              errors: [],
+              resolvedCount: log.resolved_count || 0
+            };
+          }
+          studentMap[key].count += 1;
+          studentMap[key].totalDeduction += Number(v.deduction) || 0;
+          studentMap[key].errors.push(`${v.status} (-${v.deduction}đ)`);
+        });
+      });
 
-  async function loadSupportLog() {
-    $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
-    try {
-      const { data, error } = await supabaseClient
-        .from('class_log')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Chưa có lượt điểm danh nào.</td></tr>';
+      const list = Object.values(studentMap);
+      if (list.length === 0) {
+        $('#violationTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
         return;
       }
 
-      $('#supportLogTableBody').innerHTML = data.map(r => {
-        const timeStr = new Date(r.created_at).toLocaleString('vi-VN');
-        const isResolved = r.resolved === true;
+      $('#violationTableBody').innerHTML = list.map((item) => {
+        let rCount = item.resolvedCount || 0;
+        let btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã xử lý (Lần ${rCount}/3)`;
+        if(rCount >= 3) btnText = '🔒 Đã tối đa 3 lần';
 
         return `
           <tr>
-            <td><small>${esc(timeStr)}</small></td>
-            <td><b>Tuần ${r.week}</b></td>
-            <td><b>${esc(r.class_name)}</b></td>
-            <td><small>${esc(r.user_email || 'Lớp trưởng')}</small></td>
-            <td><strong style="color:${r.violation_count > 0 ? '#dc2626' : '#10b981'}">${r.violation_count} vi phạm</strong></td>
+            <td><b>${esc(item.className)}</b></td>
+            <td><small>${esc(item.code)}</small></td>
+            <td><b>${esc(item.name)}</b></td>
+            <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${item.count} lần</span></td>
+            <td><strong style="color:#dc2626;">-${item.totalDeduction}đ</strong></td>
+            <td><small>${esc(item.errors.join('; '))}</small></td>
             <td>
-              ${isResolved ? '<span class="btn-resolve-ok">✅ Đã gỡ lỗi</span>' : '<span style="color:var(--muted); font-weight:700;">Đang tính điểm</span>'}
-            </td>
-            <td>
-              ${isResolved ? 
-                `<button class="secondary" style="font-size:11px;" onclick="resolveViolationLog(${r.id}, true)">Hoàn tác</button>` : 
-                `<button class="btn-remove-error" onclick="resolveViolationLog(${r.id}, false)">❌ Gỡ lỗi này</button>`
-              }
+              <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}', ${rCount})">${btnText}</button>
             </td>
           </tr>
         `;
       }).join('');
 
     } catch(e) {
-      toast("Lỗi tải nhật ký: " + e.message);
+      toast("Lỗi tải thống kê vi phạm: " + e.message);
+    }
+  }
+
+  async function handleResolveStudent(className, studentName, currentCount) {
+    if (currentCount >= 3) {
+      toast("Học sinh này đã xử lý khắc phục tối đa 3 lần!");
+      return;
+    }
+    const nextCount = currentCount + 1;
+    try {
+      const { data: logs } = await supabaseClient.from('class_log').select('*').eq('class_name', className);
+      for(let log of logs) {
+        let matched = false;
+        const vList = log.violations_json || [];
+        vList.forEach(v => { if(v.name === studentName) matched = true; });
+        if(matched) {
+          await supabaseClient.from('class_log').update({ resolved_count: nextCount }).eq('id', log.id);
+        }
+      }
+      toast(`✅ Đã ghi nhận xử lý khắc phục Lần ${nextCount}/3 cho ${studentName}! Điểm thi đua giữ nguyên.`);
+      loadViolationsData();
+    } catch(e) {
+      toast("Lỗi xử lý: " + e.message);
     }
   }
 
@@ -442,10 +469,7 @@
     btn.disabled = true; btn.textContent = '⚡ Đang lưu lên Supabase...';
 
     try {
-      const { error } = await supabaseClient
-        .from('diem_sdb')
-        .upsert(records, { onConflict: 'week,class_name' });
-
+      const { error } = await supabaseClient.from('diem_sdb').upsert(records, { onConflict: 'week,class_name' });
       if (error) throw error;
 
       toast(`✅ Đã nạp thành công ${records.length} dòng Điểm SĐB!`);
@@ -516,7 +540,7 @@
     $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$$
 ('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
     if(id === 'adminLog') loadAdminLog();
-    if(id === 'support') loadSupportLog();
+    if(id === 'support') loadViolationsData();
   }
   
   function renderClasses(filter=''){
@@ -546,20 +570,13 @@
   $('#login').onclick=async()=>{
     const email = $('#classEmail').value.trim();
     const pass = $('#password').value.trim();
-
     if(!pass) { toast("Vui lòng nhập mật khẩu!"); return; }
 
     const btn = $('#login');
     btn.disabled = true; btn.textContent = '⚡ Đang kiểm tra...';
 
     try {
-      const { data, error } = await supabaseClient
-        .from('class_users')
-        .select('*')
-        .eq('email', email)
-        .eq('password', pass)
-        .single();
-
+      const { data, error } = await supabaseClient.from('class_users').select('*').eq('email', email).eq('password', pass).single();
       if (error || !data) throw new Error('Mật khẩu không chính xác!');
 
       state.token = 'SUPABASE_AUTH_TOKEN_' + Date.now();
@@ -579,14 +596,26 @@
   };
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
+  
+  // KIỂM TRA MẬT KHẨU BÍ THƯ BẢO MẬT TRỰC TIẾP TỪ BẢNG SUPABASE admin_auth
   $('#loginSupport').onclick=async()=>{
-    if($('#supportPassword').value === 'Bithu@26') {
+    const passInput = $('#supportPassword').value.trim();
+    if(!passInput) { toast("Vui lòng nhập mật khẩu Bí thư!"); return; }
+
+    try {
+      const { data, error } = await supabaseClient.from('admin_auth').select('password').eq('id', 1).single();
+      if(error || !data || data.password !== passInput) {
+        toast('Mật khẩu không chính xác!');
+        return;
+      }
+
       state.supportToken = 'SUPPORT_TOKEN';
       $('#supportPasswordModal').classList.remove('open');
+      $('#supportPassword').value = '';
       openPage('support');
       toast('Xác minh Bí thư Đoàn thành công!');
-    } else {
-      toast('Mật khẩu không chính xác!');
+    } catch(e) {
+      toast('Lỗi xác thực: ' + e.message);
     }
   };
 
@@ -604,12 +633,7 @@
     $('#students').innerHTML = '<div class="loader"></div>';
     
     try {
-      const { data: studentList, error } = await supabaseClient
-        .from('students')
-        .select('*')
-        .eq('class_name', cls)
-        .order('stt', { ascending: true });
-
+      const { data: studentList, error } = await supabaseClient.from('students').select('*').eq('class_name', cls).order('stt', { ascending: true });
       if (error) throw error;
 
       state.students = (studentList || []).map(s => ({
@@ -624,13 +648,7 @@
       state.className = cls;
       $('#studentCount').textContent = `${state.students.length} học sinh`;
 
-      const { data: lastLog } = await supabaseClient
-        .from('class_log')
-        .select('*')
-        .eq('class_name', cls)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
+      const { data: lastLog } = await supabaseClient.from('class_log').select('*').eq('class_name', cls).order('created_at', { ascending: false }).limit(1);
       const alertBox = $('#sessionAlertBox');
       if (lastLog && lastLog.length > 0) {
         const log = lastLog[0];
@@ -767,13 +785,13 @@
         violation_count: violations.length,
         violations_json: violations,
         user_email: state.userEmail || 'Lớp trưởng',
-        resolved: false
+        resolved_count: 0
       };
 
       const { error } = await supabaseClient.from('class_log').insert([payload]);
       if (error) throw new Error(error.message);
 
-      toast(`⚡ Lưu điểm danh siêu tốc thành công! (${violations.length} vi phạm)`);
+      toast(`⚡ Lưu điểm danh thành công! (${violations.length} vi phạm)`);
       loadClass(state.className);
       loadSupabaseCompetition();
 
@@ -788,7 +806,7 @@
 
   async function loadAdminLog() {
     const d = $('#adminLogDate').value, c = $('#adminLogClass').value;
-    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
       let query = supabaseClient.from('class_log').select('*').order('created_at', { ascending: false });
       if (c && c !== 'ALL') query = query.eq('class_name', c);
@@ -801,11 +819,10 @@
 
       filtered.forEach(r => {
         const list = r.violations_json || [];
-        const statusBadge = r.resolved ? '<span style="color:#10b981; font-weight:700;">✅ Đã gỡ lỗi</span>' : '<span style="color:#dc2626; font-weight:700;">Ghi nhận</span>';
         if (list.length === 0) {
-          logs.push({ date: new Date(r.created_at).toLocaleTimeString('vi-VN'), period: r.period, className: r.class_name, code: '—', name: 'Tập thể lớp', status: 'Không vi phạm', deduction: 0, statusBadge });
+          logs.push({ date: new Date(r.created_at).toLocaleTimeString('vi-VN'), period: r.period, className: r.class_name, code: '—', name: 'Tập thể lớp', status: 'Không vi phạm', deduction: 0 });
         } else {
-          list.forEach(s => logs.push({ date: new Date(r.created_at).toLocaleTimeString('vi-VN'), period: r.period, className: r.class_name, code: s.code, name: s.name, status: s.status, deduction: s.deduction, statusBadge }));
+          list.forEach(s => logs.push({ date: new Date(r.created_at).toLocaleTimeString('vi-VN'), period: r.period, className: r.class_name, code: s.code, name: s.name, status: s.status, deduction: s.deduction }));
         }
       });
 
@@ -816,15 +833,14 @@
   async function loadWeeklyLog() {
     const c = $('#weeklyLogClass').value;
     const w = Number($('#weeklyLogWeekSelect').value);
-    $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
+    $('#adminLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
       const { data, error } = await supabaseClient.from('class_log').select('*').eq('class_name', c).eq('week', w).order('created_at', { ascending: false });
       if (error) throw error;
 
       const logs = [];
       data.forEach(r => {
-        const statusBadge = r.resolved ? '<span style="color:#10b981; font-weight:700;">✅ Đã gỡ lỗi</span>' : '<span style="color:#dc2626; font-weight:700;">Ghi nhận</span>';
-        (r.violations_json || []).forEach(s => logs.push({ date: new Date(r.created_at).toLocaleDateString('vi-VN'), period: r.period, className: r.class_name, code: s.code, name: s.name, status: s.status, deduction: s.deduction, statusBadge }));
+        (r.violations_json || []).forEach(s => logs.push({ date: new Date(r.created_at).toLocaleDateString('vi-VN'), period: r.period, className: r.class_name, code: s.code, name: s.name, status: s.status, deduction: s.deduction }));
       });
 
       renderLogTable(logs);
@@ -833,7 +849,7 @@
 
   function renderLogTable(logs) {
     if(!logs || logs.length === 0) {
-      $('#adminLogTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--muted); padding: 20px;">Không có dữ liệu vi phạm.</td></tr>';
+      $('#adminLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--muted); padding: 20px;">Không có dữ liệu vi phạm.</td></tr>';
       return;
     }
     $('#adminLogTableBody').innerHTML = logs.map(r => `
@@ -845,7 +861,6 @@
         <td><b>${esc(r.name)}</b></td>
         <td>${esc(r.status)}</td>
         <td><strong style="color:${r.deduction > 0 ? '#dc2626' : '#10b981'};">-${r.deduction}đ</strong></td>
-        <td>${r.statusBadge || '—'}</td>
       </tr>
     `).join('');
   }
@@ -871,7 +886,16 @@
     $('#rulesList').innerHTML = list.length ? list.map((r,i)=>`<article class="rule"><span class="rule-num">${esc(r.stt||i+1)}</span><div><b>${esc(r.content)}</b>${r.deduction!==undefined?`<p>Điểm trừ: <strong>-${esc(r.deduction)}đ</strong></p>`:''}</div></article>`).join('') : '<div class="card empty">Chưa có nội dung.</div>'; 
   }
 
+  function checkFutureWeek(weekNum) {
+    if (weekNum > state.currentRealWeek) {
+      alert(`⚠️ Chưa đến Tuần ${weekNum} (Hiện tại đang là Tuần ${state.currentRealWeek}). Không thể xuất dữ liệu cho các tuần trong tương lai!`);
+      return false;
+    }
+    return true;
+  }
+
   async function downloadCompetitionExcel() {
+    if (!checkFutureWeek(state.selectedWeek)) return;
     try {
       const { data } = await supabaseClient.from('v_competition_ranking').select('*').eq('week', state.selectedWeek).order('rank', { ascending: true });
       let csvContent = "\uFEFFHạng,Chi đoàn,Điểm SĐB,Điểm trừ,Tổng điểm\n";
@@ -887,8 +911,8 @@
     } catch(e) { toast(e.message); }
   }
 
-  // TÍNH NĂNG XUẤT PDF TRỰC TIẾP TỪ DỮ LIỆU SUPABASE
   async function downloadCompetitionPdf() {
+    if (!checkFutureWeek(state.selectedWeek)) return;
     try {
       toast("Đang tạo Báo cáo PDF Tuần " + state.selectedWeek + "...");
       const { data } = await supabaseClient.from('v_competition_ranking').select('*').eq('week', state.selectedWeek).order('rank', { ascending: true });
@@ -901,8 +925,6 @@
           <meta charset="utf-8">
           <style>
             body { font-family: 'Times New Roman', serif; padding: 20px; color: #000; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .header h3 { margin: 2px 0; font-size: 16px; text-transform: uppercase; }
             .title { text-align: center; font-weight: bold; font-size: 18px; margin: 15px 0 5px; text-transform: uppercase; }
             .subtitle { text-align: center; font-style: italic; margin-bottom: 20px; }
             table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -945,9 +967,7 @@
 
       const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
       const win = window.open(URL.createObjectURL(blob), '_blank');
-      if(win) {
-        win.onload = () => { win.print(); };
-      }
+      if(win) { win.onload = () => { win.print(); }; }
       toast("Đã mở bản in / xuất PDF thành công!");
     } catch(e) {
       toast("Lỗi xuất PDF: " + e.message);
