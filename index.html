@@ -121,7 +121,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -221,7 +221,7 @@
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
-          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
+          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu</button>
         </div>
       </div>
 
@@ -229,12 +229,12 @@
         <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
         <div class="upload-box">
           <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
-          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
+          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file</button>
         </div>
       </div>
     </section>
 
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -254,7 +254,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
+          <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
         </div>
         <div id="students"></div>
       </div>
@@ -302,12 +302,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase</p>
+    <p style="margin-top:4px; color:var(--muted);">Khi quên mật khẩu, hay liên hệ Bí thư nhé</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập (Supabase)</button>
+      <button class="save" id="login">Đăng nhập</button>
     </div>
   </div>
 </div>
@@ -540,7 +540,7 @@
     }
 
     const btn = $('#btnSavePastedSdb');
-    btn.disabled = true; btn.textContent = '⚡ Đang lưu lên Supabase...';
+    btn.disabled = true; btn.textContent = '⚡ Đang lưu ...';
 
     try {
       const { error } = await supabaseClient.from('diem_sdb').upsert(records, { onConflict: 'week,class_name' });
@@ -552,7 +552,7 @@
     } catch(e) {
       toast("Lỗi lưu SĐB: " + e.message);
     } finally {
-      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu dán lên Supabase';
+      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu';
     }
   }
 
@@ -883,7 +883,7 @@
     }
     finally{ 
       btn.disabled=false; 
-      btn.textContent='⚡ Lưu điểm danh (Supabase)'; 
+      btn.textContent='⚡ Lưu điểm danh'; 
     }
   };
 
