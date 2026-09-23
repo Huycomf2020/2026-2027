@@ -85,6 +85,7 @@
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
           <select id="competitionWeekSelect" onchange="loadSupabaseCompetition()" style="padding: 9px 12px; border-radius: 12px; border: 1px solid #dce8ee; font-weight: 700; color: var(--navy); outline: none; background: #fff;"></select>
+          <button class="save" onclick="downloadCompetitionPdf()" style="padding: 10px 14px; font-size: 13px; background: linear-gradient(120deg,#dc2626,#991b1b);">📄 Xuất PDF</button>
           <button class="save" onclick="downloadCompetitionExcel()" style="padding: 10px 14px; font-size: 13px; background: linear-gradient(120deg,#16a34a,#15803d);">📊 Xuất Excel</button>
         </div>
       </div>
@@ -256,7 +257,7 @@
   </div>
 </div>
 
-<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (MẬT KHẨU CHUẨN: Bithu@26) -->
+<!-- POPUP XÁC MINH BÍ THƯ ĐOÀN (MẬT KHẨU: Bithu@26) -->
 <div id="supportPasswordModal" class="modal">
   <div class="modal-card" style="width: min(520px, calc(100% - 24px));">
     <h3>🔐 Xác minh Bí thư Đoàn</h3>
@@ -292,7 +293,7 @@
 
 <script>
   const SUPABASE_URL = 'https://pkuhkuyumrvrcseqlble.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
@@ -579,7 +580,6 @@
 
   $('#cancelSupportLogin').onclick=()=>$('#supportPasswordModal').classList.remove('open');
   $('#loginSupport').onclick=async()=>{
-    // CẬP NHẬT MẬT KHẨU CHUẨN XÁC: Bithu@26
     if($('#supportPassword').value === 'Bithu@26') {
       state.supportToken = 'SUPPORT_TOKEN';
       $('#supportPasswordModal').classList.remove('open');
@@ -885,6 +885,73 @@
       link.click();
       toast("Tải tệp Excel thành công!");
     } catch(e) { toast(e.message); }
+  }
+
+  // TÍNH NĂNG XUẤT PDF TRỰC TIẾP TỪ DỮ LIỆU SUPABASE
+  async function downloadCompetitionPdf() {
+    try {
+      toast("Đang tạo Báo cáo PDF Tuần " + state.selectedWeek + "...");
+      const { data } = await supabaseClient.from('v_competition_ranking').select('*').eq('week', state.selectedWeek).order('rank', { ascending: true });
+      
+      if(!data || data.length === 0) { toast("Không có dữ liệu thi đua tuần này."); return; }
+
+      let htmlContent = `
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: 'Times New Roman', serif; padding: 20px; color: #000; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .header h3 { margin: 2px 0; font-size: 16px; text-transform: uppercase; }
+            .title { text-align: center; font-weight: bold; font-size: 18px; margin: 15px 0 5px; text-transform: uppercase; }
+            .subtitle { text-align: center; font-style: italic; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #000; padding: 6px 8px; text-align: center; font-size: 13px; }
+            th { background: #f2f2f2; }
+            .left { text-align: left; }
+            .footer { margin-top: 30px; display: flex; justify-content: space-between; page-break-inside: avoid; }
+            .footer div { text-align: center; width: 45%; }
+            .footer b { display: block; margin-top: 60px; }
+          </style>
+        </head>
+        <body>
+          <div style="display:flex; justify-content:space-between;">
+            <div style="text-align:center; font-size:12px; font-weight:bold;">ĐOÀN TRƯỜNG THPT LỘC NINH<br>BCH ĐOÀN TRƯỜNG</div>
+            <div style="text-align:center; font-size:12px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br><b>Độc lập - Tự do - Hạnh phúc</b></div>
+          </div>
+          <div class="title">BẢNG XẾP HẠNG THI ĐUA CÁC CHI ĐOÀN TUẦN ${state.selectedWeek}</div>
+          <div class="subtitle">NĂM HỌC 2026-2027</div>
+      `;
+
+      ['10', '11', '12'].forEach(grade => {
+        const gradeList = data.filter(r => r.class_name.startsWith(grade + 'A'));
+        if(gradeList.length > 0) {
+          htmlContent += `<h4>🏫 KHỐI ${grade}</h4><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>Tổng điểm</th></tr></thead><tbody>`;
+          gradeList.forEach((r, idx) => {
+            htmlContent += `<tr><td>#${idx+1}</td><td class="left"><b>${r.class_name}</b></td><td>${r.base}</td><td>-${r.minus}</td><td><b>${r.total}</b></td></tr>`;
+          });
+          htmlContent += `</tbody></table><br>`;
+        }
+      });
+
+      htmlContent += `
+          <div class="footer">
+            <div><b>XÁC NHẬN CỦA BGH</b></div>
+            <div><b>TM. BCH ĐOÀN TRƯỜNG<br>BÍ THƯ</b></div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+      const win = window.open(URL.createObjectURL(blob), '_blank');
+      if(win) {
+        win.onload = () => { win.print(); };
+      }
+      toast("Đã mở bản in / xuất PDF thành công!");
+    } catch(e) {
+      toast("Lỗi xuất PDF: " + e.message);
+    }
   }
 
   init();
