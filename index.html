@@ -221,13 +221,13 @@
         <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Thêm điểm thưởng hoặc điểm phạt trực tiếp cho Chi đoàn / Khối / Toàn trường theo tuần:</p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0;">
           <select id="specialWeekSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
-          <select id="specialClassSelect" multiple style="height: 45px; padding: 5px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700; min-width: 160px;"></select>
-          <select id="specialTypeSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;">
+          <select id="specialClassSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700; min-width: 160px; outline: none; background: #fff;"></select>
+          <select id="specialTypeSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700; outline: none; background: #fff;">
             <option value="minus">Trừ điểm (-)</option>
             <option value="plus">Cộng điểm (+)</option>
           </select>
-          <input type="number" id="specialPoints" placeholder="Số điểm" min="1" value="5" style="width: 90px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
-          <input type="text" id="specialReason" placeholder="Lý do đặc biệt..." style="flex: 1; min-width: 180px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <input type="number" id="specialPoints" placeholder="Số điểm" min="1" value="5" style="width: 90px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; outline: none;">
+          <input type="text" id="specialReason" placeholder="Lý do đặc biệt..." style="flex: 1; min-width: 180px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; outline: none;">
           <button class="save" onclick="saveSpecialPoint()">⚡ Xác nhận cộng/trừ</button>
         </div>
       </div>
@@ -393,6 +393,50 @@
     $('#specialClassSelect').innerHTML = html;
   }
 
+  async function saveSpecialPoint() {
+    const week = Number($('#specialWeekSelect').value);
+    const selectedOpt = $('#specialClassSelect').value;
+    const type = $('#specialTypeSelect').value;
+    const points = Number($('#specialPoints').value);
+    const reason = $('#specialReason').value.trim();
+
+    if (!points || points <= 0) { toast("Vui lòng nhập số điểm hợp lệ!"); return; }
+    if (!reason) { toast("Vui lòng nhập lý do cộng/trừ điểm đặc biệt!"); return; }
+
+    let targetClasses = [];
+    if (selectedOpt === 'ALL_SCHOOL') {
+      targetClasses = [...state.classes];
+    } else if (selectedOpt === 'GRADE_10') {
+      targetClasses = state.classes.filter(c => c.startsWith('10A'));
+    } else if (selectedOpt === 'GRADE_11') {
+      targetClasses = state.classes.filter(c => c.startsWith('11A'));
+    } else if (selectedOpt === 'GRADE_12') {
+      targetClasses = state.classes.filter(c => c.startsWith('12A'));
+    } else {
+      targetClasses = [selectedOpt];
+    }
+
+    const actualPoints = type === 'plus' ? points : -points;
+    try {
+      const records = targetClasses.map(cls => ({
+        week: week,
+        class_name: cls,
+        points: actualPoints,
+        reason: reason,
+        created_at: new Date().toISOString()
+      }));
+
+      const { error } = await supabaseClient.from('special_points').insert(records);
+      if (error) throw error;
+
+      toast(`✅ Đã cập nhật thành công cho ${targetClasses.length} lớp!`);
+      $('#specialReason').value = '';
+      loadSupabaseCompetition();
+    } catch(e) {
+      toast("Lỗi lưu điểm đặc biệt: " + e.message);
+    }
+  }
+  
   async function loadSupabaseCompetition() {
     state.selectedWeek = Number($('#competitionWeekSelect').value) || 2;
     try {
