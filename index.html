@@ -340,12 +340,24 @@
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, currentRealWeek: 2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
 
-  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
   
+  // Hàm tính tuần học tự động dựa vào ngày khai giảng (07/09/2026)
+  function getCurrentSchoolWeek() {
+    const startDate = new Date('2026-09-07T00:00:00');
+    const now = new Date();
+    const diffDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 1;
+    return Math.floor(diffDays / 7) + 1;
+  }
+
   async function init(){
     try{
+      state.currentRealWeek = getCurrentSchoolWeek();
+      state.selectedWeek = state.currentRealWeek; // Tự động chọn tuần hiện tại làm mặc định
+
       await loadSupabaseRules();
       renderClasses();
       renderHomeroomClasses();
@@ -393,52 +405,8 @@
     $('#specialClassSelect').innerHTML = html;
   }
 
-  async function saveSpecialPoint() {
-    const week = Number($('#specialWeekSelect').value);
-    const selectedOpt = $('#specialClassSelect').value;
-    const type = $('#specialTypeSelect').value;
-    const points = Number($('#specialPoints').value);
-    const reason = $('#specialReason').value.trim();
-
-    if (!points || points <= 0) { toast("Vui lòng nhập số điểm hợp lệ!"); return; }
-    if (!reason) { toast("Vui lòng nhập lý do cộng/trừ điểm đặc biệt!"); return; }
-
-    let targetClasses = [];
-    if (selectedOpt === 'ALL_SCHOOL') {
-      targetClasses = [...state.classes];
-    } else if (selectedOpt === 'GRADE_10') {
-      targetClasses = state.classes.filter(c => c.startsWith('10A'));
-    } else if (selectedOpt === 'GRADE_11') {
-      targetClasses = state.classes.filter(c => c.startsWith('11A'));
-    } else if (selectedOpt === 'GRADE_12') {
-      targetClasses = state.classes.filter(c => c.startsWith('12A'));
-    } else {
-      targetClasses = [selectedOpt];
-    }
-
-    const actualPoints = type === 'plus' ? points : -points;
-    try {
-      const records = targetClasses.map(cls => ({
-        week: week,
-        class_name: cls,
-        points: actualPoints,
-        reason: reason,
-        created_at: new Date().toISOString()
-      }));
-
-      const { error } = await supabaseClient.from('special_points').insert(records);
-      if (error) throw error;
-
-      toast(`✅ Đã cập nhật thành công cho ${targetClasses.length} lớp!`);
-      $('#specialReason').value = '';
-      loadSupabaseCompetition();
-    } catch(e) {
-      toast("Lỗi lưu điểm đặc biệt: " + e.message);
-    }
-  }
-  
   async function loadSupabaseCompetition() {
-    state.selectedWeek = Number($('#competitionWeekSelect').value) || 2;
+    state.selectedWeek = Number($('#competitionWeekSelect').value) || state.currentRealWeek;
     try {
       const { data, error } = await supabaseClient
         .from('v_competition_ranking')
@@ -578,31 +546,26 @@
 
   async function saveSpecialPoint() {
     const week = Number($('#specialWeekSelect').value);
-    const selectEl = $('#specialClassSelect');
-    const selectedOptions = [...selectEl.selectedOptions].map(o => o.value);
+    const selectedOpt = $('#specialClassSelect').value;
     const type = $('#specialTypeSelect').value;
     const points = Number($('#specialPoints').value);
     const reason = $('#specialReason').value.trim();
 
-    if (selectedOptions.length === 0) { toast("Vui lòng chọn ít nhất một lớp/khối/trường!"); return; }
     if (!points || points <= 0) { toast("Vui lòng nhập số điểm hợp lệ!"); return; }
     if (!reason) { toast("Vui lòng nhập lý do cộng/trừ điểm đặc biệt!"); return; }
 
     let targetClasses = [];
-    selectedOptions.forEach(opt => {
-      if (opt === 'ALL_SCHOOL') {
-        targetClasses = [...state.classes];
-      } else if (opt === 'GRADE_10') {
-        targetClasses.push(...state.classes.filter(c => c.startsWith('10A')));
-      } else if (opt === 'GRADE_11') {
-        targetClasses.push(...state.classes.filter(c => c.startsWith('11A')));
-      } else if (opt === 'GRADE_12') {
-        targetClasses.push(...state.classes.filter(c => c.startsWith('12A')));
-      } else {
-        targetClasses.push(opt);
-      }
-    });
-    targetClasses = [...new Set(targetClasses)];
+    if (selectedOpt === 'ALL_SCHOOL') {
+      targetClasses = [...state.classes];
+    } else if (selectedOpt === 'GRADE_10') {
+      targetClasses = state.classes.filter(c => c.startsWith('10A'));
+    } else if (selectedOpt === 'GRADE_11') {
+      targetClasses = state.classes.filter(c => c.startsWith('11A'));
+    } else if (selectedOpt === 'GRADE_12') {
+      targetClasses = state.classes.filter(c => c.startsWith('12A'));
+    } else {
+      targetClasses = [selectedOpt];
+    }
 
     const actualPoints = type === 'plus' ? points : -points;
     try {
@@ -972,7 +935,7 @@
         session_key: `${now.toISOString().split('T')[0]}|${now.getHours() < 12 ? 'Sáng' : 'Chiều'}|${state.className}`,
         class_name: state.className,
         period: now.getHours() < 12 ? 'Sáng' : 'Chiều',
-        week: Number(state.selectedWeek || 2),
+        week: Number(state.selectedWeek || state.currentRealWeek),
         school_year: "2026-2027",
         total_count: state.students.length,
         violation_count: violations.length,
