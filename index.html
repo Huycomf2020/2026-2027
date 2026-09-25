@@ -50,7 +50,7 @@
     .upload-box textarea{width:100%;height:140px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;margin:10px 0;font-family:monospace;font-size:13px;}
     
     .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
-    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(650px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
+    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(700px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
     
     /* SLIDER CSS */
     .slider-card { margin-top: 18px; background: var(--card); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
@@ -226,7 +226,7 @@
       <!-- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM (ĐOÀN TRƯỜNG) -->
       <div class="card" style="margin-bottom: 18px;">
         <h3>📑 Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường)</h3>
-        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Xác nhận các lượt khiếu nại hoặc lỗi điểm danh nhầm từ các Lớp trưởng:</p>
+        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Xác nhận các lượt khiếu nại chọn lọc lỗi nhầm từ các Lớp trưởng:</p>
         <div class="table-wrap">
           <table class="ranking">
             <thead>
@@ -235,8 +235,8 @@
                 <th>Tuần</th>
                 <th>Lớp</th>
                 <th>Người điểm danh</th>
-                <th>Số lỗi vi phạm</th>
-                <th>Trạng thái xử lý</th>
+                <th>Nội dung khiếu nại / Gỡ lỗi</th>
+                <th>Trạng thái</th>
                 <th>Thao tác Đoàn trường</th>
               </tr>
             </thead>
@@ -250,7 +250,6 @@
       <!-- BẢNG 3: ĐIỂM CỘNG VÀ ĐIỂM TRỪ ĐẶC BIỆT -->
       <div class="card" style="margin-bottom: 18px;">
         <h3>⭐ Điểm cộng và Điểm trừ đặc biệt (ĐIỂM +- ĐB)</h3>
-        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Thêm điểm thưởng hoặc điểm phạt trực tiếp cho Chi đoàn / Khối / Toàn trường theo tuần:</p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0;">
           <select id="specialWeekSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
           <select id="specialClassSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700; min-width: 160px; outline: none; background: #fff;"></select>
@@ -287,7 +286,6 @@
       <!-- BẢNG 5: QUẢN LÝ ẢNH SLIDE TRÌNH CHIẾU -->
       <div class="card" style="margin-top:18px">
         <h3>🖼️ Quản lý Hình ảnh Trình chiếu Slide (Bí thư Đoàn)</h3>
-        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Dán link ảnh trực tiếp (Ví dụ: https://i.ibb.co/dJD37PQF/Lop12-A11-1.jpg) kèm tiêu đề:</p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
           <input type="text" id="slideImgUrl" placeholder="Dán link ảnh (URL)..." style="flex: 2; min-width: 250px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; outline: none;">
           <input type="text" id="slideImgCaption" placeholder="Tiêu đề / Mô tả ảnh..." style="flex: 1; min-width: 180px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; outline: none;">
@@ -331,7 +329,7 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <div style="display: flex; gap: 10px;">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
             <button id="btnOpenComplaint" class="save" style="background: linear-gradient(120deg,#dc2626,#991b1b);" onclick="openComplaintConfirmModal()">🚨 KHIẾU NẠI</button>
           </div>
@@ -358,12 +356,12 @@
   </div>
 </div>
 
-<!-- POPUP CHỌN LỖI KHIẾU NẠI TỪ CÁC ĐỢT ĐIỂM DANH -->
+<!-- POPUP CHỌN LỖI KHIẾU NẠI TỪ CÁC ĐỢT ĐIỂM DANH (CÓ CHECKBOX CHỌN LỖI TRÙNG/DƯ) -->
 <div id="complaintListModal" class="modal">
-  <div class="modal-card" style="width: min(700px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
-    <h3>📋 Chọn đợt điểm danh / lỗi cần khiếu nại</h3>
-    <p style="margin: 5px 0 12px; color: var(--muted); font-size: 13px;">Bấm vào nút "Gửi Khiếu Nại" ở dòng lỗi tương ứng để gửi lên Đoàn trường:</p>
-    <div id="complaintLogsContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;">
+  <div class="modal-card" style="width: min(750px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
+    <h3>📋 Chọn các lỗi điểm danh cần khiếu nại / gỡ bỏ</h3>
+    <p style="margin: 5px 0 12px; color: var(--muted); font-size: 13px;">Tick chọn các lỗi bị tick nhầm/dư cần khiếu nại, sau đó bấm nút Gửi Khiếu Nại ở từng đợt điểm danh:</p>
+    <div id="complaintLogsContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; padding-right: 4px;">
       <div class="loader"></div>
     </div>
     <div class="modal-actions" style="margin-top: 15px;">
@@ -477,7 +475,7 @@
     }catch(e){ toast(e.message); }
   }
 
-  // --- CÁC HÀM XỬ LÝ KHIẾU NẠI CHO LỚP TRƯỞNG ---
+  // --- CÁC HÀM KHIẾU NẠI CHỌN LỌC LỖI CHO LỚP TRƯỞNG ---
   function openComplaintConfirmModal() {
     if (!state.className) {
       toast("Vui lòng đăng nhập lớp trước!");
@@ -512,17 +510,26 @@
         const isAlreadyComplain = log.resolved_count !== 0;
 
         return `
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
-            <div>
-              <b>Buổi ${esc(log.period)} (${logTime})</b><br>
-              <small style="color:var(--muted);">Số vi phạm ghi nhận: <b>${violations.length} lỗi</b></small>
-              <div style="margin-top:5px; font-size:12px; color:#475569;">
-                ${violations.map(v => `• ${esc(v.name)}: ${esc(v.status)} (-${v.deduction}đ)`).join('<br>')}
-              </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px;" id="log-box-${log.id}">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <b>Buổi ${esc(log.period)} (${logTime})</b>
+              <span class="badge" style="background:${isAlreadyComplain ? '#cbd5e1' : '#fee2e2'}; color:${isAlreadyComplain ? '#475569' : '#dc2626'};">
+                ${isAlreadyComplain ? 'Đã gửi khiếu nại' : `${violations.length} lỗi vi phạm`}
+              </span>
             </div>
-            <div>
-              <button class="save" style="background:${isAlreadyComplain ? '#64748b' : '#dc2626'}; padding:8px 14px; font-size:13px;" ${isAlreadyComplain ? 'disabled' : ''} onclick="submitClassComplaint('${log.id}')">
-                ${isAlreadyComplain ? 'Đã khiếu nại' : '🚨 Gửi Khiếu Nại'}
+            <p style="margin:0 0 8px; font-size:12px; color:var(--muted);">Tick chọn các lỗi cần khiếu nại / gỡ bỏ:</p>
+            <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
+              ${violations.map((v, idx) => `
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; background:#fff; padding:8px 10px; border-radius:8px; border:1px solid #e2e8f0; cursor:pointer;">
+                  <input type="checkbox" class="complaint-chk-${log.id}" value="${esc(v.name)}: ${esc(v.status)} (-${v.deduction}đ)" ${isAlreadyComplain ? 'disabled' : ''} style="width:16px; height:16px;">
+                  <span style="flex:1;"><b>${esc(v.name)}</b> - ${esc(v.status)}</span>
+                  <strong style="color:var(--danger);">-${v.deduction}đ</strong>
+                </label>
+              `).join('')}
+            </div>
+            <div style="text-align:right;">
+              <button class="save" style="background:${isAlreadyComplain ? '#64748b' : '#dc2626'}; padding:8px 16px; font-size:13px;" ${isAlreadyComplain ? 'disabled' : ''} onclick="submitSelectedComplaint('${log.id}')">
+                ${isAlreadyComplain ? 'Đã khiếu nại' : '🚨 Gửi Khiếu Nại Các Lỗi Đã Chọn'}
               </button>
             </div>
           </div>
@@ -535,17 +542,27 @@
     }
   }
 
-  async function submitClassComplaint(logId) {
+  async function submitSelectedComplaint(logId) {
+    const checkboxes = $$(`.complaint-chk-${logId}:checked`);
+    if (checkboxes.length === 0) {
+      toast("Vui lòng tick chọn ít nhất một lỗi cần khiếu nại!");
+      return;
+    }
+
+    const selectedErrors = checkboxes.map(chk => chk.value);
+
     try {
-      // Đánh dấu resolved_count = 0 hoặc trạng thái chờ xử lý, đồng thời đẩy lên bảng duyệt của Đoàn trường
       const { error } = await supabaseClient
         .from('class_log')
-        .update({ resolved_count: 0 }) // Chờ Đoàn trường xử lý
+        .update({ 
+          resolved_count: 0, 
+          complaint_note: selectedErrors.join(' | ') 
+        }) 
         .eq('id', logId);
 
       if (error) throw error;
 
-      toast("✅ Đã gửi đơn khiếu nại thành công đến Đoàn trường!");
+      toast("✅ Đã gửi đơn khiếu nại các lỗi đã chọn thành công đến Đoàn trường!");
       $('#complaintListModal').classList.remove('open');
       loadViolationsData();
     } catch(e) {
@@ -785,17 +802,21 @@
       } else {
         $('#supportLogTableBody').innerHTML = data.map(log => {
           const logTime = new Date(log.created_at).toLocaleString('vi-VN');
-          const vCount = (log.violations_json || []).length;
           const statusVal = log.resolved_count || 0;
+          const complaintDetails = log.complaint_note || '—';
           
-          let statusBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1;">Đang tính điểm</span>';
+          let statusBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1;">Điểm danh thường</span>';
           let actionBtns = `
-            <button class="btn-remove-error" style="background:#dc2626; padding:5px 10px; font-size:12px;" onclick="handleReviewLog('${log.id}', 1)">Xử lý</button>
-            <button class="secondary" style="background:#64748b; color:#fff; padding:5px 10px; font-size:12px; margin-left:4px;" onclick="handleReviewLog('${log.id}', -1)">Không xử lý</button>
+            <button class="btn-remove-error" style="background:#dc2626; padding:5px 10px; font-size:12px;" onclick="handleReviewLog('${log.id}', 1)">Duyệt gỡ</button>
+            <button class="secondary" style="background:#64748b; color:#fff; padding:5px 10px; font-size:12px; margin-left:4px;" onclick="handleReviewLog('${log.id}', -1)">Từ chối</button>
           `;
 
+          if (log.complaint_note) {
+            statusBadge = '<span class="badge" style="background:#fef3c7; color:#d97706;">Đang khiếu nại lỗi</span>';
+          }
+
           if (statusVal > 0) {
-            statusBadge = '<span class="badge" style="background:#d1fae5; color:#065f46;">Đã duyệt (Gỡ lỗi)</span>';
+            statusBadge = '<span class="badge" style="background:#d1fae5; color:#065f46;">Đã duyệt gỡ lỗi</span>';
             actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0)">Hoàn tác</button>`;
           } else if (statusVal < 0) {
             statusBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626;">Đã từ chối khiếu nại</span>';
@@ -808,7 +829,7 @@
               <td><b>Tuần ${log.week || 3}</b></td>
               <td><b>${esc(log.class_name)}</b></td>
               <td><small>${esc(log.user_email || 'Lớp trưởng')}</small></td>
-              <td><b>${vCount} vi phạm</b></td>
+              <td><div style="font-size:12px; color:#1e293b; max-width:280px; word-break:break-word;"><b>Chi tiết khiếu nại:</b> ${esc(complaintDetails)}</div></td>
               <td>${statusBadge}</td>
               <td>${actionBtns}</td>
             </tr>
@@ -879,7 +900,7 @@
       $('#specialReason').value = '';
       loadSupabaseCompetition();
     } catch(e) {
-      toast("Lỗi lưu điểm đặc biệt: " + e.message + " (Hãy đảm bảo bảng special_points đã được tạo trên Supabase).");
+      toast("Lỗi lưu điểm đặc biệt: " + e.message);
     }
   }
 
