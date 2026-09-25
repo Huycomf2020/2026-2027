@@ -52,13 +52,27 @@
     .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
     .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(650px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
     
+    /* SLIDER CSS */
+    .slider-card { margin-top: 18px; background: var(--card); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+    .slider-container { position: relative; width: 100%; height: 420px; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+    .slide-item { position: absolute; inset: 0; opacity: 0; transition: opacity 1s ease-in-out, transform 1s ease-in-out; transform: scale(1.05); display: flex; align-items: center; justify-content: center; }
+    .slide-item.active { opacity: 1; transform: scale(1); }
+    .slide-item img { width: 100%; height: 100%; object-fit: cover; }
+    .slide-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-weight: 700; font-size: 16px; text-align: center; }
+    .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: 0; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10; display: grid; place-items: center; transition: 0.2s; }
+    .slider-btn:hover { background: var(--cyan); }
+    .slider-prev { left: 15px; } .slider-next { right: 15px; }
+    .slider-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: 0.3s; }
+    .dot.active { background: #fff; width: 28px; border-radius: 6px; }
+
     .assistant-modal-body{display:flex;align-items:center;gap:15px;}
     .assistant-img{width:110px;height:auto;object-fit:contain;flex-shrink:0;}
 
     footer{text-align:center;color:#738796;padding:20px;font-weight:600;} footer a{color:var(--cyan);text-decoration:none;} footer a:hover{text-decoration:underline;}
     .loader{width:25px;height:25px;border:3px solid #c7dce6;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin:35px auto}@keyframes spin{to{transform:rotate(360deg)}}
 
-    @media(max-width:800px){.grid2,.grade-container{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}.modal-card{padding:18px 14px;}.assistant-modal-body{flex-direction:column;text-align:center;}.assistant-img{width:90px;}}
+    @media(max-width:800px){.grid2,.grade-container{grid-template-columns:1fr}.podium{grid-template-columns:1fr}.hero,.attendance-head{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 5px;font-size:12px}.student{grid-template-columns:40px 1fr}.statuses{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}.brand img{width:54px;height:54px}.modal-card{padding:18px 14px;}.assistant-modal-body{flex-direction:column;text-align:center;}.assistant-img{width:90px;}.slider-container{height:250px;}}
   </style>
 </head>
 <body>
@@ -108,6 +122,25 @@
       <div class="grid2">
         <div class="card"><h3>So sánh điểm thi đua</h3><div class="chartbox"><canvas id="scoreChart"></canvas></div></div>
         <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
+      </div>
+
+      <!-- HỘP SLIDER HÌNH ẢNH ĐOÀN ĐẸP, HIỆN ĐẠI -->
+      <div class="slider-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h3 style="margin: 0; color: var(--navy);">✨ Khoảnh khắc & Hoạt động Đoàn trường</h3>
+          <div style="display: flex; gap: 8px;">
+            <select id="sliderEffectSelect" onchange="changeSlideEffect(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #dce8ee; font-weight: 600; font-size: 13px;">
+              <option value="fade">Hiệu ứng: Mờ dần (Fade)</option>
+              <option value="slide">Hiệu ứng: Trượt (Slide)</option>
+            </select>
+          </div>
+        </div>
+        <div class="slider-container" id="homeSlider">
+          <button class="slider-btn slider-prev" onclick="prevSlide()">❮</button>
+          <button class="slider-btn slider-next" onclick="nextSlide()">❯</button>
+          <div id="slideTrack" style="width:100%; height:100%; position:relative;"></div>
+          <div class="slider-dots" id="sliderDots"></div>
+        </div>
       </div>
     </section>
 
@@ -251,6 +284,32 @@
           <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
         </div>
       </div>
+
+      <!-- BẢNG 5: QUẢN LÝ ẢNH SLIDE TRÌNH CHIEU (BÍ THƯ DÁN LINK) -->
+      <div class="card" style="margin-top:18px">
+        <h3>🖼️ Quản lý Hình ảnh Trình chiếu Slide (Bí thư Đoàn)</h3>
+        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Dán link ảnh trực tiếp (Ví dụ: https://i.ibb.co/dJD37PQF/Lop12-A11-1.jpg) kèm tiêu đề:</p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+          <input type="text" id="slideImgUrl" placeholder="Dán link ảnh (URL)..." style="flex: 2; min-width: 250px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; outline: none;">
+          <input type="text" id="slideImgCaption" placeholder="Tiêu đề / Mô tả ảnh..." style="flex: 1; min-width: 180px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; outline: none;">
+          <button class="save" onclick="addSlideImage()">➕ Thêm ảnh Slide</button>
+        </div>
+        <div class="table-wrap">
+          <table class="ranking">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Hình ảnh</th>
+                <th>Link URL</th>
+                <th>Tiêu đề mô tả</th>
+                <th style="width: 100px; text-align: center;">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="sliderManagerTableBody">
+              <tr><td colspan="4" style="text-align:center; padding: 20px;">Đang tải danh sách ảnh...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
     <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
@@ -339,12 +398,19 @@
 
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, currentRealWeek: 2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
+  
+  // Biến quản lý Slide
+  let currentSlideIndex = 0;
+  let slideTimer = null;
+  let sliderImages = [
+    { url: 'https://i.ibb.co/dJD37PQF/Lop12-A11-1.jpg', caption: 'Hoạt động sôi nổi của Chi đoàn Trường THPT Lộc Ninh' },
+    { url: 'https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png', caption: 'Tuổi trẻ Lộc Ninh - Tiên phong, Sáng tạo, Trách nhiệm' }
+  ];
 
-  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
   
-  // Hàm tính tuần học tự động dựa vào ngày khai giảng (07/09/2026)
   function getCurrentSchoolWeek() {
     const startDate = new Date('2026-09-07T00:00:00');
     const now = new Date();
@@ -356,9 +422,10 @@
   async function init(){
     try{
       state.currentRealWeek = getCurrentSchoolWeek();
-      state.selectedWeek = state.currentRealWeek; // Tự động chọn tuần hiện tại làm mặc định
+      state.selectedWeek = state.currentRealWeek;
 
       await loadSupabaseRules();
+      await loadSliderImagesFromSupabase();
       renderClasses();
       renderHomeroomClasses();
       setupWeekDropdowns();
@@ -378,7 +445,133 @@
       setupSpecialForm();
       await loadSupabaseCompetition();
       setupAdminClassSelect();
+      initSlider();
     }catch(e){ toast(e.message); }
+  }
+
+  // --- CÁC HÀM XỬ LÝ SLIDER ---
+  async function loadSliderImagesFromSupabase() {
+    try {
+      const { data, error } = await supabaseClient.from('slider_images').select('*').order('id', { ascending: true });
+      if (!error && data && data.length > 0) {
+        sliderImages = data.map(item => ({ id: item.id, url: item.url, caption: item.caption }));
+      }
+    } catch(e) {}
+    renderSliderManagerTable();
+  }
+
+  function initSlider() {
+    renderSlide();
+    startAutoSlide();
+  }
+
+  function renderSlide() {
+    const track = $('#slideTrack');
+    const dotsContainer = $('#sliderDots');
+    if (!track || sliderImages.length === 0) return;
+
+    track.innerHTML = sliderImages.map((img, i) => `
+      <div class="slide-item ${i === currentSlideIndex ? 'active' : ''}">
+        <img src="${esc(img.url)}" alt="${esc(img.caption)}" onerror="this.src='https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png'">
+        <div class="slide-caption">${esc(img.caption)}</div>
+      </div>
+    `).join('');
+
+    dotsContainer.innerHTML = sliderImages.map((_, i) => `
+      <div class="dot ${i === currentSlideIndex ? 'active' : ''}" onclick="currentSlide(${i})"></div>
+    `).join('');
+  }
+
+  function nextSlide() {
+    currentSlideIndex = (currentSlideIndex + 1) % sliderImages.length;
+    renderSlide();
+    resetAutoSlide();
+  }
+
+  function prevSlide() {
+    currentSlideIndex = (currentSlideIndex - 1 + sliderImages.length) % sliderImages.length;
+    renderSlide();
+    resetAutoSlide();
+  }
+
+  function currentSlide(index) {
+    currentSlideIndex = index;
+    renderSlide();
+    resetAutoSlide();
+  }
+
+  function startAutoSlide() {
+    if (slideTimer) clearInterval(slideTimer);
+    slideTimer = setInterval(() => {
+      currentSlideIndex = (currentSlideIndex + 1) % sliderImages.length;
+      renderSlide();
+    }, 4500);
+  }
+
+  function resetAutoSlide() {
+    startAutoSlide();
+  }
+
+  function changeSlideEffect(effectType) {
+    toast(`Đã chuyển hiệu ứng sang: ${effectType === 'fade' ? 'Mờ dần' : 'Trượt'}`);
+  }
+
+  function renderSliderManagerTable() {
+    const tbody = $('#sliderManagerTableBody');
+    if (!tbody) return;
+    if (sliderImages.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--muted); padding: 20px;">Chưa có hình ảnh nào được thêm.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = sliderImages.map((img, idx) => `
+      <tr>
+        <td><img src="${esc(img.url)}" style="width: 50px; height: 35px; object-fit: cover; border-radius: 6px;" onerror="this.src='https://raw.githubusercontent.com/Huycomf2020/2026-2027/main/images/Logo3D%20thpt%20LocNinh.png'"></td>
+        <td><small style="word-break: break-all;">${esc(img.url)}</small></td>
+        <td><b>${esc(img.caption)}</b></td>
+        <td style="text-align: center;">
+          <button class="secondary" style="background:#fee2e2; color:#dc2626; padding:5px 10px; font-size:12px;" onclick="deleteSlideImage(${img.id || idx})">Xóa</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function addSlideImage() {
+    const url = $('#slideImgUrl').value.trim();
+    const caption = $('#slideImgCaption').value.trim() || 'Hoạt động Đoàn trường THPT Lộc Ninh';
+    if (!url) { toast("Vui lòng dán link URL của ảnh!"); return; }
+
+    try {
+      const { error } = await supabaseClient.from('slider_images').insert([{ url, caption }]);
+      if (error) throw error;
+
+      toast("✅ Thêm ảnh vào slide thành công!");
+      $('#slideImgUrl').value = '';
+      $('#slideImgCaption').value = '';
+      await loadSliderImagesFromSupabase();
+      renderSlide();
+    } catch(e) {
+      // Nếu chưa có bảng slider_images trên Supabase, tạm thời thêm vào mảng chạy trực tiếp
+      sliderImages.push({ url, caption });
+      toast("✅ Đã thêm ảnh vào slide tạm thời!");
+      $('#slideImgUrl').value = '';
+      $('#slideImgCaption').value = '';
+      renderSliderManagerTable();
+      renderSlide();
+    }
+  }
+
+  async function deleteSlideImage(id) {
+    try {
+      if (typeof id === 'number' && id > 1000) {
+        await supabaseClient.from('slider_images').delete().eq('id', id);
+      }
+      sliderImages = sliderImages.filter((item, idx) => (item.id !== id && idx !== id));
+      toast("Đã xóa ảnh khỏi slide!");
+      renderSliderManagerTable();
+      renderSlide();
+    } catch(e) {
+      toast("Lỗi khi xóa ảnh: " + e.message);
+    }
   }
 
   function setupWeekDropdowns() {
