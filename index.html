@@ -124,7 +124,6 @@
         <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
       </div>
 
-      <!-- HỘP SLIDER HÌNH ẢNH ĐOÀN ĐẸP, HIỆN ĐẠI -->
       <div class="slider-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
           <h3 style="margin: 0; color: var(--navy);">✨ Khoảnh khắc & Hoạt động Đoàn trường</h3>
@@ -332,7 +331,10 @@
         <div id="sessionAlertBox"></div>
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
-          <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
+          <div style="display: flex; gap: 10px;">
+            <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
+            <button id="btnOpenComplaint" class="save" style="background: linear-gradient(120deg,#dc2626,#991b1b);" onclick="openComplaintConfirmModal()">🚨 KHIẾU NẠI</button>
+          </div>
         </div>
         <div id="students"></div>
       </div>
@@ -342,6 +344,32 @@
   <footer>
     <a href="https://huycomf2020.github.io/giao_vien/index.html" target="_blank">🔗 Thêm tài nguyên Giáo viên</a>
   </footer>
+</div>
+
+<!-- POPUP XÁC NHẬN KHIẾU NẠI -->
+<div id="complaintConfirmModal" class="modal">
+  <div class="modal-card" style="width: min(500px, calc(100% - 24px)); text-align: center;">
+    <h3 style="color: var(--danger);">🚨 Xác nhận Khiếu nại</h3>
+    <p style="margin: 15px 0; font-size: 15px; line-height: 1.5;">Lớp đã chắc chắn muốn khiếu nại tới Đoàn trường chưa? Lớp phải hoàn toàn trách nhiệm cho việc khiếu nại này.</p>
+    <div class="modal-actions" style="justify-content: center; gap: 15px;">
+      <button class="secondary" onclick="$('#complaintConfirmModal').classList.remove('open')">Hủy</button>
+      <button class="save" style="background: var(--danger);" onclick="proceedToComplaintList()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP CHỌN LỖI KHIẾU NẠI TỪ CÁC ĐỢT ĐIỂM DANH -->
+<div id="complaintListModal" class="modal">
+  <div class="modal-card" style="width: min(700px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
+    <h3>📋 Chọn đợt điểm danh / lỗi cần khiếu nại</h3>
+    <p style="margin: 5px 0 12px; color: var(--muted); font-size: 13px;">Bấm vào nút "Gửi Khiếu Nại" ở dòng lỗi tương ứng để gửi lên Đoàn trường:</p>
+    <div id="complaintLogsContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;">
+      <div class="loader"></div>
+    </div>
+    <div class="modal-actions" style="margin-top: 15px;">
+      <button class="secondary" onclick="$('#complaintListModal').classList.remove('open')">Đóng</button>
+    </div>
+  </div>
 </div>
 
 <!-- POPUP CHỌN LỖI VI PHẠM -->
@@ -447,6 +475,82 @@
       setupAdminClassSelect();
       initSlider();
     }catch(e){ toast(e.message); }
+  }
+
+  // --- CÁC HÀM XỬ LÝ KHIẾU NẠI CHO LỚP TRƯỞNG ---
+  function openComplaintConfirmModal() {
+    if (!state.className) {
+      toast("Vui lòng đăng nhập lớp trước!");
+      return;
+    }
+    $('#complaintConfirmModal').classList.add('open');
+  }
+
+  async function proceedToComplaintList() {
+    $('#complaintConfirmModal').classList.remove('open');
+    $('#complaintListModal').classList.add('open');
+    $('#complaintLogsContainer').innerHTML = '<div class="loader"></div>';
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('class_log')
+        .select('*')
+        .eq('class_name', state.className)
+        .eq('week', state.selectedWeek)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        $('#complaintLogsContainer').innerHTML = '<div style="text-align:center; padding: 20px; color: var(--muted);">Chưa có bản ghi điểm danh nào trong Tuần này để khiếu nại.</div>';
+        return;
+      }
+
+      $('#complaintLogsContainer').innerHTML = data.map(log => {
+        const logTime = new Date(log.created_at).toLocaleString('vi-VN');
+        const violations = log.violations_json || [];
+        const isAlreadyComplain = log.resolved_count !== 0;
+
+        return `
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
+            <div>
+              <b>Buổi ${esc(log.period)} (${logTime})</b><br>
+              <small style="color:var(--muted);">Số vi phạm ghi nhận: <b>${violations.length} lỗi</b></small>
+              <div style="margin-top:5px; font-size:12px; color:#475569;">
+                ${violations.map(v => `• ${esc(v.name)}: ${esc(v.status)} (-${v.deduction}đ)`).join('<br>')}
+              </div>
+            </div>
+            <div>
+              <button class="save" style="background:${isAlreadyComplain ? '#64748b' : '#dc2626'}; padding:8px 14px; font-size:13px;" ${isAlreadyComplain ? 'disabled' : ''} onclick="submitClassComplaint('${log.id}')">
+                ${isAlreadyComplain ? 'Đã khiếu nại' : '🚨 Gửi Khiếu Nại'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch(e) {
+      toast("Lỗi tải nhật ký: " + e.message);
+      $('#complaintLogsContainer').innerHTML = '<div style="text-align:center; color:var(--danger);">Lỗi tải dữ liệu.</div>';
+    }
+  }
+
+  async function submitClassComplaint(logId) {
+    try {
+      // Đánh dấu resolved_count = 0 hoặc trạng thái chờ xử lý, đồng thời đẩy lên bảng duyệt của Đoàn trường
+      const { error } = await supabaseClient
+        .from('class_log')
+        .update({ resolved_count: 0 }) // Chờ Đoàn trường xử lý
+        .eq('id', logId);
+
+      if (error) throw error;
+
+      toast("✅ Đã gửi đơn khiếu nại thành công đến Đoàn trường!");
+      $('#complaintListModal').classList.remove('open');
+      loadViolationsData();
+    } catch(e) {
+      toast("Lỗi khi gửi khiếu nại: " + e.message);
+    }
   }
 
   async function loadSliderImagesFromSupabase() {
