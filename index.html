@@ -285,7 +285,7 @@
         </div>
       </div>
 
-      <!-- BẢNG 5: QUẢN LÝ ẢNH SLIDE TRÌNH CHIEU (BÍ THƯ DÁN LINK) -->
+      <!-- BẢNG 5: QUẢN LÝ ẢNH SLIDE TRÌNH CHIẾU -->
       <div class="card" style="margin-top:18px">
         <h3>🖼️ Quản lý Hình ảnh Trình chiếu Slide (Bí thư Đoàn)</h3>
         <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Dán link ảnh trực tiếp (Ví dụ: https://i.ibb.co/dJD37PQF/Lop12-A11-1.jpg) kèm tiêu đề:</p>
@@ -311,6 +311,7 @@
         </div>
       </div>
     </section>
+
     <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
@@ -396,10 +397,9 @@
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:2, currentRealWeek: 2, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
+  const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:3, currentRealWeek: 3, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
   
-  // Biến quản lý Slide
   let currentSlideIndex = 0;
   let slideTimer = null;
   let sliderImages = [
@@ -449,7 +449,6 @@
     }catch(e){ toast(e.message); }
   }
 
-  // --- CÁC HÀM XỬ LÝ SLIDER ---
   async function loadSliderImagesFromSupabase() {
     try {
       const { data, error } = await supabaseClient.from('slider_images').select('*').order('id', { ascending: true });
@@ -550,7 +549,6 @@
       await loadSliderImagesFromSupabase();
       renderSlide();
     } catch(e) {
-      // Nếu chưa có bảng slider_images trên Supabase, tạm thời thêm vào mảng chạy trực tiếp
       sliderImages.push({ url, caption });
       toast("✅ Đã thêm ảnh vào slide tạm thời!");
       $('#slideImgUrl').value = '';
@@ -703,7 +701,7 @@
           return `
             <tr>
               <td><small>${esc(logTime)}</small></td>
-              <td><b>Tuần ${log.week || 2}</b></td>
+              <td><b>Tuần ${log.week || 3}</b></td>
               <td><b>${esc(log.class_name)}</b></td>
               <td><small>${esc(log.user_email || 'Lớp trưởng')}</small></td>
               <td><b>${vCount} vi phạm</b></td>
@@ -777,7 +775,7 @@
       $('#specialReason').value = '';
       loadSupabaseCompetition();
     } catch(e) {
-      toast("Lỗi lưu điểm đặc biệt: " + e.message);
+      toast("Lỗi lưu điểm đặc biệt: " + e.message + " (Hãy đảm bảo bảng special_points đã được tạo trên Supabase).");
     }
   }
 
