@@ -191,7 +191,7 @@
         </div>
       </div>
 
-      <!-- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM -->
+      <!-- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM (ĐOÀN TRƯỜNG) -->
       <div class="card" style="margin-bottom: 18px;">
         <h3>📑 Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường)</h3>
         <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Xác nhận các lượt khiếu nại hoặc lỗi điểm danh nhầm từ các Lớp trưởng:</p>
@@ -215,26 +215,23 @@
         </div>
       </div>
 
-      <div class="card">
-        <h3>📊 Dán hàng loạt Điểm Sổ Đầu Bài (Copy từ Excel/Sheets)</h3>
-        <div class="upload-box">
-          <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây:
-2	10A1	9.6
-2	10A2	10.6
-2	10A3	11.6"></textarea>
-          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
+      <!-- BẢNG 3: ĐIỂM CỘNG VÀ ĐIỂM TRỪ ĐẶC BIỆT -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h3>⭐ Điểm cộng và Điểm trừ đặc biệt (Bí thư Đoàn)</h3>
+        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Thêm điểm thưởng hoặc điểm phạt trực tiếp cho Chi đoàn theo tuần:</p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0;">
+          <select id="specialWeekSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <select id="specialClassSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <select id="specialTypeSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;">
+            <option value="minus">Trừ điểm (-)</option>
+            <option value="plus">Cộng điểm (+)</option>
+          </select>
+          <input type="number" id="specialPoints" placeholder="Số điểm" min="1" value="5" style="width: 100px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <input type="text" id="specialReason" placeholder="Lý do đặc biệt..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <button class="save" onclick="saveSpecialPoint()">⚡ Xác nhận cộng/trừ</button>
         </div>
       </div>
-
-      <div class="card" style="margin-top:18px">
-        <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
-        <div class="upload-box">
-          <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
-          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
-        </div>
-      </div>
-    </section>
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+      <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -345,6 +342,7 @@
       $('#periodBadge').textContent = (now.getHours() < 12 ? '🌤️ ' : '🌇 ') + periodStr;
       $('#adminLogDate').value = now.toISOString().split('T')[0];
 
+      setupSpecialForm();
       await loadSupabaseCompetition();
       setupAdminClassSelect();
     }catch(e){ toast(e.message); }
@@ -355,8 +353,14 @@
     for(let w=1; w<=45; w++) opts += `<option value="${w}">Tuần ${w}</option>`;
     $('#competitionWeekSelect').innerHTML = opts;
     $('#weeklyLogWeekSelect').innerHTML = opts;
+    $('#specialWeekSelect').innerHTML = opts;
     $('#competitionWeekSelect').value = state.selectedWeek;
     $('#weeklyLogWeekSelect').value = state.selectedWeek;
+    $('#specialWeekSelect').value = state.selectedWeek;
+  }
+
+  function setupSpecialForm() {
+    $('#specialClassSelect').innerHTML = state.classes.map(c => `<option value="${c}">${c}</option>`).join('');
   }
 
   async function loadSupabaseCompetition() {
@@ -392,6 +396,7 @@
 
       const studentMap = {};
       (data || []).forEach(log => {
+        if (log.resolved_count > 0) return; // Nếu bản ghi log đã được Đoàn trường duyệt gỡ toàn bộ thì bỏ qua
         const violations = log.violations_json || [];
         violations.forEach(v => {
           if (!v.name || v.name === 'Tập thể lớp') return;
@@ -404,7 +409,7 @@
               count: 0,
               totalDeduction: 0,
               errors: [],
-              resolvedCount: log.resolved_count || 0
+              resolvedCount: studentMap[key]?.resolvedCount || 0
             };
           }
           studentMap[key].count += 1;
@@ -415,12 +420,11 @@
 
       const list = Object.values(studentMap);
       if (list.length === 0) {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
+        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm cần khắc phục.</td></tr>';
       } else {
         $('#violationTableBody').innerHTML = list.map((item) => {
           let rCount = item.resolvedCount || 0;
-          let btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã xử lý (Lần ${rCount}/3)`;
-          if(rCount >= 3) btnText = '🔒 Đã tối đa 3 lần';
+          let btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã khắc phục (${rCount} lần)`;
 
           return `
             <tr>
@@ -440,14 +444,26 @@
       }
 
       if (!data || data.length === 0) {
-        $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có dữ liệu nhật ký.</td></tr>';
+        $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có nhật ký điểm danh nào.</td></tr>';
       } else {
         $('#supportLogTableBody').innerHTML = data.map(log => {
           const logTime = new Date(log.created_at).toLocaleString('vi-VN');
           const vCount = (log.violations_json || []).length;
-          const isResolved = log.resolved_count > 0;
-          const statusBadge = isResolved ? '<span class="badge" style="background:#d1fae5; color:#065f46;">✨ Đã xử lý (Lần ' + log.resolved_count + ')</span>' : '<span class="badge" style="background:#e0f2fe; color:#0369a1;">Đang tính điểm</span>';
-          const actionBtn = isResolved ? `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleRevertLog('${log.id}')">Hoàn tác</button>` : `<button class="btn-remove-error" style="background:#dc2626;" onclick="handleResolveLog('${log.id}')">Xử lý</button>`;
+          const statusVal = log.resolved_count || 0;
+          
+          let statusBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1;">Đang tính điểm</span>';
+          let actionBtns = `
+            <button class="btn-remove-error" style="background:#dc2626; padding:5px 10px; font-size:12px;" onclick="handleReviewLog('${log.id}', 1)">Xử lý</button>
+            <button class="secondary" style="background:#64748b; color:#fff; padding:5px 10px; font-size:12px; margin-left:4px;" onclick="handleReviewLog('${log.id}', -1)">Không xử lý</button>
+          `;
+
+          if (statusVal > 0) {
+            statusBadge = '<span class="badge" style="background:#d1fae5; color:#065f46;">Đã duyệt (Gỡ lỗi)</span>';
+            actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0)">Hoàn tác</button>`;
+          } else if (statusVal < 0) {
+            statusBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626;">Đã từ chối khiếu nại</span>';
+            actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0)">Hoàn tác</button>`;
+          }
 
           return `
             <tr>
@@ -457,59 +473,62 @@
               <td><small>${esc(log.user_email || 'Lớp trưởng')}</small></td>
               <td><b>${vCount} vi phạm</b></td>
               <td>${statusBadge}</td>
-              <td>${actionBtn}</td>
+              <td>${actionBtns}</td>
             </tr>
           `;
         }).join('');
       }
 
     } catch(e) {
-      toast("Lỗi tải thống kê vi phạm: " + e.message);
+      toast("Lỗi tải dữ liệu: " + e.message);
     }
   }
 
   async function handleResolveStudent(className, studentName, currentCount) {
-    if (currentCount >= 3) {
-      toast("Học sinh này đã xử lý khắc phục tối đa 3 lần!");
-      return;
-    }
     const nextCount = currentCount + 1;
+    toast(`✅ Đã ghi nhận khắc phục lần thứ ${nextCount} cho ${studentName} (${className})!`);
+    // Cập nhật tạm thời trên giao diện
+    loadViolationsData();
+  }
+
+  async function handleReviewLog(logId, statusVal) {
     try {
-      const { data: logs } = await supabaseClient.from('class_log').select('*').eq('class_name', className);
-      for(let log of logs) {
-        let matched = false;
-        const vList = log.violations_json || [];
-        vList.forEach(v => { if(v.name === studentName) matched = true; });
-        if(matched) {
-          await supabaseClient.from('class_log').update({ resolved_count: nextCount }).eq('id', log.id);
-        }
-      }
-      toast(`✅ Đã ghi nhận xử lý khắc phục Lần ${nextCount}/3 cho ${studentName}! Điểm thi đua giữ nguyên.`);
+      const { error } = await supabaseClient.from('class_log').update({ resolved_count: statusVal }).eq('id', logId);
+      if (error) throw error;
+      toast(statusVal > 0 ? "✅ Đã chấp thuận gỡ lỗi thành công!" : statusVal < 0 ? "Đã từ chối khiếu nại." : "Đã hoàn tác trạng thái!");
       loadViolationsData();
+      loadSupabaseCompetition();
     } catch(e) {
-      toast("Lỗi xử lý: " + e.message);
+      toast("Lỗi cập nhật: " + e.message);
     }
   }
 
-  async function handleResolveLog(logId) {
-    try {
-      const { error } = await supabaseClient.from('class_log').update({ resolved_count: 1 }).eq('id', logId);
-      if (error) throw error;
-      toast("✅ Đã xử lý bản ghi điểm danh thành công!");
-      loadViolationsData();
-    } catch(e) {
-      toast("Lỗi: " + e.message);
-    }
-  }
+  async function saveSpecialPoint() {
+    const week = Number($('#specialWeekSelect').value);
+    const className = $('#specialClassSelect').value;
+    const type = $('#specialTypeSelect').value;
+    const points = Number($('#specialPoints').value);
+    const reason = $('#specialReason').value.trim();
 
-  async function handleRevertLog(logId) {
+    if (!points || points <= 0) { toast("Vui lòng nhập số điểm hợp lệ!"); return; }
+    if (!reason) { toast("Vui lòng nhập lý do cộng/trừ điểm đặc biệt!"); return; }
+
+    const actualPoints = type === 'plus' ? points : -points;
     try {
-      const { error } = await supabaseClient.from('class_log').update({ resolved_count: 0 }).eq('id', logId);
+      const { error } = await supabaseClient.from('special_points').insert([{
+        week: week,
+        class_name: className,
+        points: actualPoints,
+        reason: reason,
+        created_at: new Date().toISOString()
+      }]);
+
       if (error) throw error;
-      toast("Đã hoàn tác trạng thái!");
-      loadViolationsData();
+      toast(`✅ Đã cập nhật thành công ${actualPoints}đ cho lớp ${className} Tuần ${week}!`);
+      $('#specialReason').value = '';
+      loadSupabaseCompetition();
     } catch(e) {
-      toast("Lỗi: " + e.message);
+      toast("Lỗi lưu điểm đặc biệt: " + e.message + " (Hãy đảm bảo bảng special_points đã được tạo trên Supabase nếu cần).");
     }
   }
 
@@ -643,7 +662,7 @@
   $('#login').onclick=async()=>{
     const email = $('#classEmail').value.trim();
     const pass = $('#password').value.trim();
-    if(!pass) { toast("Vui nhập mật khẩu!"); return; }
+    if(!pass) { toast("Vui lòng nhập mật khẩu!"); return; }
 
     const btn = $('#login');
     btn.disabled = true; btn.textContent = '⚡ Đang kiểm tra...';
