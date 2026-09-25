@@ -93,21 +93,21 @@
       <div class="grade-container">
         <div class="grade-card">
           <h4><span>🏫 KHỐI 10</span></h4>
-          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>Tổng</th></tr></thead><tbody id="rankingGrade10"></tbody></table></div>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="rankingGrade10"></tbody></table></div>
         </div>
         <div class="grade-card">
           <h4><span>🏫 KHỐI 11</span></h4>
-          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>Tổng</th></tr></thead><tbody id="rankingGrade11"></tbody></table></div>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="rankingGrade11"></tbody></table></div>
         </div>
         <div class="grade-card">
           <h4><span>🏫 KHỐI 12</span></h4>
-          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>Tổng</th></tr></thead><tbody id="rankingGrade12"></tbody></table></div>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="rankingGrade12"></tbody></table></div>
         </div>
       </div>
 
       <div class="grid2">
         <div class="card"><h3>So sánh điểm thi đua</h3><div class="chartbox"><canvas id="scoreChart"></canvas></div></div>
-        <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>Tổng</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
+        <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
       </div>
     </section>
 
@@ -217,21 +217,42 @@
 
       <!-- BẢNG 3: ĐIỂM CỘNG VÀ ĐIỂM TRỪ ĐẶC BIỆT -->
       <div class="card" style="margin-bottom: 18px;">
-        <h3>⭐ Điểm cộng và Điểm trừ đặc biệt (Bí thư Đoàn)</h3>
-        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Thêm điểm thưởng hoặc điểm phạt trực tiếp cho Chi đoàn theo tuần:</p>
+        <h3>⭐ Điểm cộng và Điểm trừ đặc biệt (ĐIỂM +- ĐB)</h3>
+        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Thêm điểm thưởng hoặc điểm phạt trực tiếp cho Chi đoàn / Khối / Toàn trường theo tuần:</p>
         <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0;">
           <select id="specialWeekSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
-          <select id="specialClassSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;"></select>
+          <select id="specialClassSelect" multiple style="height: 45px; padding: 5px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700; min-width: 160px;"></select>
           <select id="specialTypeSelect" style="padding: 10px; border-radius: 10px; border: 1px solid #dce8ee; font-weight: 700;">
             <option value="minus">Trừ điểm (-)</option>
             <option value="plus">Cộng điểm (+)</option>
           </select>
-          <input type="number" id="specialPoints" placeholder="Số điểm" min="1" value="5" style="width: 100px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
-          <input type="text" id="specialReason" placeholder="Lý do đặc biệt..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <input type="number" id="specialPoints" placeholder="Số điểm" min="1" value="5" style="width: 90px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
+          <input type="text" id="specialReason" placeholder="Lý do đặc biệt..." style="flex: 1; min-width: 180px; padding: 10px; border-radius: 10px; border: 1px solid #dce8ee;">
           <button class="save" onclick="saveSpecialPoint()">⚡ Xác nhận cộng/trừ</button>
         </div>
       </div>
-      <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+
+      <!-- BẢNG 4: NHẬP ĐIỂM SỔ ĐẦU BÀI -->
+      <div class="card">
+        <h3>📊 Dán hàng loạt Điểm Sổ Đầu Bài (Copy từ Excel/Sheets)</h3>
+        <div class="upload-box">
+          <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây:
+2	10A1	9.6
+2	10A2	10.6
+2	10A3	11.6"></textarea>
+          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
+        <div class="upload-box">
+          <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
+          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
+        </div>
+      </div>
+    </section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -360,7 +381,16 @@
   }
 
   function setupSpecialForm() {
-    $('#specialClassSelect').innerHTML = state.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    let html = `
+      <option value="ALL_SCHOOL">🌟 Cả trường</option>
+      <option value="GRADE_10">🏫 Khối 10</option>
+      <option value="GRADE_11">🏫 Khối 11</option>
+      <option value="GRADE_12">🏫 Khối 12</option>
+    `;
+    state.classes.forEach(c => {
+      html += `<option value="${c}">${c}</option>`;
+    });
+    $('#specialClassSelect').innerHTML = html;
   }
 
   async function loadSupabaseCompetition() {
@@ -396,7 +426,7 @@
 
       const studentMap = {};
       (data || []).forEach(log => {
-        if (log.resolved_count > 0) return; // Nếu bản ghi log đã được Đoàn trường duyệt gỡ toàn bộ thì bỏ qua
+        if (log.resolved_count > 0) return;
         const violations = log.violations_json || [];
         violations.forEach(v => {
           if (!v.name || v.name === 'Tập thể lớp') return;
@@ -487,7 +517,6 @@
   async function handleResolveStudent(className, studentName, currentCount) {
     const nextCount = currentCount + 1;
     toast(`✅ Đã ghi nhận khắc phục lần thứ ${nextCount} cho ${studentName} (${className})!`);
-    // Cập nhật tạm thời trên giao diện
     loadViolationsData();
   }
 
@@ -505,30 +534,50 @@
 
   async function saveSpecialPoint() {
     const week = Number($('#specialWeekSelect').value);
-    const className = $('#specialClassSelect').value;
+    const selectEl = $('#specialClassSelect');
+    const selectedOptions = [...selectEl.selectedOptions].map(o => o.value);
     const type = $('#specialTypeSelect').value;
     const points = Number($('#specialPoints').value);
     const reason = $('#specialReason').value.trim();
 
+    if (selectedOptions.length === 0) { toast("Vui lòng chọn ít nhất một lớp/khối/trường!"); return; }
     if (!points || points <= 0) { toast("Vui lòng nhập số điểm hợp lệ!"); return; }
     if (!reason) { toast("Vui lòng nhập lý do cộng/trừ điểm đặc biệt!"); return; }
 
+    let targetClasses = [];
+    selectedOptions.forEach(opt => {
+      if (opt === 'ALL_SCHOOL') {
+        targetClasses = [...state.classes];
+      } else if (opt === 'GRADE_10') {
+        targetClasses.push(...state.classes.filter(c => c.startsWith('10A')));
+      } else if (opt === 'GRADE_11') {
+        targetClasses.push(...state.classes.filter(c => c.startsWith('11A')));
+      } else if (opt === 'GRADE_12') {
+        targetClasses.push(...state.classes.filter(c => c.startsWith('12A')));
+      } else {
+        targetClasses.push(opt);
+      }
+    });
+    targetClasses = [...new Set(targetClasses)];
+
     const actualPoints = type === 'plus' ? points : -points;
     try {
-      const { error } = await supabaseClient.from('special_points').insert([{
+      const records = targetClasses.map(cls => ({
         week: week,
-        class_name: className,
+        class_name: cls,
         points: actualPoints,
         reason: reason,
         created_at: new Date().toISOString()
-      }]);
+      }));
 
+      const { error } = await supabaseClient.from('special_points').insert(records);
       if (error) throw error;
-      toast(`✅ Đã cập nhật thành công ${actualPoints}đ cho lớp ${className} Tuần ${week}!`);
+
+      toast(`✅ Đã cập nhật thành công cho ${targetClasses.length} lớp!`);
       $('#specialReason').value = '';
       loadSupabaseCompetition();
     } catch(e) {
-      toast("Lỗi lưu điểm đặc biệt: " + e.message + " (Hãy đảm bảo bảng special_points đã được tạo trên Supabase nếu cần).");
+      toast("Lỗi lưu điểm đặc biệt: " + e.message);
     }
   }
 
@@ -969,7 +1018,11 @@
     const medals=['🥇','🥈','🥉'];
     $('#podium').innerHTML=rows.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.class_name)}</b><span>Hạng ${r.rank} • <strong>${r.total} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có dữ liệu thi đua.</div>';
     
-    const renderTableRows = (list) => list.map(r => `<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.class_name)}</b></td><td>${r.base}</td><td>-${r.minus}</td><td><b>${r.total}</b></td></tr>`).join('');
+    const renderTableRows = (list) => list.map(r => {
+      const baseDisplay = (r.base !== null && r.base !== undefined && r.base !== '' && !isNaN(r.base)) ? r.base : '—';
+      const specialPts = (r.special !== null && r.special !== undefined) ? (r.special > 0 ? `+${r.special}` : r.special) : '0';
+      return `<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.class_name)}</b></td><td>${baseDisplay}</td><td>-${r.minus}</td><td><span style="color:${r.special > 0 ? '#10b981' : r.special < 0 ? '#dc2626' : 'inherit'}; font-weight:700;">${specialPts}</span></td><td><b>${r.total}</b></td></tr>`;
+    }).join('');
     
     $('#ranking').innerHTML = renderTableRows(rows);
     $('#rankingGrade10').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('10A')));
@@ -998,9 +1051,9 @@
     if (!checkFutureWeek(state.selectedWeek)) return;
     try {
       const { data } = await supabaseClient.from('v_competition_ranking').select('*').eq('week', state.selectedWeek).order('rank', { ascending: true });
-      let csvContent = "\uFEFFHạng,Chi đoàn,Điểm SĐB,Điểm trừ,Tổng điểm\n";
+      let csvContent = "\uFEFFHạng,Chi đoàn,Điểm SĐB,Điểm trừ,Điểm +- ĐB,Tổng điểm\n";
       (data || []).forEach(r => {
-        csvContent += `"#${r.rank}","${r.class_name}","${r.base}","-${r.minus}","${r.total}"\n`;
+        csvContent += `"#${r.rank}","${r.class_name}","${r.base ?? ''}","-${r.minus}","${r.special || 0}","${r.total}"\n`;
       });
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -1048,9 +1101,9 @@
       ['10', '11', '12'].forEach(grade => {
         const gradeList = data.filter(r => r.class_name.startsWith(grade + 'A'));
         if(gradeList.length > 0) {
-          htmlContent += `<h4>🏫 KHỐI ${grade}</h4><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>Tổng điểm</th></tr></thead><tbody>`;
+          htmlContent += `<h4>🏫 KHỐI ${grade}</h4><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng điểm</th></tr></thead><tbody>`;
           gradeList.forEach((r, idx) => {
-            htmlContent += `<tr><td>#${idx+1}</td><td class="left"><b>${r.class_name}</b></td><td>${r.base}</td><td>-${r.minus}</td><td><b>${r.total}</b></td></tr>`;
+            htmlContent += `<tr><td>#${idx+1}</td><td class="left"><b>${r.class_name}</b></td><td>${r.base ?? '—'}</td><td>-${r.minus}</td><td>${r.special || 0}</td><td><b>${r.total}</b></td></tr>`;
           });
           htmlContent += `</tbody></table><br>`;
         }
