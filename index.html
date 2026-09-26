@@ -153,7 +153,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -271,7 +271,7 @@
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
-          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu</button>
+          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
         </div>
       </div>
 
@@ -279,7 +279,7 @@
         <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
         <div class="upload-box">
           <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
-          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file</button>
+          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
         </div>
       </div>
 
@@ -309,7 +309,7 @@
       </div>
     </section>
 
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -330,7 +330,7 @@
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
+            <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
             <button id="btnOpenComplaint" class="save" style="background: linear-gradient(120deg,#dc2626,#991b1b);" onclick="openComplaintConfirmModal()">🚨 KHIẾU NẠI</button>
           </div>
         </div>
@@ -406,12 +406,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Quên hoặc lộ mật khẩu thì hãy liên hệ Đoàn trường</p>
+    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập</button>
+      <button class="save" id="login">Đăng nhập (Supabase)</button>
     </div>
   </div>
 </div>
@@ -476,7 +476,7 @@
     }catch(e){ toast(e.message); }
   }
 
-  // --- KHIẾU NẠI LỚP TRƯỞNG (TÁCH BIỆT TỪNG LỖI CỤ THỂ QUA Ô KIỂM) ---
+  // --- KHIẾU NẠI LỚP TRƯỞNG ---
   function openComplaintConfirmModal() {
     if (!state.className) {
       toast("Vui lòng đăng nhập lớp trước!");
@@ -520,11 +520,11 @@
             </div>
             <p style="margin:0 0 8px; font-size:12px; color:var(--muted);">Tick chọn tất cả các ô kiểm lỗi cần khiếu nại / gỡ bỏ:</p>
             <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
-              ${violations.map((v, vIdx) => {
+              ${violations.map((v) => {
                 const subErrors = v.status.split(';').map(s=>s.trim()).filter(Boolean);
-                return subErrors.map((err, eIdx) => `
+                return subErrors.map((err) => `
                   <label style="display:flex; align-items:center; gap:8px; font-size:13px; background:#fff; padding:8px 10px; border-radius:8px; border:1px solid #e2e8f0; cursor:pointer;">
-                    <input type="checkbox" class="complaint-chk-${log.id}" value="${esc(v.name)} - ${esc(err)}" style="width:16px; height:16px;">
+                    <input type="checkbox" class="complaint-chk-${log.id}" value="${esc(v.name)} - ${esc(err)}" data-deduction="${v.deduction || 0}" style="width:16px; height:16px;">
                     <span style="flex:1;"><b>${esc(v.name)}</b>: ${esc(err)}</span>
                     <strong style="color:var(--danger);">(-${v.deduction}đ)</strong>
                   </label>
@@ -554,13 +554,24 @@
     }
 
     const selectedErrors = checkboxes.map(chk => chk.value);
+    let totalDeductionToRefund = 0;
+    checkboxes.forEach(chk => {
+      // Lấy điểm trừ từ attribute hoặc tính toán
+      const parent = chk.closest('label');
+      const strongTag = parent ? parent.querySelector('strong') : null;
+      if (strongTag) {
+        const match = strongTag.textContent.match(/-(\d+)đ/);
+        if (match) totalDeductionToRefund += Number(match[1]);
+      }
+    });
 
     try {
       const { error } = await supabaseClient
         .from('class_log')
         .update({ 
           resolved_count: 0, 
-          complaint_note: selectedErrors.join(' | ') 
+          complaint_note: selectedErrors.join(' | '),
+          refund_points: totalDeductionToRefund || 5 // Lưu điểm cần gỡ
         }) 
         .eq('id', logId);
 
@@ -753,7 +764,7 @@
       const { data, error } = await supabaseClient.from('class_log').select('*').order('created_at', { ascending: false });
       if (error) throw error;
 
-      // --- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM (ĐỘC LẬP HOÀN TOÀN) ---
+      // --- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM ---
       const studentMap = {};
       (data || []).forEach(log => {
         const violations = log.violations_json || [];
@@ -814,16 +825,16 @@
           
           let statusBadge = '<span class="badge" style="background:#fef3c7; color:#d97706;">Đang khiếu nại</span>';
           let actionBtns = `
-            <button class="btn-remove-error" style="background:#dc2626; padding:5px 10px; font-size:12px;" onclick="handleReviewLog('${log.id}', 1)">Duyệt gỡ</button>
-            <button class="secondary" style="background:#64748b; color:#fff; padding:5px 10px; font-size:12px; margin-left:4px;" onclick="handleReviewLog('${log.id}', -1)">Từ chối</button>
+            <button class="btn-remove-error" style="background:#dc2626; padding:5px 10px; font-size:12px;" onclick="handleReviewLog('${log.id}', 1, '${log.class_name}', ${log.week || 3}, ${log.refund_points || 5})">Duyệt gỡ</button>
+            <button class="secondary" style="background:#64748b; color:#fff; padding:5px 10px; font-size:12px; margin-left:4px;" onclick="handleReviewLog('${log.id}', -1, '${log.class_name}', ${log.week || 3}, 0)">Từ chối</button>
           `;
 
           if (statusVal > 0) {
             statusBadge = '<span class="badge" style="background:#d1fae5; color:#065f46;">Đã duyệt gỡ lỗi</span>';
-            actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0)">Hoàn tác</button>`;
+            actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0, '${log.class_name}', ${log.week || 3}, -${log.refund_points || 5})">Hoàn tác</button>`;
           } else if (statusVal < 0) {
             statusBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626;">Đã từ chối khiếu nại</span>';
-            actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0)">Hoàn tác</button>`;
+            actionBtns = `<button class="secondary" style="font-size:12px; padding:5px 10px;" onclick="handleReviewLog('${log.id}', 0, '${log.class_name}', ${log.week || 3}, 0)">Hoàn tác</button>`;
           }
 
           return `
@@ -853,11 +864,24 @@
     loadViolationsData();
   }
 
-  async function handleReviewLog(logId, statusVal) {
+  async function handleReviewLog(logId, statusVal, className, weekNum, refundPoints) {
     try {
+      // 1. Cập nhật trạng thái duyệt gỡ trong class_log
       const { error } = await supabaseClient.from('class_log').update({ resolved_count: statusVal }).eq('id', logId);
       if (error) throw error;
-      toast(statusVal > 0 ? "✅ Đã chấp thuận gỡ lỗi thành công!" : statusVal < 0 ? "Đã từ chối khiếu nại." : "Đã hoàn tác trạng thái!");
+
+      // 2. Đồng bộ điểm thi đua (Tạo bản ghi special_points tự động để bù trừ điểm trừ trên bảng xếp hạng)
+      if (refundPoints && refundPoints !== 0) {
+        await supabaseClient.from('special_points').insert([{
+          week: weekNum,
+          class_name: className,
+          points: refundPoints, // Nếu duyệt gỡ thì points > 0 (cộng bù điểm), nếu hoàn tác thì points < 0
+          reason: statusVal > 0 ? `Đã duyệt gỡ lỗi khiếu nại (Hoàn lại ${refundPoints} điểm)` : `Thu hồi điểm gỡ lỗi khiếu nại`,
+          created_at: new Date().toISOString()
+        }]);
+      }
+
+      toast(statusVal > 0 ? "✅ Đã duyệt gỡ lỗi và đồng bộ điểm thi đua thành công!" : statusVal < 0 ? "Đã từ chối khiếu nại." : "Đã hoàn tác trạng thái và điểm!");
       loadViolationsData();
       loadSupabaseCompetition();
     } catch(e) {
@@ -1060,7 +1084,7 @@
     } catch(e) {
       toast(e.message);
     } finally {
-      btn.disabled = false; btn.textContent = 'Đăng nhập';
+      btn.disabled = false; btn.textContent = 'Đăng nhập (Supabase)';
     }
   };
 
@@ -1242,7 +1266,7 @@
 
   $('#saveAttendance').onclick=async()=>{
     const btn=$('#saveAttendance');
-    btn.disabled=true; btn.textContent='⚡ Đang lưu...';
+    btn.disabled=true; btn.textContent='⚡ Đang lưu Supabase...';
     try{
       const now = new Date();
       const violations = state.students.filter(s => s.status && s.status !== 'Có mặt').map(s => ({
@@ -1277,7 +1301,7 @@
     }
     finally{ 
       btn.disabled=false; 
-      btn.textContent='⚡ Lưu điểm danh'; 
+      btn.textContent='⚡ Lưu điểm danh (Supabase)'; 
     }
   };
 
