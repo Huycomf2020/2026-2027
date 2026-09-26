@@ -50,7 +50,7 @@
     .upload-box textarea{width:100%;height:140px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;margin:10px 0;font-family:monospace;font-size:13px;}
     
     .save{border:0;background:linear-gradient(120deg,#0891b2,#0369a1);color:#fff;border-radius:14px;padding:13px 22px;font-weight:800;box-shadow:0 8px 22px #bae6fd}
-    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(700px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
+    .modal{position:fixed;inset:0;background:rgba(3,27,41,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:20}.modal.open{display:grid}.modal-card{width:min(750px,calc(100% - 24px));max-width:100%;background:#fff;border-radius:24px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.28);box-sizing:border-box;overflow:hidden;}.modal-card h3{font-size:21px;margin:0}.modal-card input[type="password"], .modal-card input[type="email"]{width:100%;padding:14px;border:1px solid #d6e1e7;border-radius:13px;margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:12px;}.secondary{border:0;background:#edf3f6;padding:11px 16px;border-radius:12px}.toast{position:fixed;right:22px;bottom:22px;background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:30}.toast.show{transform:none;opacity:1}
     
     /* SLIDER CSS */
     .slider-card { margin-top: 18px; background: var(--card); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
@@ -153,7 +153,7 @@
 
     <!-- TAB BGH & GVCN QUAN SÁT HÀNG NGÀY & TRA CỨU THEO TUẦN -->
     <section id="adminLog" class="panel">
-      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết (Realtime Supabase)</p></div></div>
+      <div class="hero"><div><h2>👁️ Nhật ký vi phạm hàng ngày & Tra cứu Tuần</h2><p>Dành cho BGH & GVCN theo dõi vi phạm chi tiết</p></div></div>
       
       <div class="card" style="margin-bottom: 18px;">
         <h3>📅 1. Lọc vi phạm theo Ngày</h3>
@@ -223,10 +223,10 @@
         </div>
       </div>
 
-      <!-- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM (ĐOÀN TRƯỜNG) -->
+      <!-- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM (ĐOÀN TRƯỜNG) [KHIẾU NẠI] -->
       <div class="card" style="margin-bottom: 18px;">
-        <h3>📑 Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường)</h3>
-        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Xác nhận các lượt khiếu nại chọn lọc lỗi nhầm từ các Lớp trưởng:</p>
+        <h3>📑 Bảng duyệt xử lý & Gỡ lỗi vi phạm (Đoàn trường) [Khiếu nại]</h3>
+        <p style="margin-top:-10px; margin-bottom:12px; color:var(--muted); font-size:13px;">Xác nhận chi tiết các lỗi khiếu nại từ các Lớp trưởng:</p>
         <div class="table-wrap">
           <table class="ranking">
             <thead>
@@ -235,13 +235,13 @@
                 <th>Tuần</th>
                 <th>Lớp</th>
                 <th>Người điểm danh</th>
-                <th>Nội dung khiếu nại / Gỡ lỗi</th>
+                <th>Chi tiết lỗi khiếu nại</th>
                 <th>Trạng thái</th>
                 <th>Thao tác Đoàn trường</th>
               </tr>
             </thead>
             <tbody id="supportLogTableBody">
-              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu nhật ký...</td></tr>
+              <tr><td colspan="7" style="text-align:center; padding: 20px;">Đang nạp dữ liệu khiếu nại...</td></tr>
             </tbody>
           </table>
         </div>
@@ -271,7 +271,7 @@
 2	10A1	9.6
 2	10A2	10.6
 2	10A3	11.6"></textarea>
-          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
+          <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu</button>
         </div>
       </div>
 
@@ -279,7 +279,7 @@
         <h3>📤 Tải File Excel / CSV Điểm SĐB</h3>
         <div class="upload-box">
           <input id="sdbFile" type="file" accept=".xlsx,.xls,.csv">
-          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file lên Supabase</button>
+          <button id="uploadSdbBtn" class="save" onclick="uploadSdbFile()">Tải file</button>
         </div>
       </div>
 
@@ -309,7 +309,7 @@
       </div>
     </section>
 
-    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (Supabase ⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
+    <section id="rules" class="panel"><div class="hero"><div><h2>📜 Quy định</h2><p>Nội quy và tiêu chí thi đua của Đoàn trường (⚡ 41 Mục)</p></div></div><div id="rulesList" class="rules"><div class="loader"></div></div></section>
     
     <!-- TAB ĐIỂM DANH -->
     <section id="attendance" class="panel">
@@ -330,7 +330,7 @@
         <div class="attendance-head">
           <div><h3 id="classTitle">Danh sách lớp</h3><p id="studentCount"></p></div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button id="saveAttendance" class="save">⚡ Lưu điểm danh (Supabase)</button>
+            <button id="saveAttendance" class="save">⚡ Lưu điểm danh</button>
             <button id="btnOpenComplaint" class="save" style="background: linear-gradient(120deg,#dc2626,#991b1b);" onclick="openComplaintConfirmModal()">🚨 KHIẾU NẠI</button>
           </div>
         </div>
@@ -356,11 +356,11 @@
   </div>
 </div>
 
-<!-- POPUP CHỌN LỖI KHIẾU NẠI TỪ CÁC ĐỢT ĐIỂM DANH (CÓ CHECKBOX CHỌN LỖI TRÙNG/DƯ) -->
+<!-- POPUP CHỌN LỖI KHIẾU NẠI TỪ CÁC ĐỢT ĐIỂM DANH -->
 <div id="complaintListModal" class="modal">
   <div class="modal-card" style="width: min(750px, calc(100% - 24px)); max-height: 85vh; display: flex; flex-direction: column;">
-    <h3>📋 Chọn các lỗi điểm danh cần khiếu nại / gỡ bỏ</h3>
-    <p style="margin: 5px 0 12px; color: var(--muted); font-size: 13px;">Tick chọn các lỗi bị tick nhầm/dư cần khiếu nại, sau đó bấm nút Gửi Khiếu Nại ở từng đợt điểm danh:</p>
+    <h3>📋 Chọn tất cả các ô kiểm lỗi điểm danh cần khiếu nại / gỡ bỏ</h3>
+    <p style="margin: 5px 0 12px; color: var(--muted); font-size: 13px;">Tick chọn cụ thể các lỗi bị tick nhầm/dư, sau đó bấm nút Gửi Khiếu Nại ở từng đợt điểm danh:</p>
     <div id="complaintLogsContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; padding-right: 4px;">
       <div class="loader"></div>
     </div>
@@ -406,12 +406,12 @@
 <div id="passwordModal" class="modal">
   <div class="modal-card">
     <h3 id="modalClassTitle">🔐 Đăng nhập Điểm danh</h3>
-    <p style="margin-top:4px; color:var(--muted);">Xác thực tài khoản Lớp trưởng qua Supabase</p>
+    <p style="margin-top:4px; color:var(--muted);">Quên hoặc lộ mật khẩu thì hãy liên hệ Đoàn trường</p>
     <input id="classEmail" type="email" readonly style="background:#f1f5f9;">
     <input id="password" type="password" placeholder="Mật khẩu của lớp">
     <div class="modal-actions">
       <button class="secondary" id="cancelLogin">Đóng</button>
-      <button class="save" id="login">Đăng nhập (Supabase)</button>
+      <button class="save" id="login">Đăng nhập</button>
     </div>
   </div>
 </div>
@@ -425,6 +425,7 @@
 
   const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:3, currentRealWeek: 3, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
+  let localRecoveryCounts = JSON.parse(localStorage.getItem('local_recovery_counts') || '{}');
   
   let currentSlideIndex = 0;
   let slideTimer = null;
@@ -475,7 +476,7 @@
     }catch(e){ toast(e.message); }
   }
 
-  // --- CÁC HÀM KHIẾU NẠI CHỌN LỌC LỖI CHO LỚP TRƯỞNG ---
+  // --- KHIẾU NẠI LỚP TRƯỞNG (TÁCH BIỆT TỪNG LỖI CỤ THỂ QUA Ô KIỂM) ---
   function openComplaintConfirmModal() {
     if (!state.className) {
       toast("Vui lòng đăng nhập lớp trước!");
@@ -507,29 +508,32 @@
       $('#complaintLogsContainer').innerHTML = data.map(log => {
         const logTime = new Date(log.created_at).toLocaleString('vi-VN');
         const violations = log.violations_json || [];
-        const isAlreadyComplain = log.resolved_count !== 0;
+        const isAlreadyComplain = log.complaint_note && log.resolved_count === 0;
 
         return `
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:15px;" id="log-box-${log.id}">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <b>Buổi ${esc(log.period)} (${logTime})</b>
-              <span class="badge" style="background:${isAlreadyComplain ? '#cbd5e1' : '#fee2e2'}; color:${isAlreadyComplain ? '#475569' : '#dc2626'};">
-                ${isAlreadyComplain ? 'Đã gửi khiếu nại' : `${violations.length} lỗi vi phạm`}
+              <span class="badge" style="background:${isAlreadyComplain ? '#fef3c7' : '#fee2e2'}; color:${isAlreadyComplain ? '#d97706' : '#dc2626'};">
+                ${isAlreadyComplain ? 'Đang khiếu nại' : `${violations.length} lỗi vi phạm`}
               </span>
             </div>
-            <p style="margin:0 0 8px; font-size:12px; color:var(--muted);">Tick chọn các lỗi cần khiếu nại / gỡ bỏ:</p>
+            <p style="margin:0 0 8px; font-size:12px; color:var(--muted);">Tick chọn tất cả các ô kiểm lỗi cần khiếu nại / gỡ bỏ:</p>
             <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
-              ${violations.map((v, idx) => `
-                <label style="display:flex; align-items:center; gap:8px; font-size:13px; background:#fff; padding:8px 10px; border-radius:8px; border:1px solid #e2e8f0; cursor:pointer;">
-                  <input type="checkbox" class="complaint-chk-${log.id}" value="${esc(v.name)}: ${esc(v.status)} (-${v.deduction}đ)" ${isAlreadyComplain ? 'disabled' : ''} style="width:16px; height:16px;">
-                  <span style="flex:1;"><b>${esc(v.name)}</b> - ${esc(v.status)}</span>
-                  <strong style="color:var(--danger);">-${v.deduction}đ</strong>
-                </label>
-              `).join('')}
+              ${violations.map((v, vIdx) => {
+                const subErrors = v.status.split(';').map(s=>s.trim()).filter(Boolean);
+                return subErrors.map((err, eIdx) => `
+                  <label style="display:flex; align-items:center; gap:8px; font-size:13px; background:#fff; padding:8px 10px; border-radius:8px; border:1px solid #e2e8f0; cursor:pointer;">
+                    <input type="checkbox" class="complaint-chk-${log.id}" value="${esc(v.name)} - ${esc(err)}" style="width:16px; height:16px;">
+                    <span style="flex:1;"><b>${esc(v.name)}</b>: ${esc(err)}</span>
+                    <strong style="color:var(--danger);">(-${v.deduction}đ)</strong>
+                  </label>
+                `).join('');
+              }).join('')}
             </div>
             <div style="text-align:right;">
-              <button class="save" style="background:${isAlreadyComplain ? '#64748b' : '#dc2626'}; padding:8px 16px; font-size:13px;" ${isAlreadyComplain ? 'disabled' : ''} onclick="submitSelectedComplaint('${log.id}')">
-                ${isAlreadyComplain ? 'Đã khiếu nại' : '🚨 Gửi Khiếu Nại Các Lỗi Đã Chọn'}
+              <button class="save" style="background:#dc2626; padding:8px 16px; font-size:13px;" onclick="submitSelectedComplaint('${log.id}')">
+                🚨 Gửi Khiếu Nại Các Lỗi Đã Chọn
               </button>
             </div>
           </div>
@@ -741,6 +745,7 @@
     renderRules();
   }
 
+  // --- TÁCH BIỆT 2 BẢNG Ở TAB HỖ TRỢ ---
   async function loadViolationsData() {
     $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
     $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
@@ -748,9 +753,9 @@
       const { data, error } = await supabaseClient.from('class_log').select('*').order('created_at', { ascending: false });
       if (error) throw error;
 
+      // --- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM (ĐỘC LẬP HOÀN TOÀN) ---
       const studentMap = {};
       (data || []).forEach(log => {
-        if (log.resolved_count > 0) return;
         const violations = log.violations_json || [];
         violations.forEach(v => {
           if (!v.name || v.name === 'Tập thể lớp') return;
@@ -762,8 +767,7 @@
               name: v.name,
               count: 0,
               totalDeduction: 0,
-              errors: [],
-              resolvedCount: studentMap[key]?.resolvedCount || 0
+              errors: []
             };
           }
           studentMap[key].count += 1;
@@ -774,11 +778,12 @@
 
       const list = Object.values(studentMap);
       if (list.length === 0) {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm cần khắc phục.</td></tr>';
+        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
       } else {
         $('#violationTableBody').innerHTML = list.map((item) => {
-          let rCount = item.resolvedCount || 0;
-          let btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã khắc phục (${rCount} lần)`;
+          const rKey = item.className + '_' + item.name;
+          const rCount = localRecoveryCounts[rKey] || 0;
+          const btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã khắc phục (${rCount} lần)`;
 
           return `
             <tr>
@@ -790,30 +795,28 @@
               <td><small>${esc(item.errors.join('; '))}</small></td>
               <td><span class="badge" style="background:${rCount > 0 ? '#d1fae5' : '#f1f5f9'}; color:${rCount > 0 ? '#065f46' : '#64748b'}; font-weight:800;">${rCount} lần</span></td>
               <td>
-                <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}', ${rCount})">${btnText}</button>
+                <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}')">${btnText}</button>
               </td>
             </tr>
           `;
         }).join('');
       }
 
-      if (!data || data.length === 0) {
-        $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Không có nhật ký điểm danh nào.</td></tr>';
+      // --- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM [KHIẾU NẠI] ---
+      const complaintLogs = (data || []).filter(log => log.complaint_note);
+      if (complaintLogs.length === 0) {
+        $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color:var(--muted);">Chưa có đơn khiếu nại nào từ các lớp.</td></tr>';
       } else {
-        $('#supportLogTableBody').innerHTML = data.map(log => {
+        $('#supportLogTableBody').innerHTML = complaintLogs.map(log => {
           const logTime = new Date(log.created_at).toLocaleString('vi-VN');
           const statusVal = log.resolved_count || 0;
           const complaintDetails = log.complaint_note || '—';
           
-          let statusBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1;">Điểm danh thường</span>';
+          let statusBadge = '<span class="badge" style="background:#fef3c7; color:#d97706;">Đang khiếu nại</span>';
           let actionBtns = `
             <button class="btn-remove-error" style="background:#dc2626; padding:5px 10px; font-size:12px;" onclick="handleReviewLog('${log.id}', 1)">Duyệt gỡ</button>
             <button class="secondary" style="background:#64748b; color:#fff; padding:5px 10px; font-size:12px; margin-left:4px;" onclick="handleReviewLog('${log.id}', -1)">Từ chối</button>
           `;
-
-          if (log.complaint_note) {
-            statusBadge = '<span class="badge" style="background:#fef3c7; color:#d97706;">Đang khiếu nại lỗi</span>';
-          }
 
           if (statusVal > 0) {
             statusBadge = '<span class="badge" style="background:#d1fae5; color:#065f46;">Đã duyệt gỡ lỗi</span>';
@@ -829,7 +832,7 @@
               <td><b>Tuần ${log.week || 3}</b></td>
               <td><b>${esc(log.class_name)}</b></td>
               <td><small>${esc(log.user_email || 'Lớp trưởng')}</small></td>
-              <td><div style="font-size:12px; color:#1e293b; max-width:280px; word-break:break-word;"><b>Chi tiết khiếu nại:</b> ${esc(complaintDetails)}</div></td>
+              <td><div style="font-size:12px; color:#1e293b; max-width:320px; word-break:break-word;"><b>Chi tiết khiếu nại:</b> ${esc(complaintDetails)}</div></td>
               <td>${statusBadge}</td>
               <td>${actionBtns}</td>
             </tr>
@@ -842,9 +845,11 @@
     }
   }
 
-  async function handleResolveStudent(className, studentName, currentCount) {
-    const nextCount = currentCount + 1;
-    toast(`✅ Đã ghi nhận khắc phục lần thứ ${nextCount} cho ${studentName} (${className})!`);
+  function handleResolveStudent(className, studentName) {
+    const key = className + '_' + studentName;
+    localRecoveryCounts[key] = (localRecoveryCounts[key] || 0) + 1;
+    localStorage.setItem('local_recovery_counts', JSON.stringify(localRecoveryCounts));
+    toast(`✅ Đã ghi nhận khắc phục lần thứ ${localRecoveryCounts[key]} cho ${studentName} (${className})!`);
     loadViolationsData();
   }
 
@@ -1055,7 +1060,7 @@
     } catch(e) {
       toast(e.message);
     } finally {
-      btn.disabled = false; btn.textContent = 'Đăng nhập (Supabase)';
+      btn.disabled = false; btn.textContent = 'Đăng nhập';
     }
   };
 
@@ -1237,7 +1242,7 @@
 
   $('#saveAttendance').onclick=async()=>{
     const btn=$('#saveAttendance');
-    btn.disabled=true; btn.textContent='⚡ Đang lưu Supabase...';
+    btn.disabled=true; btn.textContent='⚡ Đang lưu...';
     try{
       const now = new Date();
       const violations = state.students.filter(s => s.status && s.status !== 'Có mặt').map(s => ({
@@ -1272,7 +1277,7 @@
     }
     finally{ 
       btn.disabled=false; 
-      btn.textContent='⚡ Lưu điểm danh (Supabase)'; 
+      btn.textContent='⚡ Lưu điểm danh'; 
     }
   };
 
