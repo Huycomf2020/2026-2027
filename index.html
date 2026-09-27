@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <style>
     :root{--navy:#062c43;--cyan:#0891b2;--sky:#e0f2fe;--gold:#f59e0b;--ink:#102a3a;--muted:#637889;--card:#fff;--bg:#f4f8fb;--danger:#dc2626;--radius:22px;--shadow:0 16px 45px rgba(6,44,67,.10)}
     *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 90% 0,#cffafe 0,transparent 28%),var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--ink)}
@@ -209,6 +210,23 @@
     <!-- TAB HỖ TRỢ & THỐNG KÊ VI PHẠM + XỬ LÝ KHẮC PHỤC -->
     <section id="support" class="panel">
       <div class="hero"><div><h2>🛠️ Khu vực Hỗ trợ & Xử lý Khắc phục</h2><p>Dành riêng cho Đoàn trường thống kê và xử lý vi phạm</p></div></div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <h3>📄 Báo cáo vi phạm trong buổi gửi Ban Giám hiệu</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
+          <label style="display:grid;gap:5px;font-weight:700;">Ngày
+            <input id="supportReportDate" type="date" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;">
+          </label>
+          <label style="display:grid;gap:5px;font-weight:700;">Buổi
+            <select id="supportReportPeriod" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;">
+              <option value="Sáng">Sáng</option><option value="Chiều">Chiều</option>
+            </select>
+          </label>
+          <button class="save" onclick="exportSessionViolations('pdf')">📄 Xuất PDF</button>
+          <button class="save" onclick="exportSessionViolations('excel')">📊 Xuất Excel</button>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin:12px 0 0;">Báo cáo theo ngày và buổi, chỉ gồm các lỗi còn hiệu lực sau xử lý khiếu nại.</p>
+      </div>
       
       <!-- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM -->
       <div class="card" style="margin-bottom: 18px;">
@@ -478,6 +496,9 @@
       $('#sessionText').textContent = `${dayName}, ${dateStr}`;
       $('#periodBadge').textContent = (now.getHours() < 12 ? '🌤️ ' : '🌇 ') + periodStr;
       $('#adminLogDate').value = now.toISOString().split('T')[0];
+      const vietnamNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      $('#supportReportDate').value = vietnamNow.toISOString().slice(0, 10);
+      $('#supportReportPeriod').value = vietnamNow.getUTCHours() < 12 ? 'Sáng' : 'Chiều';
 
       await loadSupabaseCompetition();
       setupAdminClassSelect();
@@ -755,6 +776,160 @@
       state.supabaseRules = data || [];
     } catch(e) {}
     renderRules();
+  }
+
+  // --- BÁO CÁO VI PHẠM THEO BUỔI (DỮ LIỆU CÒN HIỆU LỰC) ---
+  async function getSessionViolationReport() {
+    const date = $('#supportReportDate').value;
+    const period = $('#supportReportPeriod').value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !['Sáng', 'Chiều'].includes(period)) {
+      throw new Error('Vui lòng chọn ngày và buổi hợp lệ.');
+    }
+    const start = new Date(date + (period === 'Sáng' ? 'T00:00:00+07:00' : 'T12:00:00+07:00'));
+    if (Number.isNaN(start.getTime())) throw new Error('Ngày báo cáo không hợp lệ.');
+    const end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+    const logs = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabaseClient.from('class_log')
+        .select('id,created_at,period,class_name,resolved,violations_json')
+        .gte('created_at', start.toISOString()).lt('created_at', end.toISOString())
+        .order('created_at', { ascending: true }).range(offset, offset + 999);
+      if (error) throw error;
+      logs.push(...(data || []));
+      if (!data || data.length < 1000) break;
+    }
+    const activeLogs = logs.filter(log => log.resolved !== true && log.period === period);
+    const rows = activeLogs.flatMap(log => (log.violations_json || [])
+      .filter(student => student.name && student.status)
+      .map(student => ({
+        className: log.class_name || '',
+        code: student.code || '',
+        name: student.name || '',
+        status: student.status || '',
+        deduction: Number(student.deduction) || 0,
+        time: new Date(log.created_at).toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' })
+      })));
+    rows.sort((a, b) => a.className.localeCompare(b.className, 'vi', { numeric: true }) || a.name.localeCompare(b.name, 'vi'));
+    return { date, period, rows, sessions: activeLogs.length, classes: new Set(activeLogs.map(log => log.class_name)).size,
+      totalDeduction: rows.reduce((sum, row) => sum + row.deduction, 0) };
+  }
+
+  function reportDateLabel(date) {
+    const [year, month, day] = date.split('-');
+    return day + '/' + month + '/' + year;
+  }
+
+  function printSessionViolationPdf(report, win) {
+    const bodyRows = report.rows.map((row, index) =>
+      '<tr><td class="center">' + (index + 1) + '</td><td class="center">' + esc(row.className) +
+      '</td><td class="center">' + esc(row.code) + '</td><td>' + esc(row.name) +
+      '</td><td>' + esc(row.status) + '</td><td class="center">' + (row.deduction ? '-' + row.deduction : '0') +
+      '</td><td class="center">' + esc(row.time) + '</td></tr>').join('');
+    const html = [
+      '<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Báo cáo vi phạm trong buổi</title>',
+      '<style>@page{size:A4 landscape;margin:18mm 16mm 17mm 18mm}',
+      'body{font:14pt "Times New Roman",Times,serif;color:#111;margin:0;line-height:1.3}',
+      '.header{display:flex;justify-content:space-between;gap:10mm;text-align:center;font-size:14pt}',
+      '.header>div{width:48%}.header strong{font-weight:bold}.rule{display:inline-block;border-bottom:1px solid #111;width:34mm;margin-top:4px}',
+      'h1{text-align:center;font-size:16pt;margin:16mm 0 2mm;line-height:1.3}',
+      '.sub{text-align:center;margin:0 0 7mm}.info{margin:0 0 5mm}',
+      'table{width:100%;table-layout:fixed;border-collapse:collapse;font:12pt "Times New Roman",Times,serif}',
+      'th,td{border:1px solid #222;padding:2.3mm 1.8mm;vertical-align:middle;overflow-wrap:break-word;word-break:normal;white-space:normal}',
+      'thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}',
+      'th{text-align:center;font-weight:bold;background:#f4f4f4}.center{text-align:center;white-space:nowrap}',
+      '.summary{margin-top:5mm}.footer{margin-top:9mm;break-inside:avoid}',
+      '</style></head><body>',
+      '<div class="header"><div><strong>TRƯỜNG THPT LỘC NINH<br>BCH ĐOÀN TRƯỜNG</strong><br><span class="rule"></span></div>',
+      '<div><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>Độc lập - Tự do - Hạnh phúc</strong><br><span class="rule"></span></div></div>',
+      '<h1>BÁO CÁO HỌC SINH VI PHẠM TRONG BUỔI</h1>',
+      '<p class="sub">Buổi ' + esc(report.period) + ', ngày ' + reportDateLabel(report.date) + ' · Năm học 2026–2027</p>',
+      '<p class="info">Số lượt điểm danh: ' + report.sessions + ' &nbsp;|&nbsp; Số lớp đã điểm danh: ' + report.classes + '</p>',
+      '<table><colgroup><col style="width:5%"><col style="width:8%"><col style="width:11%"><col style="width:19%"><col style="width:44%"><col style="width:8%"><col style="width:5%"></colgroup>',
+      '<thead><tr><th>STT</th><th>Lớp</th><th>Mã HS</th><th>Họ và tên</th><th>Nội dung vi phạm</th><th>Điểm trừ</th><th>Giờ</th></tr></thead><tbody>',
+      bodyRows || '<tr><td colspan="7" class="center">Không ghi nhận vi phạm trong buổi này.</td></tr>',
+      '</tbody></table>',
+      '<p class="summary">Số lượt học sinh vi phạm: <strong>' + report.rows.length +
+      '</strong> &nbsp;|&nbsp; Tổng điểm trừ: <strong>' + report.totalDeduction + '</strong>.</p>',
+      '<p class="footer"><strong>Nơi nhận:</strong> Ban Giám hiệu; Lưu BCH Đoàn trường.</p>',
+      '</body></html>'
+    ].join('');
+    win.onload = () => { win.focus(); win.print(); };
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+  }
+
+  async function downloadSessionViolationExcel(report) {
+    if (!window.ExcelJS) throw new Error('Chưa tải được thư viện Excel. Vui lòng kết nối Internet rồi thử lại.');
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Vi phạm trong buổi', {
+      pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0,
+        margins: { left: 0.55, right: 0.55, top: 0.65, bottom: 0.6, header: 0.25, footer: 0.25 } }
+    });
+    sheet.columns = [7, 11, 16, 27, 62, 13, 11].map(width => ({ width }));
+    sheet.mergeCells('A1:D1'); sheet.getCell('A1').value = 'TRƯỜNG THPT LỘC NINH';
+    sheet.mergeCells('A2:D2'); sheet.getCell('A2').value = 'BCH ĐOÀN TRƯỜNG';
+    sheet.mergeCells('E1:G1'); sheet.getCell('E1').value = 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM';
+    sheet.mergeCells('E2:G2'); sheet.getCell('E2').value = 'Độc lập - Tự do - Hạnh phúc';
+    sheet.mergeCells('A4:G4'); sheet.getCell('A4').value = 'BÁO CÁO HỌC SINH VI PHẠM TRONG BUỔI';
+    sheet.mergeCells('A5:G5'); sheet.getCell('A5').value = 'Buổi ' + report.period + ', ngày ' + reportDateLabel(report.date) + ' · Năm học 2026–2027';
+    sheet.mergeCells('A6:G6'); sheet.getCell('A6').value = 'Số lượt điểm danh: ' + report.sessions + '    |    Số lớp đã điểm danh: ' + report.classes;
+    const header = sheet.getRow(8);
+    header.values = ['STT', 'Lớp', 'Mã HS', 'Họ và tên', 'Nội dung vi phạm', 'Điểm trừ', 'Giờ'];
+    header.height = 30;
+    if (!report.rows.length) {
+      sheet.mergeCells('A9:G9'); sheet.getCell('A9').value = 'Không ghi nhận vi phạm trong buổi này.';
+    }
+    report.rows.forEach((item, index) => {
+      const row = sheet.getRow(index + 9);
+      row.values = [index + 1, item.className, item.code, item.name, item.status, -item.deduction, item.time];
+      row.height = Math.min(72, Math.max(25, Math.ceil(item.status.length / 60) * 18));
+    });
+    const last = Math.max(9, report.rows.length + 8);
+    const sumRow = sheet.getRow(last + 2);
+    sheet.mergeCells(last + 2, 1, last + 2, 7);
+    sumRow.getCell(1).value = 'Số lượt học sinh vi phạm: ' + report.rows.length + '    |    Tổng điểm trừ: ' + report.totalDeduction;
+    sheet.mergeCells(last + 4, 1, last + 4, 7);
+    sheet.getRow(last + 4).getCell(1).value = 'Nơi nhận: Ban Giám hiệu; Lưu BCH Đoàn trường.';
+    sheet.eachRow(row => row.eachCell({ includeEmpty: true }, cell => {
+      cell.font = { name: 'Times New Roman', size: row.number >= 8 && row.number <= last ? 12 : 14,
+        bold: [1, 2, 4, 8, last + 2].includes(row.number) };
+      cell.alignment = { vertical: 'middle', horizontal: [1, 2, 4, 5, 8].includes(row.number) ? 'center' :
+        cell.col === 4 || cell.col === 5 ? 'left' : 'center', wrapText: true };
+      if (row.number >= 8 && row.number <= last) {
+        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+      }
+      if (row.number === 8) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+    }));
+    sheet.getRow(4).height = 34;
+    sheet.getCell('A4').font = { name: 'Times New Roman', size: 16, bold: true };
+    sheet.getRow(5).height = 25;
+    sheet.pageSetup.printTitlesRow = '1:8';
+    sheet.pageSetup.printArea = 'A1:G' + (last + 4);
+    const buffer = await workbook.xlsx.writeBuffer();
+    const url = URL.createObjectURL(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    const anchor = document.createElement('a');
+    anchor.href = url; anchor.download = 'Bao_cao_vi_pham_' + report.date + '_' + (report.period === 'Sáng' ? 'Sang' : 'Chieu') + '.xlsx';
+    document.body.appendChild(anchor); anchor.click(); anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  async function exportSessionViolations(format) {
+    if (!state.supportToken) { toast('Vui lòng đăng nhập khu vực Hỗ trợ.'); return; }
+    const buttons = $$('#support .card button.save').filter(button => button.textContent.includes('Xuất PDF') || button.textContent.includes('Xuất Excel'));
+    buttons.forEach(button => button.disabled = true);
+    const printWindow = format === 'pdf' ? window.open('', '_blank') : null;
+    try {
+      if (format === 'pdf' && !printWindow) throw new Error('Trình duyệt đang chặn cửa sổ in. Vui lòng cho phép cửa sổ bật lên.');
+      const report = await getSessionViolationReport();
+      if (!report.sessions) {
+        if (printWindow) printWindow.close();
+        toast('Chưa có lượt điểm danh trong ngày và buổi này.'); return;
+      }
+      if (format === 'pdf') printSessionViolationPdf(report, printWindow);
+      else await downloadSessionViolationExcel(report);
+    } catch(e) { if (printWindow && !printWindow.closed) printWindow.close(); toast('Lỗi xuất báo cáo: ' + e.message); }
+    finally { buttons.forEach(button => button.disabled = false); }
   }
 
   // --- TÁCH BIỆT 2 BẢNG Ở TAB HỖ TRỢ ---
