@@ -1124,43 +1124,38 @@
   async function savePastedSdbData() {
     const rawText = $('#sdbPasteArea').value.trim();
     if (!rawText) { toast("Vui lòng dán dữ liệu vào ô!"); return; }
-
-    const lines = rawText.split('\n');
-    const records = [];
-
-    lines.forEach(line => {
-      const parts = line.split(/[\t,;]+/).map(s => s.trim());
-      if (parts.length >= 3) {
-        const week = Number(parts[0]);
-        const className = parts[1].toUpperCase();
-        const score = Number(parts[2].replace(',', '.'));
-
-        if (Number.isInteger(week) && week >= 1 && week <= 45 && /^(10|11|12)A\d+$/.test(className) && Number.isFinite(score) && score >= 0 && score <= 10) {
-          records.push({ week, class_name: className, score });
-        }
+    const records = [], errors = [], seen = new Set();
+    rawText.split(/\r?\n/).forEach((line, i) => {
+      if (!line.trim()) return;
+      const parts = line.includes('\t') ? line.split('\t') : line.split(';');
+      if (i === 0 && /tuần|tuan/i.test(parts[0])) return;
+      const week = Number((parts[0] || '').trim());
+      const className = (parts[1] || '').trim().toUpperCase();
+      const scoreText = (parts[2] || '').trim().replace(',', '.');
+      const score = scoreText === '' ? NaN : Number(scoreText);
+      const key = week + ':' + className;
+      if (parts.length !== 3 || !Number.isInteger(week) || week < 1 || week > 45 ||
+          !/^(10|11|12)A\d+$/.test(className) || !Number.isFinite(score) ||
+          score < 0 || score > 10 || seen.has(key)) {
+        errors.push(i + 1); return;
       }
+      seen.add(key);
+      records.push({ week, class_name: className, score });
     });
-
-    if (records.length === 0) {
-      toast("Dữ liệu dán không đúng cấu trúc (Tuần - Lớp - Điểm SĐB)");
+    if (errors.length || !records.length) {
+      toast(errors.length ? 'Dòng SĐB không hợp lệ/trùng: ' + errors.join(', ') + '. Cần đúng 3 cột và điểm TB 0–10.' : 'Không có dòng SĐB hợp lệ.');
       return;
     }
-
     const btn = $('#btnSavePastedSdb');
     btn.disabled = true; btn.textContent = '⚡ Đang lưu lên Supabase...';
-
     try {
       const { error } = await supabaseClient.from('diem_sdb').upsert(records, { onConflict: 'week,class_name' });
       if (error) throw error;
-
       toast(`✅ Đã nạp thành công ${records.length} dòng Điểm SĐB!`);
       $('#sdbPasteArea').value = '';
       loadSupabaseCompetition();
-    } catch(e) {
-      toast("Lỗi lưu SĐB: " + e.message);
-    } finally {
-      btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu dán lên Supabase';
-    }
+    } catch(e) { toast("Lỗi lưu SĐB: " + e.message); }
+    finally { btn.disabled = false; btn.textContent = '⚡ Lưu dữ liệu dán lên Supabase'; }
   }
 
   async function uploadSdbFile() {
@@ -1175,19 +1170,25 @@
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
-        const records = [];
+        const records = [], errors = [], seen = new Set();
         for (let i = 0; i < jsonData.length; i++) {
-          const row = jsonData[i];
-          if (row.length >= 3) {
-            const week = Number(row[0]);
-            const className = String(row[1] || '').trim().toUpperCase();
-            const score = Number(String(row[2] ?? '').replace(',', '.'));
-
-            if (Number.isInteger(week) && week >= 1 && week <= 45 && /^(10|11|12)A\d+$/.test(className) && Number.isFinite(score) && score >= 0 && score <= 10) {
-              records.push({ week, class_name: className, score });
-            }
+          const row = jsonData[i] || [];
+          if (row.every(cell => cell == null || String(cell).trim() === '')) continue;
+          if (i === 0 && /tuần|tuan/i.test(String(row[0] || ''))) continue;
+          const week = Number(row[0]);
+          const className = String(row[1] || '').trim().toUpperCase();
+          const scoreText = String(row[2] ?? '').trim().replace(',', '.');
+          const score = scoreText === '' ? NaN : Number(scoreText);
+          const key = week + ':' + className;
+          if (!Number.isInteger(week) || week < 1 || week > 45 ||
+              !/^(10|11|12)A\d+$/.test(className) || !Number.isFinite(score) ||
+              score < 0 || score > 10 || seen.has(key)) {
+            errors.push(i + 1); continue;
           }
+          seen.add(key);
+          records.push({ week, class_name: className, score });
         }
+        if (errors.length) throw new Error('Dòng SĐB không hợp lệ/trùng: ' + errors.join(', ') + '. Cần điểm TB 0–10.');
 
         if (records.length === 0) {
           toast("Không tìm thấy dữ liệu hợp lệ trong file!");
