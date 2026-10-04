@@ -1644,7 +1644,7 @@
             <small>${esc(s.code)}</small>
           </div>
           <div class="statuses">
-            <button class="status ${hasBaseStatus('Vắng có phép')?'selected':''}" data-s="Vắng có phép" onclick="toggleStatus('${s.row}', 'Vắng có phép', 1)">Vắng có phép</button>
+            <button class="status ${hasBaseStatus('Vắng có phép')?'selected':''}" data-s="Vắng có phép" onclick="toggleStatus('${s.row}', 'Vắng có phép', 2)">Vắng có phép</button>
             <button class="status ${hasBaseStatus('Vắng không phép')?'selected':''}" data-s="Vắng không phép" onclick="toggleStatus('${s.row}', 'Vắng không phép', 3)">Vắng không phép</button>
             <button class="status ${hasBaseStatus('Đi trễ')?'selected':''}" data-s="Đi trễ" onclick="toggleStatus('${s.row}', 'Đi trễ', 2)">Đi trễ</button>
             <button class="status rule-btn ${hasCustomRule?'selected':''}" onclick="openRuleModal('${s.row}', '${esc(s.name)}')">
@@ -1705,7 +1705,7 @@
     let currentList = activeStudentForModal.status ? activeStudentForModal.status.split(', ').map(x=>x.trim()).filter(x => baseStatuses.includes(x)) : [];
     
     let totalDeduction = 0;
-    if (currentList.includes('Vắng có phép')) totalDeduction += 1;
+    if (currentList.includes('Vắng có phép')) totalDeduction += 2;
     if (currentList.includes('Vắng không phép')) totalDeduction += 3;
     if (currentList.includes('Đi trễ')) totalDeduction += 2;
 
@@ -1735,7 +1735,7 @@
         deduction: s.deduction || 0,
         items: splitErrors(s.status).map(name => ({
           name,
-          deduction: Number(name === 'Vắng có phép' ? 1 : name === 'Vắng không phép' ? 3 : name === 'Đi trễ' ? 2 :
+          deduction: Number(name === 'Vắng có phép' ? 2 : name === 'Vắng không phép' ? 3 : name === 'Đi trễ' ? 2 :
             state.supabaseRules.find(rule => rule.content === name)?.deduction || 0)
         }))
       }));
