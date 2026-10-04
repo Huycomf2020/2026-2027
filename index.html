@@ -1568,7 +1568,7 @@
 
     const renderTableRows = (list, gradeOnly=false) => list.map(r => {
       const rank = gradeOnly ? r.rank_grade : r.rank;
-      return `<tr><td><span class="badge">${rank == null ? '—' : '#'+rank}</span></td><td><b>${esc(r.class_name)}</b><br><small>Sĩ số: ${r.class_size}</small></td><td>${fmt(r.base)}</td><td title="Điểm trừ gốc: ${fmt(r.raw_minus)}">-${fmt(r.minus)}</td><td><span style="color:#10b981;font-weight:700;">+${fmt(r.special)}</span></td><td><b>${fmt(r.total)}</b></td></tr>`;
+      return `<tr><td><span class="badge">${rank == null ? '—' : '#'+rank}</span></td><td><b>${esc(r.class_name)}</b><br><small>Sĩ số: ${r.class_size}</small></td><td>${fmt(r.base)}</td><td title="Điểm trừ gốc: ${fmt(r.raw_minus)}">${Number(r.minus) ? '-' : ''}${fmt(r.minus)}</td><td><span style="color:#10b981;font-weight:700;">+${fmt(r.special)}</span></td><td><b>${fmt(r.total)}</b></td></tr>`;
     }).join('');
 
     $('#ranking').innerHTML = renderTableRows(rows.slice().sort((a,b)=>a.class_name.slice(0,2).localeCompare(b.class_name.slice(0,2)) || (a.rank_grade ?? 999)-(b.rank_grade ?? 999) || a.class_name.localeCompare(b.class_name,'vi',{numeric:true})),true);
@@ -1600,7 +1600,7 @@
       const { data } = await supabaseClient.from('v_competition_ranking').select('*').eq('week', state.selectedWeek).order('rank', { ascending: true });
       let csvContent = "\uFEFFHạng khối,Chi đoàn,Sĩ số,Điểm SĐB,Điểm trừ gốc,Trừ chuẩn hóa,Điểm cộng,Tổng điểm\n";
       (data || []).forEach(r => {
-        csvContent += `"${r.rank_grade == null ? '' : '#'+r.rank_grade}","${r.class_name}","${r.class_size}","${r.base ?? ''}","${r.raw_minus}","-${r.minus}","${r.special}","${r.total ?? ''}"\n`;
+        csvContent += `"${r.rank_grade == null ? '' : '#'+r.rank_grade}","${r.class_name}","${r.class_size}","${r.base ?? ''}","${r.raw_minus}","${Number(r.minus) ? '-' : ''}${r.minus}","${r.special}","${r.total ?? ''}"\n`;
       });
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -1650,7 +1650,7 @@
         if(gradeList.length > 0) {
           htmlContent += `<h4>🏫 KHỐI ${grade}</h4><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Sĩ số</th><th>Điểm SĐB</th><th>Điểm trừ gốc</th><th>Trừ chuẩn hóa</th><th>Điểm cộng</th><th>Tổng điểm</th></tr></thead><tbody>`;
           gradeList.forEach((r, idx) => {
-            htmlContent += `<tr><td>${r.rank_grade == null ? '—' : '#'+r.rank_grade}</td><td class="left"><b>${r.class_name}</b></td><td>${r.class_size}</td><td>${r.base ?? '—'}</td><td>${r.raw_minus}</td><td>-${r.minus}</td><td>+${r.special}</td><td><b>${r.total ?? '—'}</b></td></tr>`;
+            htmlContent += `<tr><td>${r.rank_grade == null ? '—' : '#'+r.rank_grade}</td><td class="left"><b>${r.class_name}</b></td><td>${r.class_size}</td><td>${r.base ?? '—'}</td><td>${r.raw_minus}</td><td>${Number(r.minus) ? '-' : ''}${r.minus}</td><td>+${r.special}</td><td><b>${r.total ?? '—'}</b></td></tr>`;
           });
           htmlContent += `</tbody></table><br>`;
         }
