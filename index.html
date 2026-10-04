@@ -514,7 +514,7 @@
       return names.map((name, errorIndex) => ({
         studentIndex, errorIndex, name, studentName: v.name,
         deduction: Number((v.items || []).find(item => item.name === name)?.deduction ??
-          (name === 'Vắng có phép' ? 1 : name === 'Vắng không phép' ? 3 : name === 'Đi trễ' ? 2 :
+          (name === 'Vắng có phép' ? 2 : name === 'Vắng không phép' ? 3 : name === 'Đi trễ' ? 2 :
            state.supabaseRules.find(rule => rule.content === name)?.deduction ?? (names.length === 1 ? v.deduction : 0)))
       }));
     });
