@@ -119,21 +119,21 @@
       <div class="grade-container">
         <div class="grade-card">
           <h4><span>🏫 KHỐI 10</span></h4>
-          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="rankingGrade10"></tbody></table></div>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Trừ chuẩn hóa</th><th>Điểm cộng</th><th>Tổng</th></tr></thead><tbody id="rankingGrade10"></tbody></table></div>
         </div>
         <div class="grade-card">
           <h4><span>🏫 KHỐI 11</span></h4>
-          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="rankingGrade11"></tbody></table></div>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Trừ chuẩn hóa</th><th>Điểm cộng</th><th>Tổng</th></tr></thead><tbody id="rankingGrade11"></tbody></table></div>
         </div>
         <div class="grade-card">
           <h4><span>🏫 KHỐI 12</span></h4>
-          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="rankingGrade12"></tbody></table></div>
+          <div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Trừ chuẩn hóa</th><th>Điểm cộng</th><th>Tổng</th></tr></thead><tbody id="rankingGrade12"></tbody></table></div>
         </div>
       </div>
 
       <div class="grid2">
         <div class="card"><h3>So sánh điểm thi đua</h3><div class="chartbox"><canvas id="scoreChart"></canvas></div></div>
-        <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
+        <div class="card"><h3>Bảng xếp hạng toàn trường</h3><div class="table-wrap"><table class="ranking"><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Trừ chuẩn hóa</th><th>Điểm cộng</th><th>Tổng</th></tr></thead><tbody id="ranking"></tbody></table></div></div>
       </div>
 
       <div class="slider-card">
@@ -293,11 +293,12 @@
       <!-- BẢNG 4: NHẬP ĐIỂM SỔ ĐẦU BÀI -->
       <div class="card">
         <h3>📊 Dán hàng loạt Điểm Sổ Đầu Bài (Copy từ Excel/Sheets)</h3>
+        <p style="font-size:13px;color:var(--muted);">Dán Tuần · Lớp · Điểm trung bình SĐB (0–10). Hệ thống nhân 20, tối đa 200 điểm. Dữ liệu cũ đã nhập theo thang 200 vẫn được giữ đúng thang điểm.</p>
         <div class="upload-box">
           <textarea id="sdbPasteArea" placeholder="Ví dụ dán vào đây:
-2	10A1	9.6
-2	10A2	10.6
-2	10A3	11.6"></textarea>
+4	10A1	8.0
+4	10A2	9.5
+4	10A3	10.0"></textarea>
           <button id="btnSavePastedSdb" class="save" onclick="savePastedSdbData()">⚡ Lưu dữ liệu dán lên Supabase</button>
         </div>
       </div>
@@ -514,7 +515,7 @@
       return names.map((name, errorIndex) => ({
         studentIndex, errorIndex, name, studentName: v.name,
         deduction: Number((v.items || []).find(item => item.name === name)?.deduction ??
-          (name === 'Vắng có phép' ? 2 : name === 'Vắng không phép' ? 3 : name === 'Đi trễ' ? 2 :
+          (name === 'Vắng có phép' ? 1 : name === 'Vắng không phép' ? 3 : name === 'Đi trễ' ? 2 :
            state.supabaseRules.find(rule => rule.content === name)?.deduction ?? (names.length === 1 ? v.deduction : 0)))
       }));
     });
@@ -1134,7 +1135,7 @@
         const className = parts[1].toUpperCase();
         const score = Number(parts[2].replace(',', '.'));
 
-        if (!isNaN(week) && className && !isNaN(score)) {
+        if (Number.isInteger(week) && week >= 1 && week <= 45 && /^(10|11|12)A\d+$/.test(className) && Number.isFinite(score) && score >= 0 && score <= 10) {
           records.push({ week, class_name: className, score });
         }
       }
@@ -1180,9 +1181,9 @@
           if (row.length >= 3) {
             const week = Number(row[0]);
             const className = String(row[1] || '').trim().toUpperCase();
-            const score = Number(String(row[2] || '').replace(',', '.'));
+            const score = Number(String(row[2] ?? '').replace(',', '.'));
 
-            if (!isNaN(week) && className && !isNaN(score)) {
+            if (Number.isInteger(week) && week >= 1 && week <= 45 && /^(10|11|12)A\d+$/.test(className) && Number.isFinite(score) && score >= 0 && score <= 10) {
               records.push({ week, class_name: className, score });
             }
           }
@@ -1256,7 +1257,7 @@
     btn.disabled = true; btn.textContent = '⚡ Đang kiểm tra...';
 
     try {
-      const { data, error } = await supabaseClient.from('class_users').select('*').eq('email', email).eq('password', pass).single();
+      const { data, error } = await supabaseClient.rpc('verify_class_login', { login_email: email, login_password: pass });
       if (error || !data) throw new Error('Mật khẩu không chính xác!');
 
       state.token = 'SUPABASE_AUTH_TOKEN_' + Date.now();
@@ -1559,23 +1560,24 @@
   }
 
   function renderCompetition(rows=[]){
+    const scored = rows.filter(r => r.total !== null && r.total !== undefined);
     const medals=['🥇','🥈','🥉'];
-    $('#podium').innerHTML=rows.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.class_name)}</b><span>Hạng ${r.rank} • <strong>${r.total} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có dữ liệu thi đua.</div>';
-    
-    const renderTableRows = (list) => list.map(r => {
-      const baseDisplay = (r.base !== null && r.base !== undefined && r.base !== '' && !isNaN(r.base)) ? r.base : '—';
-      const specialPts = (r.special !== null && r.special !== undefined) ? (r.special > 0 ? `+${r.special}` : r.special) : '0';
-      return `<tr><td><span class="badge">#${r.rank}</span></td><td><b>${esc(r.class_name)}</b></td><td>${baseDisplay}</td><td>-${r.minus}</td><td><span style="color:${r.special > 0 ? '#10b981' : r.special < 0 ? '#dc2626' : 'inherit'}; font-weight:700;">${specialPts}</span></td><td><b>${r.total}</b></td></tr>`;
-    }).join('');
-    
-    $('#ranking').innerHTML = renderTableRows(rows);
-    $('#rankingGrade10').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('10A')));
-    $('#rankingGrade11').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('11A')));
-    $('#rankingGrade12').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('12A')));
+    const fmt = value => value === null || value === undefined ? '—' : Number(value).toLocaleString('vi-VN', {maximumFractionDigits:1});
+    $('#podium').innerHTML=scored.slice(0,3).map((r,i)=>`<div class="winner"><span class="rank">${medals[i]}</span><b>${esc(r.class_name)}</b><span>Hạng ${r.rank} • <strong>${fmt(r.total)} điểm</strong></span></div>`).join('')||'<div class="card empty">Chưa có đủ điểm SĐB để xếp hạng.</div>';
 
-    const top=rows.slice(0,15);
+    const renderTableRows = (list, gradeOnly=false) => list.map(r => {
+      const rank = gradeOnly ? r.rank_grade : r.rank;
+      return `<tr><td><span class="badge">${rank == null ? '—' : '#'+rank}</span></td><td><b>${esc(r.class_name)}</b><br><small>Sĩ số: ${r.class_size}</small></td><td>${fmt(r.base)}</td><td title="Điểm trừ gốc: ${fmt(r.raw_minus)}">-${fmt(r.minus)}</td><td><span style="color:#10b981;font-weight:700;">+${fmt(r.special)}</span></td><td><b>${fmt(r.total)}</b></td></tr>`;
+    }).join('');
+
+    $('#ranking').innerHTML = renderTableRows(rows);
+    $('#rankingGrade10').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('10A')),true);
+    $('#rankingGrade11').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('11A')),true);
+    $('#rankingGrade12').innerHTML = renderTableRows(rows.filter(r => r.class_name.startsWith('12A')),true);
+
+    const top=scored.slice(0,15);
     if(state.chart)state.chart.destroy();
-    state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.class_name),datasets:[{data:top.map(x=>x.total),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
+    state.chart=new Chart($('#scoreChart'),{type:'bar',data:{labels:top.map(x=>x.class_name),datasets:[{data:top.map(x=>Number(x.total)),backgroundColor:top.map((_,i)=>i<3?'#f59e0b':'#0891b2'),borderRadius:8}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false,grid:{color:'#edf2f5'}},x:{grid:{display:false}}}}});
   }
 
   function renderRules(){ 
@@ -1595,9 +1597,9 @@
     if (!checkFutureWeek(state.selectedWeek)) return;
     try {
       const { data } = await supabaseClient.from('v_competition_ranking').select('*').eq('week', state.selectedWeek).order('rank', { ascending: true });
-      let csvContent = "\uFEFFHạng,Chi đoàn,Điểm SĐB,Điểm trừ,Điểm +- ĐB,Tổng điểm\n";
+      let csvContent = "\uFEFFHạng khối,Chi đoàn,Sĩ số,Điểm SĐB,Điểm trừ gốc,Trừ chuẩn hóa,Điểm cộng,Tổng điểm\n";
       (data || []).forEach(r => {
-        csvContent += `"#${r.rank}","${r.class_name}","${r.base ?? ''}","-${r.minus}","${r.special || 0}","${r.total}"\n`;
+        csvContent += `"${r.rank_grade == null ? '' : '#'+r.rank_grade}","${r.class_name}","${r.class_size}","${r.base ?? ''}","${r.raw_minus}","-${r.minus}","${r.special}","${r.total ?? ''}"\n`;
       });
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -1645,9 +1647,9 @@
       ['10', '11', '12'].forEach(grade => {
         const gradeList = data.filter(r => r.class_name.startsWith(grade + 'A'));
         if(gradeList.length > 0) {
-          htmlContent += `<h4>🏫 KHỐI ${grade}</h4><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Điểm SĐB</th><th>Điểm trừ</th><th>ĐIỂM +- ĐB</th><th>Tổng điểm</th></tr></thead><tbody>`;
+          htmlContent += `<h4>🏫 KHỐI ${grade}</h4><table><thead><tr><th>Hạng</th><th>Lớp</th><th>Sĩ số</th><th>Điểm SĐB</th><th>Điểm trừ gốc</th><th>Trừ chuẩn hóa</th><th>Điểm cộng</th><th>Tổng điểm</th></tr></thead><tbody>`;
           gradeList.forEach((r, idx) => {
-            htmlContent += `<tr><td>#${idx+1}</td><td class="left"><b>${r.class_name}</b></td><td>${r.base ?? '—'}</td><td>-${r.minus}</td><td>${r.special || 0}</td><td><b>${r.total}</b></td></tr>`;
+            htmlContent += `<tr><td>${r.rank_grade == null ? '—' : '#'+r.rank_grade}</td><td class="left"><b>${r.class_name}</b></td><td>${r.class_size}</td><td>${r.base ?? '—'}</td><td>${r.raw_minus}</td><td>-${r.minus}</td><td>+${r.special}</td><td><b>${r.total ?? '—'}</b></td></tr>`;
           });
           htmlContent += `</tbody></table><br>`;
         }
