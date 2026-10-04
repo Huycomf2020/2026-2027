@@ -38,7 +38,13 @@
 
     .grid2{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}.card h3{margin:0 0 18px}.chartbox{height:370px}.table-wrap{overflow:auto}.ranking{width:100%;border-collapse:collapse}.ranking th,.ranking td{padding:13px 12px;border-bottom:1px solid #e7eef2;text-align:left}.ranking th{font-size:12px;text-transform:uppercase;color:var(--muted)}.badge{background:#e0f2fe;color:#0369a1;border-radius:99px;padding:5px 9px;font-weight:700;font-size:12px}
     .rules{display:grid;gap:12px}.rule{background:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(6,44,67,.06);display:flex;gap:16px}.rule-num{width:38px;height:38px;flex:0 0 auto;border-radius:12px;background:var(--sky);display:grid;place-items:center;font-weight:800;color:#0369a1}.empty{text-align:center;padding:60px 15px;color:var(--muted)}
-    .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
+    .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}
+    .attendance-alert{margin:18px 0 0;border:1px solid #fecaca;border-radius:14px;background:#fff1f2;color:#991b1b;overflow:hidden}
+    .attendance-alert .alert-label{padding:9px 14px;font-weight:800;background:#fee2e2}
+    .attendance-alert .marquee-track{overflow:hidden;white-space:nowrap;padding:12px 0}
+    .attendance-alert .marquee-text{display:inline-block;padding-left:100%;font-weight:700;animation:attendance-scroll var(--scroll-duration,40s) linear infinite}
+    @keyframes attendance-scroll{to{transform:translateX(-100%)}}
+    @media(prefers-reduced-motion:reduce){.attendance-alert .marquee-text{animation:none;padding-left:14px;white-space:normal}.attendance-alert .marquee-track{white-space:normal}}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
     
     .student{display:grid;grid-template-columns:50px minmax(180px,1.2fr) minmax(340px,2fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
     .statuses{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -228,6 +234,18 @@
         <p style="font-size:13px;color:var(--muted);margin:12px 0 0;">Báo cáo theo ngày và buổi, chỉ gồm các lỗi còn hiệu lực sau xử lý khiếu nại.</p>
       </div>
       
+      <div class="card" style="margin-bottom:18px;">
+        <h3>📅 Báo cáo vi phạm cả tuần toàn trường</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
+          <label style="display:grid;gap:5px;font-weight:700;">Tuần
+            <select id="supportWeekSelect" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;"></select>
+          </label>
+          <button class="save" onclick="exportWeeklyViolations('pdf')">📄 Xuất PDF tuần</button>
+          <button class="save" onclick="exportWeeklyViolations('excel')">📊 Xuất Excel tuần</button>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin:12px 0 0;">Báo cáo theo ngày thực tế, từ thứ Hai đến Chủ Nhật, chỉ gồm lỗi còn hiệu lực sau xử lý khiếu nại.</p>
+      </div>
+
       <!-- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM -->
       <div class="card" style="margin-bottom: 18px;">
         <h3>⚠️ Bảng thống kê học sinh vi phạm</h3>
@@ -349,6 +367,10 @@
         </div>
         <span id="periodBadge" class="session">—</span>
       </div>
+      <div id="attendanceAlert" class="attendance-alert" role="status" aria-live="polite" style="display:none">
+        <div id="attendanceAlertLabel" class="alert-label"></div>
+        <div class="marquee-track"><span id="attendanceAlertText" class="marquee-text"></span></div>
+      </div>
       <div id="classChooser" class="card" style="margin-top:20px">
         <input id="classSearch" class="search" placeholder="🔎 Tìm lớp, ví dụ: 10A1" onkeyup="renderClasses(this.value)">
         <div id="classes" class="classes"></div>
@@ -467,12 +489,19 @@
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000)}
   function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
   
+  function vietnamClock(now = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(now);
+    const value = Object.fromEntries(parts.filter(part => part.type !== 'literal').map(part => [part.type, part.value]));
+    return { date: value.year + '-' + value.month + '-' + value.day,
+      minutes: Number(value.hour) * 60 + Number(value.minute) };
+  }
   function getCurrentSchoolWeek() {
-    const startDate = new Date('2026-09-07T00:00:00');
-    const now = new Date();
-    const diffDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return 1;
-    return Math.floor(diffDays / 7) + 1;
+    const days = Math.floor((Date.parse(vietnamClock().date + 'T00:00:00Z') -
+      Date.parse('2026-09-07T00:00:00Z')) / 86400000);
+    return Math.max(1, Math.floor(days / 7) + 1);
   }
 
   async function init(){
@@ -485,6 +514,7 @@
       renderClasses();
       renderHomeroomClasses();
       setupWeekDropdowns();
+      setupAttendanceAlert();
       
       const now = new Date();
       const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
@@ -505,6 +535,84 @@
       setupAdminClassSelect();
       initSlider();
     }catch(e){ toast(e.message); }
+  }
+
+  function attendanceAlertPeriod(clock) {
+    if (clock.minutes >= 15 * 60) return 'Chiều';
+    if (clock.minutes >= 8 * 60 + 10 && clock.minutes < 12 * 60) return 'Sáng';
+    return null;
+  }
+
+  let attendanceAlertRequest = 0;
+  async function refreshAttendanceAlert() {
+    const alert = $('#attendanceAlert');
+    const clock = vietnamClock();
+    const period = attendanceAlertPeriod(clock);
+    if (!period) { attendanceAlertRequest++; alert.style.display = 'none'; return; }
+    const request = ++attendanceAlertRequest;
+    const start = new Date(clock.date + (period === 'Sáng' ? 'T00:00:00+07:00' : 'T12:00:00+07:00'));
+    const end = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+    try {
+      const week = getCurrentSchoolWeek();
+      const rosterRequest = supabaseClient.from('v_competition_ranking')
+        .select('class_name').eq('week', week).order('class_name');
+      const logs = [];
+      for (let offset = 0; ; offset += 1000) {
+        const { data, error } = await supabaseClient.from('class_log')
+          .select('class_name').eq('period', period)
+          .gte('created_at', start.toISOString()).lt('created_at', end.toISOString())
+          .order('created_at', { ascending: true }).range(offset, offset + 999);
+        if (error) throw error;
+        logs.push(...(data || []));
+        if (!data || data.length < 1000) break;
+      }
+      const { data: roster, error: rosterError } = await rosterRequest;
+      if (rosterError) throw rosterError;
+      if (request !== attendanceAlertRequest || vietnamClock().date !== clock.date ||
+          attendanceAlertPeriod(vietnamClock()) !== period) return;
+      const classes = [...new Set((roster || []).map(row => row.class_name))].sort((a,b) => a.localeCompare(b,'vi',{numeric:true}));
+      const attended = new Set(logs.map(row => row.class_name));
+      const missing = classes.filter(name => !attended.has(name));
+      $('#attendanceAlertLabel').textContent = '⚠️ Chưa điểm danh buổi ' + period +
+        ' (' + (classes.length - missing.length) + '/' + classes.length + ' lớp đã điểm danh)';
+      const message = missing.length ? 'Các lớp chưa điểm danh: ' + missing.join('  •  ') :
+        'Tất cả các lớp đã điểm danh buổi ' + period + '.';
+      const ticker = $('#attendanceAlertText');
+      if (ticker.textContent !== message) {
+        ticker.textContent = message;
+        ticker.style.setProperty('--scroll-duration', Math.max(18, missing.length * 2.2) + 's');
+      }
+      alert.style.display = '';
+    } catch(error) {
+      if (request === attendanceAlertRequest) {
+        $('#attendanceAlertLabel').textContent = '⚠️ Chưa tải được trạng thái điểm danh';
+        $('#attendanceAlertText').textContent = 'Vui lòng thử tải lại trang để kiểm tra danh sách lớp.';
+        alert.style.display = '';
+      }
+    }
+  }
+
+  function scheduleAttendanceAlertBoundary() {
+    const clock = vietnamClock();
+    const today = clock.date;
+    const nextDay = new Date(Date.parse(today + 'T00:00:00Z') + 86400000).toISOString().slice(0,10);
+    const boundaries = [
+      today + 'T08:10:00+07:00', today + 'T12:00:00+07:00',
+      today + 'T15:00:00+07:00', nextDay + 'T00:00:00+07:00'
+    ].map(value => Date.parse(value));
+    const next = boundaries.find(time => time > Date.now() + 50);
+    setTimeout(() => { refreshAttendanceAlert(); scheduleAttendanceAlertBoundary(); },
+      Math.max(100, (next || Date.parse(nextDay + 'T08:10:00+07:00')) - Date.now()));
+  }
+
+  function setupAttendanceAlert() {
+    refreshAttendanceAlert();
+    scheduleAttendanceAlertBoundary();
+    setInterval(refreshAttendanceAlert, 30000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshAttendanceAlert(); });
+    supabaseClient.channel('attendance-alert')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'class_log' },
+        () => refreshAttendanceAlert()).subscribe();
   }
 
   // Các lỗi lưu theo từng mục để xử lý chính xác từng điểm trừ.
@@ -751,6 +859,8 @@
     for(let w=1; w<=45; w++) opts += `<option value="${w}">Tuần ${w}</option>`;
     $('#competitionWeekSelect').innerHTML = opts;
     $('#weeklyLogWeekSelect').innerHTML = opts;
+    $('#supportWeekSelect').innerHTML = opts;
+    $('#supportWeekSelect').value = state.currentRealWeek;
     $('#competitionWeekSelect').value = state.selectedWeek;
     $('#weeklyLogWeekSelect').value = state.selectedWeek;
   }
@@ -931,6 +1041,165 @@
       else await downloadSessionViolationExcel(report);
     } catch(e) { if (printWindow && !printWindow.closed) printWindow.close(); toast('Lỗi xuất báo cáo: ' + e.message); }
     finally { buttons.forEach(button => button.disabled = false); }
+  }
+
+  function schoolWeekBounds(week) {
+    if (!Number.isInteger(week) || week < 1 || week > 45) throw new Error('Tuần không hợp lệ.');
+    const start = new Date(Date.parse('2026-09-07T00:00:00+07:00') + (week - 1) * 7 * 86400000);
+    const end = new Date(start.getTime() + 7 * 86400000);
+    const dateLabel = date => date.toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    return { start, end, fromLabel: dateLabel(start), toLabel: dateLabel(new Date(end.getTime() - 86400000)) };
+  }
+
+  async function getWeeklyViolationReport() {
+    const week = Number($('#supportWeekSelect').value);
+    if (!Number.isInteger(week) || week < 1 || week > getCurrentSchoolWeek())
+      throw new Error('Vui lòng chọn tuần đã bắt đầu.');
+    const bounds = schoolWeekBounds(week);
+    const logs = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabaseClient.from('class_log')
+        .select('id,created_at,period,class_name,resolved,violations_json')
+        .gte('created_at', bounds.start.toISOString()).lt('created_at', bounds.end.toISOString())
+        .eq('school_year','2026-2027')
+        .order('created_at', { ascending: true }).range(offset,offset + 999);
+      if (error) throw error;
+      logs.push(...(data || []));
+      if (!data || data.length < 1000) break;
+    }
+    const rows = logs.filter(log => log.resolved !== true).flatMap(log =>
+      (log.violations_json || []).filter(student => student.name && student.status).map(student => ({
+        date: new Date(log.created_at).toLocaleDateString('vi-VN', { timeZone:'Asia/Ho_Chi_Minh' }),
+        sortTime: Date.parse(log.created_at),
+        period: log.period || '',
+        className: log.class_name || '',
+        code: student.code || '',
+        name: student.name || '',
+        status: student.status || '',
+        deduction: Number(student.deduction) || 0
+      })));
+    rows.sort((a,b) => a.sortTime - b.sortTime ||
+      a.className.localeCompare(b.className,'vi',{numeric:true}) || a.name.localeCompare(b.name,'vi'));
+    return { week, ...bounds, rows, sessions: logs.length,
+      classes: new Set(logs.map(log => log.class_name)).size,
+      totalDeduction: rows.reduce((sum,row) => sum + row.deduction,0) };
+  }
+
+  function printWeeklyViolationPdf(report, win) {
+    const bodyRows = report.rows.map((row,index) =>
+      '<tr><td class="center">' + (index+1) + '</td><td class="center">' + esc(row.date) +
+      '</td><td class="center">' + esc(row.period) + '</td><td class="center">' + esc(row.className) +
+      '</td><td class="center">' + esc(row.code) + '</td><td>' + esc(row.name) +
+      '</td><td>' + esc(row.status) + '</td><td class="center">' +
+      (row.deduction ? '-' + row.deduction : '0') + '</td></tr>').join('');
+    const html = [
+      '<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Báo cáo vi phạm tuần ' + report.week + '</title>',
+      '<style>@page{size:A4 landscape;margin:17mm 14mm 16mm 17mm}',
+      'body{font:14pt "Times New Roman",Times,serif;color:#111;margin:0;line-height:1.3}',
+      '.header{display:flex;justify-content:space-between;gap:10mm;text-align:center;font-size:14pt}',
+      '.header>div{width:48%}.rule{display:inline-block;border-bottom:1px solid #111;width:34mm;margin-top:4px}',
+      'h1{text-align:center;font-size:16pt;margin:12mm 0 2mm;line-height:1.3}',
+      '.sub{text-align:center;margin:0 0 6mm}.info{margin:0 0 4mm}',
+      'table{width:100%;table-layout:fixed;border-collapse:collapse;font:12pt "Times New Roman",Times,serif}',
+      'th,td{border:1px solid #222;padding:2.1mm 1.5mm;vertical-align:middle;overflow-wrap:break-word;word-break:normal}',
+      'thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}',
+      'th{text-align:center;font-weight:bold;background:#f4f4f4}.center{text-align:center;white-space:nowrap}',
+      '.summary{margin-top:5mm}.footer{margin-top:8mm;break-inside:avoid}',
+      '</style></head><body>',
+      '<div class="header"><div><strong>TRƯỜNG THPT LỘC NINH<br>BCH ĐOÀN TRƯỜNG</strong><br><span class="rule"></span></div>',
+      '<div><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>Độc lập - Tự do - Hạnh phúc</strong><br><span class="rule"></span></div></div>',
+      '<h1>BÁO CÁO HỌC SINH VI PHẠM TOÀN TRƯỜNG</h1>',
+      '<p class="sub">Tuần ' + report.week + ' (từ ' + report.fromLabel + ' đến ' + report.toLabel + ') · Năm học 2026–2027</p>',
+      '<p class="info">Số lượt điểm danh: ' + report.sessions + ' &nbsp;|&nbsp; Số lớp đã điểm danh: ' + report.classes + '</p>',
+      '<table><colgroup><col style="width:5%"><col style="width:10%"><col style="width:8%"><col style="width:7%"><col style="width:10%"><col style="width:18%"><col style="width:35%"><col style="width:7%"></colgroup>',
+      '<thead><tr><th>STT</th><th>Ngày</th><th>Buổi</th><th>Lớp</th><th>Mã HS</th><th>Họ và tên</th><th>Nội dung vi phạm</th><th>Điểm trừ</th></tr></thead><tbody>',
+      bodyRows || '<tr><td colspan="8" class="center">Không ghi nhận vi phạm trong tuần này.</td></tr>',
+      '</tbody></table>',
+      '<p class="summary">Số lượt học sinh vi phạm: <strong>' + report.rows.length +
+      '</strong> &nbsp;|&nbsp; Tổng điểm trừ gốc: <strong>' + report.totalDeduction + '</strong>.</p>',
+      '<p class="footer"><strong>Nơi nhận:</strong> Lớp trưởng các lớp; Giáo viên chủ nhiệm các lớp; Lưu BCH Đoàn trường.</p>',
+      '</body></html>'
+    ].join('');
+    win.onload = () => { win.focus(); win.print(); };
+    win.document.open(); win.document.write(html); win.document.close();
+  }
+
+  async function downloadWeeklyViolationExcel(report) {
+    if (!window.ExcelJS) throw new Error('Chưa tải được thư viện Excel. Vui lòng kết nối Internet rồi thử lại.');
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Vi phạm tuần ' + report.week, {
+      pageSetup: { paperSize: 9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0,
+        margins: { left:0.5,right:0.5,top:0.6,bottom:0.55,header:0.25,footer:0.25 } }
+    });
+    sheet.columns = [7,14,12,10,16,27,57,13].map(width => ({ width }));
+    sheet.mergeCells('A1:D1'); sheet.getCell('A1').value='TRƯỜNG THPT LỘC NINH';
+    sheet.mergeCells('A2:D2'); sheet.getCell('A2').value='BCH ĐOÀN TRƯỜNG';
+    sheet.mergeCells('E1:H1'); sheet.getCell('E1').value='CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM';
+    sheet.mergeCells('E2:H2'); sheet.getCell('E2').value='Độc lập - Tự do - Hạnh phúc';
+    sheet.mergeCells('A4:H4'); sheet.getCell('A4').value='BÁO CÁO HỌC SINH VI PHẠM TOÀN TRƯỜNG';
+    sheet.mergeCells('A5:H5'); sheet.getCell('A5').value=
+      'Tuần ' + report.week + ' (từ ' + report.fromLabel + ' đến ' + report.toLabel + ') · Năm học 2026–2027';
+    sheet.mergeCells('A6:H6'); sheet.getCell('A6').value=
+      'Số lượt điểm danh: ' + report.sessions + '    |    Số lớp đã điểm danh: ' + report.classes;
+    const header = sheet.getRow(8);
+    header.values=['STT','Ngày','Buổi','Lớp','Mã HS','Họ và tên','Nội dung vi phạm','Điểm trừ'];
+    header.height=30;
+    if (!report.rows.length) {
+      sheet.mergeCells('A9:H9'); sheet.getCell('A9').value='Không ghi nhận vi phạm trong tuần này.';
+    }
+    report.rows.forEach((item,index) => {
+      const row=sheet.getRow(index+9);
+      row.values=[index+1,item.date,item.period,item.className,item.code,item.name,item.status,-item.deduction];
+      row.height=Math.min(75,Math.max(26,Math.ceil(item.status.length/55)*18));
+    });
+    const last=Math.max(9,report.rows.length+8);
+    sheet.mergeCells(last+2,1,last+2,8);
+    sheet.getRow(last+2).getCell(1).value='Số lượt học sinh vi phạm: ' + report.rows.length +
+      '    |    Tổng điểm trừ gốc: ' + report.totalDeduction;
+    sheet.mergeCells(last+4,1,last+4,8);
+    sheet.getRow(last+4).getCell(1).value=
+      'Nơi nhận: Lớp trưởng các lớp; Giáo viên chủ nhiệm các lớp; Lưu BCH Đoàn trường.';
+    sheet.eachRow(row => row.eachCell({ includeEmpty:true }, cell => {
+      cell.font={ name:'Times New Roman',size:row.number>=8&&row.number<=last?12:14,
+        bold:[1,2,4,8,last+2].includes(row.number) };
+      cell.alignment={ vertical:'middle',horizontal:[1,2,4,5,8].includes(row.number)?'center':
+        cell.col===6||cell.col===7?'left':'center',wrapText:true };
+      if (row.number>=8&&row.number<=last)
+        cell.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+      if (row.number===8) cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF1F5F9'}};
+    }));
+    sheet.getRow(4).height=34;
+    sheet.getCell('A4').font={name:'Times New Roman',size:16,bold:true};
+    sheet.getRow(5).height=25;
+    sheet.pageSetup.printTitlesRow='1:8';
+    sheet.pageSetup.printArea='A1:H'+(last+4);
+    const buffer=await workbook.xlsx.writeBuffer();
+    const url=URL.createObjectURL(new Blob([buffer],{
+      type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    const anchor=document.createElement('a');
+    anchor.href=url;anchor.download='Bao_cao_vi_pham_tuan_'+report.week+'_2026-2027.xlsx';
+    document.body.appendChild(anchor);anchor.click();anchor.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }
+
+  async function exportWeeklyViolations(format) {
+    if (!state.supportToken) { toast('Vui lòng đăng nhập khu vực Hỗ trợ.'); return; }
+    const buttons=$$('#support .card button.save').filter(button => button.textContent.includes('Xuất PDF tuần') ||
+      button.textContent.includes('Xuất Excel tuần'));
+    buttons.forEach(button=>button.disabled=true);
+    const printWindow=format==='pdf'?window.open('','_blank'):null;
+    try {
+      if (format==='pdf'&&!printWindow) throw new Error('Trình duyệt đang chặn cửa sổ in.');
+      const report=await getWeeklyViolationReport();
+      if (!report.sessions) {
+        if (printWindow) printWindow.close();
+        toast('Chưa có lượt điểm danh trong tuần này.');return;
+      }
+      if (format==='pdf') printWeeklyViolationPdf(report,printWindow);
+      else await downloadWeeklyViolationExcel(report);
+    } catch(e) { if (printWindow&&!printWindow.closed) printWindow.close();
+      toast('Lỗi xuất báo cáo tuần: '+e.message); }
+    finally { buttons.forEach(button=>button.disabled=false); }
   }
 
   // --- TÁCH BIỆT 2 BẢNG Ở TAB HỖ TRỢ ---
@@ -1471,10 +1740,10 @@
       }));
 
       const payload = {
-        session_key: `${now.toISOString().split('T')[0]}|${now.getHours() < 12 ? 'Sáng' : 'Chiều'}|${state.className}`,
+        session_key: `${vietnamClock(now).date}|${vietnamClock(now).minutes < 720 ? 'Sáng' : 'Chiều'}|${state.className}`,
         class_name: state.className,
-        period: now.getHours() < 12 ? 'Sáng' : 'Chiều',
-        week: Number(state.selectedWeek || state.currentRealWeek),
+        period: vietnamClock(now).minutes < 720 ? 'Sáng' : 'Chiều',
+        week: getCurrentSchoolWeek(),
         school_year: "2026-2027",
         total_count: state.students.length,
         violation_count: violations.length,
@@ -1488,6 +1757,7 @@
 
       toast(`⚡ Lưu điểm danh thành công! (${violations.length} vi phạm)`);
       loadClass(state.className);
+      refreshAttendanceAlert();
       loadSupabaseCompetition();
 
     }catch(e){ 
