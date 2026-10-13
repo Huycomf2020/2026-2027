@@ -1,0 +1,18 @@
+[
+  {
+    "sheet": "GVBM",
+    "row": 16,
+    "originalBase": 10,
+    "originalMax": 11.0,
+    "base": 12,
+    "max": 13.2
+  },
+  {
+    "sheet": "GVBM",
+    "row": 17,
+    "originalBase": 10,
+    "originalMax": 10.0,
+    "base": 12,
+    "max": 13.2
+  }
+]

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{--navy:#062c43;--navy2:#075985;--cyan:#0891b2;--sky:#e0f2fe;--gold:#f59e0b;--ink:#102a3a;--muted:#637889;--line:#dce8ee;--card:#fff;--bg:#f4f8fb;--danger:#dc2626;--success:#059669;--radius:22px;--shadow:0 16px 45px rgba(6,44,67,.10)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 90% 0,#cffafe 0,transparent 28%),var(--bg);font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);font-size:16px}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.65}.shell{min-height:100vh;display:flex;flex-direction:column}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 90% 0,#cffafe 0,transparent 28%),var(--bg);font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);font-size:16px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.65}.shell{min-height:100vh;display:flex;flex-direction:column}
     .top{background:linear-gradient(120deg,#041f30,#075985 70%,#0e7490);color:#fff;padding:22px clamp(18px,5vw,70px);box-shadow:0 10px 35px rgba(2,32,49,.2)}
     .brand{max-width:1250px;margin:auto;display:flex;align-items:center;gap:16px}.school-logo{width:74px;height:74px;flex:0 0 74px;object-fit:contain;filter:drop-shadow(0 7px 13px rgba(0,0,0,.22))}.brand h1{font-size:clamp(19px,3vw,31px);line-height:1.25;margin:0;font-weight:800}.brand p{margin:6px 0 0;color:#bae6fd;font-size:.84rem;letter-spacing:.08em;text-transform:uppercase}
     .nav{max-width:1250px;margin:20px auto -45px;display:flex;gap:8px;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);padding:8px;border:1px solid rgba(255,255,255,.18);border-radius:18px;width:max-content;flex-wrap:wrap}.nav button{border:0;border-radius:13px;background:transparent;color:#dff7ff;font-weight:700;padding:12px 18px;transition:.2s}.nav button:hover,.nav button.active{color:var(--navy);background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.14)}
@@ -29,7 +29,8 @@
     .toast{position:fixed;right:22px;bottom:22px;max-width:min(440px,calc(100% - 44px));background:#07334a;color:#fff;border-radius:14px;padding:13px 18px;box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:.3s;z-index:80}.toast.show{transform:none;opacity:1}.toast.bad{background:#991b1b}footer{text-align:center;color:#738796;padding:22px;font-weight:600;font-size:.86rem}
     @media(max-width:850px){.achievement-layout{grid-template-columns:1fr}.tree-card{position:static}.podium{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.nav{width:100%;justify-content:stretch}.nav button{flex:1;padding:11px 7px}.rule{grid-template-columns:42px 1fr}.rule .points{grid-column:2}.school-logo{width:58px;height:58px;flex-basis:58px}.detail-placeholder{min-height:300px}}
     @media(max-width:520px){main{width:min(100% - 20px,1250px)}.top{padding-inline:12px}.nav button{font-size:.82rem}.card{padding:16px;border-radius:18px}.modal-card{padding:20px}.brand{gap:11px}.brand p{font-size:.7rem}.winner{min-height:130px}.rule{padding:15px}.userbar{align-items:flex-start}}
-  </style>
+  .field textarea,.field select,select{width:100%;padding:10px;border:1px solid #d6e1e7;border-radius:10px;background:white}.field textarea{min-height:95px}.notice{padding:12px;border-radius:10px;background:#fff4df;color:#62440b;line-height:1.6}.fields,.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.metrics{grid-template-columns:repeat(4,1fr)}.metrics div{padding:16px;background:#ecf6f1;border-radius:12px}.metrics strong{display:block;font-size:1.4rem;color:#145b46}details{margin:12px 0}summary{cursor:pointer;font-weight:bold;padding:12px}p{line-height:1.6}[hidden]{display:none!important}@media(max-width:650px){.metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -42,7 +43,7 @@
       <button class="active" data-page="rules">📜 Quy định</button>
       <button data-page="ranking">🏆 Bảng xếp hạng</button>
       <button data-page="achievements">🎖️ Thành tích</button>
-    </nav>
+    <button id="managerNav" data-page="management" hidden>Quản lý / Báo cáo</button></nav>
   </header>
 
   <main>
@@ -52,27 +53,29 @@
     </section>
 
     <section id="ranking" class="panel">
-      <div class="hero"><div><span class="eyebrow">Ghi nhận đóng góp</span><h2>Bảng vàng thành tích</h2><p>Xếp hạng cán bộ, giáo viên, nhân viên theo tổng điểm lượng hóa.</p></div><span id="dataStatus" class="status">Đang đồng bộ</span></div>
-      <div id="podium" class="podium"></div>
+      <div class="hero"><div><span class="eyebrow">Ghi nhận đóng góp</span><h2>Bảng kết quả KPI</h2><p>Ưu tiên điểm KPI công việc; xem kết quả đã duyệt theo phạm vi được phân quyền.</p></div><span id="dataStatus" class="status">Đang đồng bộ</span></div>
+      <p id="connectionNotice" class="notice"></p><div class="field"><label for="rankSearch">Tìm họ tên / tổ</label><input id="rankSearch" placeholder="Tìm kiếm"></div><div id="podium" class="podium"></div>
       <div class="card">
         <div class="card-title"><h3>Bảng xếp hạng toàn trường</h3><span id="memberCount" class="status">0 cá nhân</span></div>
-        <div class="table-wrap"><table class="ranking"><thead><tr><th>Thứ hạng</th><th>Họ và tên</th><th>Tổ / bộ phận</th><th>Thành tích</th><th>Tổng điểm</th></tr></thead><tbody id="rankingBody"><tr><td colspan="5" class="loading"><div class="loader"></div>Đang tổng hợp xếp hạng…</td></tr></tbody></table></div>
+        <div class="table-wrap"><table class="ranking"><thead><tr><th>Thứ hạng</th><th>Họ và tên</th><th>Tổ / bộ phận</th><th>KPI /70</th><th>Chung /30</th><th>Thưởng</th><th>Tổng /100</th><th>Hoàn thành / vượt</th><th>Đề xuất</th></tr></thead><tbody id="rankingBody"><tr><td colspan="5" class="loading"><div class="loader"></div>Đang tổng hợp xếp hạng…</td></tr></tbody></table></div>
       </div>
     </section>
 
     <section id="achievements" class="panel">
-      <div class="hero"><div><span class="eyebrow">Hồ sơ cá nhân</span><h2>Kho thành tích</h2><p>Chọn tiêu chí, tải minh chứng và xác nhận để ghi nhận điểm.</p></div></div>
-      <div class="achievement-layout">
+      <div class="hero"><div><span class="eyebrow">Hồ sơ cá nhân</span><h2>Kho thành tích</h2><p>Đăng ký nhiệm vụ, kê khai kết quả và gửi tự đánh giá để duyệt.</p></div></div>
+      <div class="card" id="personalSummary"></div><p><button id="refreshPersonal" class="secondary">Tải lại hồ sơ</button></p><div class="achievement-layout">
         <aside class="card tree-card">
           <div id="userBar" class="userbar"><div><strong>Chưa đăng nhập</strong><small>Vui lòng xác thực tài khoản</small></div><button class="link-btn" id="loginAgain">Đăng nhập</button></div>
-          <div class="card-title"><h3>Danh mục tiêu chí</h3><span class="status">6 nhóm</span></div>
+          <div class="card-title"><h3>Danh mục tiêu chí</h3><span class="status">Theo vai trò</span></div>
           <div id="criteriaTree" class="tree"><div class="loading"><div class="loader"></div>Đang tải danh mục…</div></div>
         </aside>
         <article id="criterionDetail" class="card detail-placeholder">
           <div><svg viewBox="0 0 96 96" aria-hidden="true"><rect x="14" y="10" width="68" height="76" rx="14" fill="#e0f2fe"/><path d="M31 33h34M31 47h34M31 61h22" stroke="#0891b2" stroke-width="6" stroke-linecap="round"/><circle cx="70" cy="69" r="16" fill="#075985"/><path d="m63 69 5 5 9-11" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Chọn một nội dung bên trái</h3><p>Thông tin điểm và khu vực tải minh chứng sẽ xuất hiện tại đây.</p></div>
         </article>
-      </div>
+      </div><div class="card" style="margin-top:20px"><details><summary>Tiêu chí chung /30</summary><div id="generalArea"></div></details><details><summary>Đề xuất điểm thưởng</summary><div id="bonusArea"></div></details></div>
     </section>
+
+<section id="management" class="panel"><div class="hero"><div><h2>Quản lý và báo cáo KPI</h2><p>BGH: toàn trường. TTCM: trong tổ. Không tự duyệt hồ sơ.</p></div></div><div class="card"><div class="field"><label for="managerPeople">Nhân sự</label><select id="managerPeople"></select></div><button id="refreshManagement" class="secondary">Tải lại</button> <button id="exportExcel" class="save">Xuất Excel chi tiết</button> <button id="exportPdf" class="save">Xuất PDF (In / Lưu PDF)</button><div id="managerDetail" style="margin-top:20px"></div></div></section>
   </main>
   <footer>THPT Lộc Ninh • Hệ thống lượng hóa năm học 2026–2027</footer>
 </div>
@@ -91,147 +94,777 @@
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<script>
-  const API_URL='https://script.google.com/macros/s/AKfycbzw4ybKD7ck9A4k0j5GX1MSk8Sb0sqjeV7P1eoAaVZdMtRQfeJm37UGs3tTtf6V1Oig/exec';
-  const DRIVE_FOLDER_ID='1t-pd9-xQD1hST9LZxHcEGJP8C8fcB8RG';
-  /* Đổi tên hành động tại đây nếu Apps Script đang dùng tên hàm khác. */
-  const ACTIONS={bootstrap:'getBootstrapData',login:'verifyAchievementAccount',profile:'getAchievementProfile',save:'saveAchievement'};
-  const state={token:'',user:null,rules:[],criteria:[],records:[],ranking:[],selected:null,loaded:false};
-  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-  const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  const keyNorm=v=>String(v??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
-  const pick=(obj,keys,fallback='')=>{if(!obj)return fallback;for(const k of keys)if(obj[k]!==undefined&&obj[k]!==null&&obj[k]!=='')return obj[k];const objectKeys=Object.keys(obj);for(const wanted of keys){const match=objectKeys.find(k=>keyNorm(k)===keyNorm(wanted));if(match&&obj[match]!==undefined&&obj[match]!==null&&obj[match]!=='')return obj[match]}return fallback};
-  function toast(message,bad=false){const el=$('#toast');el.textContent=message;el.classList.toggle('bad',bad);el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3600)}
-
-  function jsonpOnce(action,args,attempt){
-    return new Promise((resolve,reject)=>{
-      const callback='__lh_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2),script=document.createElement('script');
-      const timer=setTimeout(()=>finish(new Error('Kết nối Apps Script quá thời gian.')),30000);let done=false;
-      function finish(error,value){if(done)return;done=true;clearTimeout(timer);delete window[callback];script.remove();error?reject(error):resolve(value)}
-      window[callback]=result=>{if(result&&result.ok===false)return finish(new Error(result.error||'Yêu cầu không thành công.'));finish(null,result&&Object.prototype.hasOwnProperty.call(result,'data')?result.data:result)};
-      script.onerror=()=>finish(new Error('Kết nối Apps Script bị gián đoạn.'));
-      script.src=API_URL+'?'+new URLSearchParams({action,args:JSON.stringify(args),callback,_:Date.now()+'_'+attempt});document.head.appendChild(script);
-    });
+<div id="passwordModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="passwordTitle"><div class="modal-card"><h3 id="passwordTitle">Đổi mật khẩu</h3><form id="passwordForm"><div class="field"><label for="oldPassword">Mật khẩu hiện tại</label><input id="oldPassword" type="password" autocomplete="current-password" required></div><div class="field"><label for="newPassword">Mật khẩu mới (ít nhất 10 ký tự)</label><input id="newPassword" type="password" autocomplete="new-password" minlength="10" required></div><div class="field"><label for="confirmPassword">Xác nhận mật khẩu mới</label><input id="confirmPassword" type="password" autocomplete="new-password" required></div><div class="modal-actions"><button id="closePassword" type="button" class="secondary">Đóng</button><button class="save">Lưu mật khẩu mới</button></div></form></div></div><script id="catalogData" type="application/json">[
+  {
+    "id": "GVBM-1",
+    "role": "GVBM",
+    "title": "Xây dựng kế hoạch giáo dục môn học đối với các lớp được phân công; tham gia xây dựng, điều chỉnh kế hoạch giáo dục của tổ chuyên môn.",
+    "output": "Kế hoạch giáo dục môn học",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Văn bản ban hành và hồ sơ trình",
+    "source": "GVBM!B4"
+  },
+  {
+    "id": "GVBM-2",
+    "role": "GVBM",
+    "title": "Xây dựng kế hoạch bài dạy, học liệu và chuẩn bị phương tiện, thiết bị dạy học theo yêu cầu của chương trình và kế hoạch giáo dục nhà trường.",
+    "output": "Kế hoạch bài dạy, học liệu",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Kế hoạch bài dạy",
+    "source": "GVBM!B5"
+  },
+  {
+    "id": "GVBM-3",
+    "role": "GVBM",
+    "title": "Tổ chức dạy học đúng chương trình, yêu cầu cần đạt, đúng thời gian và bảo đảm chất lượng các tiết dạy theo thời khóa biểu, phân công chuyên môn và định mức tiết dạy theo quy định.",
+    "output": "Lịch giảng dạy / Sổ đầu bài",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Sổ đầu bài, TKB",
+    "source": "GVBM!B6"
+  },
+  {
+    "id": "GVBM-4",
+    "role": "GVBM",
+    "title": "Tổ chức kiểm tra, đánh giá thường xuyên, định kỳ và cập nhật điểm số, nhận xét học sinh",
+    "output": "Bảng điểm môn học và học bạ điện tử",
+    "sourceDue": "Theo lịch",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Dữ liệu điểm số đồng bộ trên VnEdu",
+    "source": "GVBM!B7"
+  },
+  {
+    "id": "GVBM-5",
+    "role": "GVBM",
+    "title": "6. Xây dựng đề, đáp án, hướng dẫn chấm và thực hiện kiểm tra, đánh giá kết quả học tập, sự tiến bộ của học sinh theo phân công và quy định.",
+    "output": "Đề kiểm tra, đáp án, ma trận",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Hồ sơ đề thi, đáp án",
+    "source": "GVBM!B8"
+  },
+  {
+    "id": "GVBM-6",
+    "role": "GVBM",
+    "title": "Phân tích kết quả học tập và sự tiến bộ của học sinh theo từng giai đoạn; xác định những nội dung cần điều chỉnh và đề xuất biện pháp nâng cao chất lượng dạy học.",
+    "output": "Báo cáo phân tích chất lượng",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Báo cáo chuyên môn",
+    "source": "GVBM!B9"
+  },
+  {
+    "id": "GVBM-7",
+    "role": "GVBM",
+    "title": "Thực hiện phụ đạo, hỗ trợ học sinh chưa đạt yêu cầu theo kế hoạch; bồi dưỡng học sinh giỏi, hướng dẫn nghiên cứu khoa học hoặc tham gia các kỳ thi khi được phân công.",
+    "output": "Kế hoạch & Danh sách HS",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Hồ sơ phụ đạo, bồi dưỡng HSG",
+    "source": "GVBM!B10"
+  },
+  {
+    "id": "GVBM-8",
+    "role": "GVBM",
+    "title": "Thực hiện giáo dục hòa nhập đối với học sinh thuộc phạm vi được giao; phối hợp thực hiện các biện pháp hỗ trợ phù hợp với từng đối tượng học sinh.",
+    "output": "Kế hoạch giáo dục cá nhân hóa",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Hồ sơ theo dõi HS hòa nhập",
+    "source": "GVBM!B11"
+  },
+  {
+    "id": "GVBM-9",
+    "role": "GVBM",
+    "title": "Tham gia đầy đủ sinh hoạt tổ, nhóm chuyên môn, nghiên cứu bài học, chuyên đề, dự giờ, thao giảng và các hoạt động phát triển chuyên môn theo kế hoạch.",
+    "output": "Biên bản sinh hoạt tổ/nhóm",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Biên bản họp tổ chuyên môn",
+    "source": "GVBM!B12"
+  },
+  {
+    "id": "GVBM-10",
+    "role": "GVBM",
+    "title": "Tham gia đào tạo, bồi dưỡng, tự bồi dưỡng chuyên môn, nghiệp vụ và thực hiện các yêu cầu về phát triển năng lực nghề nghiệp giáo viên.",
+    "output": "Chứng nhận / Báo cáo",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Chứng chỉ, giấy chứng nhận",
+    "source": "GVBM!B13"
+  },
+  {
+    "id": "GVBM-11",
+    "role": "GVBM",
+    "title": "Ứng dụng công nghệ thông tin, chuyển đổi số, học liệu số, thiết bị và các phương tiện dạy học phù hợp trong quá trình giảng dạy.",
+    "output": "Bài giảng điện tử / Học liệu số",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Kho học liệu số, LMS",
+    "source": "GVBM!B14"
+  },
+  {
+    "id": "GVBM-12",
+    "role": "GVBM",
+    "title": "Chủ động đổi mới phương pháp, hình thức tổ chức dạy học, kiểm tra đánh giá và khai thác hiệu quả các nguồn học liệu phục vụ dạy học.",
+    "output": "Sản phẩm đổi mới PPDH",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Báo cáo chuyên đề, sáng kiến",
+    "source": "GVBM!B15"
+  },
+  {
+    "id": "GVBM-13",
+    "role": "GVBM",
+    "title": "Tham gia các hoạt động giáo dục, hoặc các nhiệm vụ khác khi được Hiệu trưởng, Phó Hiệu trưởng  phân công.",
+    "output": "Báo cáo kết quả / Kế hoạch",
+    "sourceDue": "Theo phân công",
+    "kind": "Đột xuất",
+    "base": 12,
+    "coef": 1.1,
+    "max": 13.2,
+    "evidence": "Minh chứng phân công",
+    "source": "GVBM!B16"
+  },
+  {
+    "id": "GVBM-14",
+    "role": "GVBM",
+    "title": "Tham gia các hoạt động giáo dục, hoặc các nhiệm vụ chuyên môn khác khi được Sở Giáo dục phân công.",
+    "output": "Biên bản kiểm tra / Báo cáo",
+    "sourceDue": "Theo phân công",
+    "kind": "Đột xuất",
+    "base": 12,
+    "coef": 1.1,
+    "max": 13.2,
+    "evidence": "QĐ/Hồ sơ thực hiện nhiệm vụ",
+    "source": "GVBM!B17"
+  },
+  {
+    "id": "GVCN-1",
+    "role": "GVCN",
+    "title": "Xây dựng và thực hiện kế hoạch công tác chủ nhiệm, kế hoạch giáo dục của lớp phù hợp với kế hoạch giáo dục nhà trường.",
+    "output": "Kế hoạch công tác chủ nhiệm",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Văn bản ban hành và hồ sơ trình",
+    "source": "GVCN!B4"
+  },
+  {
+    "id": "GVCN-2",
+    "role": "GVCN",
+    "title": "Nắm bắt, cập nhật và quản lý đầy đủ, chính xác thông tin về học sinh thuộc lớp chủ nhiệm; kịp thời phát hiện những vấn đề cần quan tâm, hỗ trợ.",
+    "output": "Hồ sơ thông tin học sinh",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Sổ chủ nhiệm / CSDL học sinh",
+    "source": "GVCN!B5"
+  },
+  {
+    "id": "GVCN-3",
+    "role": "GVCN",
+    "title": "Theo dõi thường xuyên tình hình chuyên cần, học tập, rèn luyện, ý thức chấp hành nội quy và sự tiến bộ của từng học sinh.",
+    "output": "Sổ theo dõi chuyên cần",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Sổ đầu bài / Sổ điểm danh",
+    "source": "GVCN!B6"
+  },
+  {
+    "id": "GVCN-4",
+    "role": "GVCN",
+    "title": "Tổ chức tiết sinh hoạt lớp và các hoạt động giáo dục tập thể theo kế hoạch; xây dựng tập thể lớp đoàn kết, tích cực, tự quản và có ý thức trách nhiệm.",
+    "output": "Biên bản sinh hoạt lớp",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Giáo án HĐTN-HN / Sổ chủ nhiệm",
+    "source": "GVCN!B7"
+  },
+  {
+    "id": "GVCN-5",
+    "role": "GVCN",
+    "title": "Hướng dẫn ban cán sự lớp tổ chức, điều hành và quản lý các hoạt động của lớp; phát huy vai trò tự quản của học sinh.",
+    "output": "Sổ tay cán sự lớp",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Sổ phân công nhiệm vụ lớp",
+    "source": "GVCN!B8"
+  },
+  {
+    "id": "GVCN-6",
+    "role": "GVCN",
+    "title": "Tư vấn, hỗ trợ ban đầu đối với học sinh gặp khó khăn trong học tập, tâm lý, quan hệ xã hội; phối hợp với nhà trường, cha mẹ học sinh và các lực lượng có liên quan khi cần thiết.",
+    "output": "Nhật ký tư vấn tâm lý",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản tư vấn / Sổ theo dõi",
+    "source": "GVCN!B9"
+  },
+  {
+    "id": "GVCN-7",
+    "role": "GVCN",
+    "title": "Chủ động thực hiện các biện pháp hỗ trợ đối với học sinh có nguy cơ bỏ học, vi phạm nội quy, sa sút trong học tập hoặc rèn luyện; theo dõi kết quả và báo cáo nhà trường theo quy định.",
+    "output": "Hồ sơ hỗ trợ HS cá biệt",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Biên bản làm việc với PHHS, BGH",
+    "source": "GVCN!B10"
+  },
+  {
+    "id": "GVCN-8",
+    "role": "GVCN",
+    "title": "Phối hợp với giáo viên bộ môn trong theo dõi, quản lý, giáo dục và hỗ trợ học sinh; trao đổi kịp thời những vấn đề phát sinh liên quan đến học sinh.",
+    "output": "Biên bản phối hợp GVBM",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Sổ ghi chép / Sổ liên lạc",
+    "source": "GVCN!B11"
+  },
+  {
+    "id": "GVCN-9",
+    "role": "GVCN",
+    "title": "Phối hợp, trao đổi thường xuyên với cha mẹ học sinh về tình hình học tập, rèn luyện, chuyên cần và những vấn đề cần phối hợp giáo dục học sinh.",
+    "output": "Sổ liên lạc PHHS",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Nhật ký trao đổi, ứng dụng SLLĐT",
+    "source": "GVCN!B12"
+  },
+  {
+    "id": "GVCN-10",
+    "role": "GVCN",
+    "title": "Tổ chức họp cha mẹ học sinh theo kế hoạch của nhà trường; thực hiện đầy đủ nội dung, bảo đảm đúng quy định và hiệu quả phối hợp giáo dục.",
+    "output": "Biên bản họp PHHS",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản họp, danh sách điểm danh",
+    "source": "GVCN!B13"
+  },
+  {
+    "id": "GVCN-11",
+    "role": "GVCN",
+    "title": "Hướng dẫn, quản lý học sinh tham gia hoạt động trải nghiệm, hướng nghiệp và các hoạt động giáo dục khác theo kế hoạch của nhà trường.",
+    "output": "Báo cáo hoạt động trải nghiệm",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Kế hoạch, Hình ảnh minh chứng",
+    "source": "GVCN!B14"
+  },
+  {
+    "id": "GVCN-12",
+    "role": "GVCN",
+    "title": "Tổng hợp thông tin, nhận xét và thực hiện đánh giá kết quả rèn luyện của học sinh cuối học kỳ, cuối năm học theo quy định; bảo đảm khách quan, chính xác và đúng thời hạn.",
+    "output": "Kết quả đánh giá rèn luyện",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Bảng tổng hợp xếp loại trên vnedu",
+    "source": "GVCN!B15"
+  },
+  {
+    "id": "GVCN-13",
+    "role": "GVCN",
+    "title": "Hướng dẫn học sinh thực hiện quy trình bình xét, đề nghị khen thưởng; tổng hợp và báo cáo kết quả theo quy định của nhà trường.",
+    "output": "Biên bản xét khen thưởng",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Hồ sơ đề nghị khen thưởng",
+    "source": "GVCN!B16"
+  },
+  {
+    "id": "GVCN-14",
+    "role": "GVCN",
+    "title": "Tổng hợp, lập danh sách và đề xuất việc lên lớp, không lên lớp, rèn luyện trong kỳ nghỉ hè và các nội dung liên quan đến kết quả giáo dục học sinh theo quy định.",
+    "output": "Danh sách xét duyệt",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Biên bản họp xét duyệt cuối năm/hè",
+    "source": "GVCN!B17"
+  },
+  {
+    "id": "GVCN-15",
+    "role": "GVCN",
+    "title": "Cập nhật, hoàn thiện học bạ và hồ sơ học sinh của lớp chủ nhiệm đầy đủ, chính xác, đúng thời hạn; thực hiện quản lý, bảo quản thông tin, hồ sơ học sinh theo quy định.",
+    "output": "Học bạ học sinh",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Hồ sơ học bạ hoàn thiện",
+    "source": "GVCN!B18"
+  },
+  {
+    "id": "GVCN-16",
+    "role": "GVCN",
+    "title": "Thực hiện đầy đủ, chính xác và đúng thời hạn các báo cáo định kỳ, đột xuất về tình hình lớp, học sinh và công tác chủ nhiệm theo yêu cầu của nhà trường.",
+    "output": "Báo cáo tổng hợp/đột xuất",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Văn bản báo cáo / Biểu mẫu",
+    "source": "GVCN!B19"
+  },
+  {
+    "id": "TTCM-1",
+    "role": "TTCM",
+    "title": "Tham gia xây dựng kế hoạch giáo dục của nhà trường theo lĩnh vực chuyên môn được phân công.",
+    "output": "Kế hoạch giáo dục nhà trường",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Văn bản Kế hoạch trường",
+    "source": "TTCM!B4"
+  },
+  {
+    "id": "TTCM-2",
+    "role": "TTCM",
+    "title": "Xây dựng và tổ chức thực hiện kế hoạch giáo dục của tổ chuyên môn; chịu trách nhiệm về tiến độ, chất lượng và hiệu quả thực hiện kế hoạch của tổ.",
+    "output": "Kế hoạch tổ chuyên môn",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Kế hoạch tổ được duyệt",
+    "source": "TTCM!B5"
+  },
+  {
+    "id": "TTCM-3",
+    "role": "TTCM",
+    "title": "Tham mưu, đề xuất với Hiệu trưởng việc phân công giáo viên giảng dạy, làm công tác chủ nhiệm và thực hiện các nhiệm vụ chuyên môn khác phù hợp với năng lực, chuyên môn và yêu cầu của nhà trường.",
+    "output": "Phiếu/Văn bản đề xuất",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Tờ trình đề xuất BGH",
+    "source": "TTCM!B6"
+  },
+  {
+    "id": "TTCM-4",
+    "role": "TTCM",
+    "title": "Đề xuất lựa chọn, sử dụng tài liệu giáo dục, học liệu và xuất bản phẩm tham khảo phục vụ hoạt động dạy học theo quy định.",
+    "output": "Danh mục tài liệu đề xuất",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản họp tổ đề xuất",
+    "source": "TTCM!B7"
+  },
+  {
+    "id": "TTCM-5",
+    "role": "TTCM",
+    "title": "Hướng dẫn thành viên xây dựng, thực hiện và điều chỉnh kế hoạch giáo dục môn học, kế hoạch bài dạy và các nhiệm vụ chuyên môn theo yêu cầu.",
+    "output": "Biên bản / Hướng dẫn",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản sinh hoạt chuyên môn",
+    "source": "TTCM!B8"
+  },
+  {
+    "id": "TTCM-6",
+    "role": "TTCM",
+    "title": "Tổ chức sinh hoạt tổ chuyên môn theo quy định; sinh hoạt chuyên môn theo NCBH bảo đảm nội dung sinh hoạt thiết thực, hiệu quả và gắn với nâng cao chất lượng dạy học.",
+    "output": "Biên bản họp tổ",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Sổ biên bản sinh hoạt tổ",
+    "source": "TTCM!B9"
+  },
+  {
+    "id": "TTCM-7",
+    "role": "TTCM",
+    "title": "Tổ chức hội giảng, chuyên đề đổi mới phương pháp dạy học, ứng dụng công nghệ số cấp tổ/trường",
+    "output": "Kế hoạch & Báo cáo kết quả chuyên đề",
+    "sourceDue": "Theo lịch",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Kế hoạch, Biên bản dự giờ",
+    "source": "TTCM!B10"
+  },
+  {
+    "id": "TTCM-8",
+    "role": "TTCM",
+    "title": "Theo dõi, đôn đốc tiến độ thực hiện chương trình, kế hoạch giáo dục và các nhiệm vụ chuyên môn của thành viên trong tổ; kịp thời báo cáo, đề xuất xử lý những vấn đề phát sinh.",
+    "output": "Báo cáo tiến độ",
+    "sourceDue": "Hằng tuần/tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Nhật ký tổ trưởng, Sổ theo dõi",
+    "source": "TTCM!B11"
+  },
+  {
+    "id": "TTCM-9",
+    "role": "TTCM",
+    "title": "Kiểm tra hồ sơ, sản phẩm chuyên môn của thành viên theo kế hoạch; hướng dẫn khắc phục những hạn chế và theo dõi kết quả thực hiện.",
+    "output": "Biên bản kiểm tra hồ sơ",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản kiểm tra HSSS GV",
+    "source": "TTCM!B12"
+  },
+  {
+    "id": "TTCM-10",
+    "role": "TTCM",
+    "title": "Phân tích kết quả giáo dục của tổ, xác định những vấn đề cần cải thiện và đề xuất giải pháp nâng cao chất lượng dạy học.",
+    "output": "Báo cáo phân tích chất lượng",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Báo cáo thống kê, phân tích",
+    "source": "TTCM!B13"
+  },
+  {
+    "id": "TTCM-11",
+    "role": "TTCM",
+    "title": "Tham mưu đánh giá, xếp loại thi đua viên chức định kỳ quý/năm đối với giáo viên trong tổ",
+    "output": "Bảng đánh giá và phiếu nhận xét",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Bảng đánh giá và phiếu nhận xét",
+    "source": "TTCM!B14"
+  },
+  {
+    "id": "TTCM-12",
+    "role": "TTCM",
+    "title": "Quản lý, cập nhật và lưu trữ hồ sơ, dữ liệu và minh chứng hoạt động của tổ chuyên môn theo quy định.",
+    "output": "Hồ sơ tổ chuyên môn",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Hệ thống hồ sơ sổ sách tổ",
+    "source": "TTCM!B15"
+  },
+  {
+    "id": "TTCM-13",
+    "role": "TTCM",
+    "title": "Thực hiện báo cáo định kỳ, sơ kết, tổng kết và các báo cáo đột xuất về hoạt động của tổ chuyên môn theo yêu cầu của Hiệu trưởng.",
+    "output": "Báo cáo chuyên môn tổ",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Báo cáo nộp BGH",
+    "source": "TTCM!B16"
+  },
+  {
+    "id": "TPCM-1",
+    "role": "TPCM",
+    "title": "Tham gia xây dựng và thực hiện kế hoạch giáo dục của tổ chuyên môn theo lĩnh vực, nhiệm vụ được phân công.",
+    "output": "Kế hoạch giáo dục",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Bản thảo góp ý/Kế hoạch ban hành",
+    "source": "TPCM!B4"
+  },
+  {
+    "id": "TPCM-2",
+    "role": "TPCM",
+    "title": "Tổ chức triển khai các nhiệm vụ chuyên môn được Tổ trưởng phân công; phối hợp với các thành viên trong tổ để bảo đảm tiến độ và chất lượng thực hiện.",
+    "output": "Kế hoạch triển khai",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Báo cáo tiến độ/Biên bản phối hợp",
+    "source": "TPCM!B5"
+  },
+  {
+    "id": "TPCM-3",
+    "role": "TPCM",
+    "title": "Theo dõi tiến độ thực hiện chương trình, kế hoạch giáo dục và kết quả giáo dục của môn học, lĩnh vực chuyên môn được phân công; kịp thời báo cáo Tổ trưởng những vấn đề phát sinh.",
+    "output": "Báo cáo tiến độ",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Sổ theo dõi/Nhật ký tổ phó",
+    "source": "TPCM!B6"
+  },
+  {
+    "id": "TPCM-4",
+    "role": "TPCM",
+    "title": "Hỗ trợ, hướng dẫn thành viên trong tổ xây dựng, thực hiện và điều chỉnh kế hoạch giáo dục môn học, kế hoạch bài dạy và các nhiệm vụ chuyên môn theo yêu cầu.",
+    "output": "Biên bản hướng dẫn",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản sinh hoạt/Sổ ghi chép",
+    "source": "TPCM!B7"
+  },
+  {
+    "id": "TPCM-5",
+    "role": "TPCM",
+    "title": "Chuẩn bị nội dung sinh hoạt tổ chuyên môn, chuyên đề, nghiên cứu bài học và các hoạt động chuyên môn khác theo phân công của Tổ trưởng.",
+    "output": "Tài liệu chuyên đề",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Hồ sơ sinh hoạt chuyên môn",
+    "source": "TPCM!B8"
+  },
+  {
+    "id": "TPCM-6",
+    "role": "TPCM",
+    "title": "Tham gia kiểm tra hồ sơ, sản phẩm chuyên môn của thành viên theo phân công; tổng hợp những nội dung cần điều chỉnh và báo cáo Tổ trưởng để chỉ đạo thực hiện.",
+    "output": "Biên bản kiểm tra",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Phiếu/Biên bản kiểm tra HSSS",
+    "source": "TPCM!B9"
+  },
+  {
+    "id": "TPCM-7",
+    "role": "TPCM",
+    "title": "Tổng hợp số liệu, hồ sơ, minh chứng và kết quả thực hiện các nhiệm vụ chuyên môn thuộc lĩnh vực được phân công; phục vụ công tác đánh giá, sơ kết, tổng kết và báo cáo của tổ.",
+    "output": "Bảng tổng hợp dữ liệu",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Báo cáo/Biểu mẫu thống kê",
+    "source": "TPCM!B10"
+  },
+  {
+    "id": "TPCM-8",
+    "role": "TPCM",
+    "title": "Điều hành hoạt động của tổ chuyên môn hoặc các hoạt động chuyên môn cụ thể khi được Tổ trưởng phân công hoặc ủy quyền; bảo đảm hoạt động được thực hiện đúng kế hoạch và quy định.",
+    "output": "Biên bản điều hành",
+    "sourceDue": "Theo phân công",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản họp do tổ phó chủ trì",
+    "source": "TPCM!B11"
+  },
+  {
+    "id": "TPCM-9",
+    "role": "TPCM",
+    "title": "Báo cáo Tổ trưởng về tiến độ, kết quả thực hiện nhiệm vụ được giao; đề xuất giải pháp xử lý những khó khăn, vướng mắc trong quá trình thực hiện.",
+    "output": "Báo cáo công tác",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Báo cáo định kỳ nộp Tổ trưởng",
+    "source": "TPCM!B12"
+  },
+  {
+    "id": "HOANHAP-1",
+    "role": "HOANHAP",
+    "title": "Tham gia xây dựng và thực hiện kế hoạch giáo dục cá nhân đối với học sinh hòa nhập theo hồ sơ, nhu cầu, khả năng của học sinh và sự hướng dẫn của nhà trường.",
+    "output": "Kế hoạch GD cá nhân",
+    "sourceDue": "2026-08-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.2,
+    "max": 12.0,
+    "evidence": "Hồ sơ kế hoạch giáo dục cá nhân được duyệt",
+    "source": "HOA NHAP!B4"
+  },
+  {
+    "id": "HOANHAP-2",
+    "role": "HOANHAP",
+    "title": "Hỗ trợ học sinh hòa nhập trong học tập và tham gia các hoạt động giáo dục theo kế hoạch giáo dục cá nhân và nhiệm vụ được phân công; tạo điều kiện để học sinh tham gia phù hợp với khả năng.",
+    "output": "Nhật ký hỗ trợ HS",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Sổ theo dõi/Nhật ký hỗ trợ học sinh",
+    "source": "HOA NHAP!B5"
+  },
+  {
+    "id": "HOANHAP-3",
+    "role": "HOANHAP",
+    "title": "Phối hợp với giáo viên bộ môn, giáo viên chủ nhiệm và các bộ phận có liên quan trong việc điều chỉnh cách thức hỗ trợ, phương pháp, hình thức tổ chức hoạt động giáo dục phù hợp với nhu cầu của học sinh.",
+    "output": "Biên bản điều chỉnh phương pháp",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản sinh hoạt chuyên môn / Góp ý",
+    "source": "HOA NHAP!B6"
+  },
+  {
+    "id": "HOANHAP-4",
+    "role": "HOANHAP",
+    "title": "Theo dõi, ghi nhận và báo cáo sự tiến bộ của học sinh về học tập, khả năng tham gia hoạt động giáo dục và các kỹ năng cần hỗ trợ; kịp thời thông tin những khó khăn phát sinh.",
+    "output": "Báo cáo tiến độ học sinh",
+    "sourceDue": "Hằng tháng",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Sổ theo dõi sự tiến bộ / Báo cáo định kỳ",
+    "source": "HOA NHAP!B7"
+  },
+  {
+    "id": "HOANHAP-5",
+    "role": "HOANHAP",
+    "title": "Phối hợp với cha mẹ học sinh và cơ quan, đơn vị, cá nhân có chuyên môn liên quan trong quá trình hỗ trợ học sinh theo kế hoạch và sự chỉ đạo của nhà trường.",
+    "output": "Biên bản làm việc với PHHS",
+    "sourceDue": "Khi phát sinh",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Biên bản phối hợp gia đình - nhà trường",
+    "source": "HOA NHAP!B8"
+  },
+  {
+    "id": "HOANHAP-6",
+    "role": "HOANHAP",
+    "title": "Quản lý, cập nhật và bảo mật hồ sơ, thông tin liên quan đến quá trình hỗ trợ học sinh theo quy định; bảo đảm thông tin được sử dụng đúng mục đích.",
+    "output": "Hệ thống hồ sơ bảo mật",
+    "sourceDue": "Hằng tuần",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.0,
+    "max": 10.0,
+    "evidence": "Tủ lưu trữ hồ sơ / Minh chứng bảo mật",
+    "source": "HOA NHAP!B9"
+  },
+  {
+    "id": "HOANHAP-7",
+    "role": "HOANHAP",
+    "title": "Tổng hợp, báo cáo kết quả thực hiện kế hoạch hỗ trợ và đề xuất điều chỉnh biện pháp hỗ trợ khi cần thiết; thực hiện các nhiệm vụ khác theo phân công của Hiệu trưởng.",
+    "output": "Báo cáo tổng kết hỗ trợ",
+    "sourceDue": "2026-09-30",
+    "kind": "Thường xuyên",
+    "base": 10,
+    "coef": 1.1,
+    "max": 11.0,
+    "evidence": "Văn bản báo cáo tổng kết nộp Ban Giám hiệu",
+    "source": "HOA NHAP!B10"
   }
-
-  async function api(action,...args){
-    let lastError;
-    const maxAttempts=action==='getAsyncResult'?1:3;
-    for(let attempt=1;attempt<=maxAttempts;attempt++){
-      try{return await jsonpOnce(action,args,attempt)}
-      catch(error){lastError=error;if(attempt<maxAttempts)await new Promise(resolve=>setTimeout(resolve,700*attempt))}
-    }
-    throw new Error((lastError?.message||'Không kết nối được Apps Script.')+' Vui lòng thử lại.');
-  }
-
-  function postApi(action,...args){
-    return new Promise((resolve,reject)=>{
-      const requestId='lh_'+Date.now()+'_'+Math.random().toString(36).slice(2),frame=document.createElement('iframe'),form=document.createElement('form');
-      frame.name='lh_frame_'+requestId;frame.hidden=true;form.method='POST';form.action=API_URL;form.target=frame.name;form.hidden=true;
-      const fields={action,args:JSON.stringify(args),requestId};Object.entries(fields).forEach(([name,value])=>{const input=document.createElement('input');input.type='hidden';input.name=name;input.value=value;form.appendChild(input)});
-      document.body.append(frame,form);form.submit();let attempts=0;
-      const timer=setInterval(async()=>{try{const result=await api('getAsyncResult',requestId);if(result&&result.pending){if(++attempts<80)return;throw new Error('Máy chủ xử lý quá thời gian.')}clearInterval(timer);form.remove();frame.remove();result&&result.ok===false?reject(new Error(result.error||'Yêu cầu không thành công.')):resolve(result&&Object.prototype.hasOwnProperty.call(result,'data')?result.data:result)}catch(error){if(++attempts>=80){clearInterval(timer);form.remove();frame.remove();reject(error)}}},1000);
-    });
-  }
-
-  async function hashPassword(value){
-    if(!window.crypto?.subtle)throw new Error('Trình duyệt không hỗ trợ đăng nhập an toàn.');
-    const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(bytes)].map(b=>b.toString(16).padStart(2,'0')).join('');
-  }
-
-  function arrayFrom(data,keys){for(const k of keys)if(Array.isArray(data?.[k]))return data[k];return []}
-  function normalizeRule(r,i){const rawPoint=pick(r,['points','diem','điểm','diem_cong','điểm cộng','diem_tru','điểm trừ','deduction','mức trừ'],0);return{id:pick(r,['id','ma','code'],i+1),title:pick(r,['title','content','ten','noi_dung','nội dung','nội_dung','quy định','tieu_chi','tiêu chí'],'Chưa đặt tên'),description:pick(r,['description','mo_ta','mô tả','mô_tả','ghi_chu','ghi chú'],''),points:Number(String(rawPoint).replace(',','.').replace(/[^0-9.\-]/g,''))||0}}
-  function normalizeRank(r,i){return{name:pick(r,['name','ho_ten','họ_tên','Họ và tên','hoten'],`Cá nhân ${i+1}`),unit:pick(r,['unit','to','tổ','bo_phan','bộ_phận','department'],'—'),count:Number(pick(r,['count','so_thanh_tich','số_thành_tích'],0))||0,score:Number(pick(r,['score','total','tong_diem','tổng_điểm','diem'],0))||0}}
-  function normalizeCriterion(c,i){const rawPoint=pick(c,['points','diem','điểm','diem_cong','điểm cộng','mức điểm','điểm tối đa'],0);return{id:String(pick(c,['id','ma','code','mã tiêu chí'],`criterion-${i+1}`)),group:pick(c,['group','nhom','nhóm','muc_lon','mục lớn','mục_lớn','nhóm tiêu chí','nội dung lớn'],'Tiêu chí lượng hóa'),title:pick(c,['title','content','ten','nội dung','noi_dung','nội_dung','nội dung lượng hóa','tieu_chi','tiêu chí','thành tích'],'Chưa đặt tên'),points:Number(String(rawPoint).replace(',','.').replace(/[^0-9.\-]/g,''))||0,evidence:!['không','khong','no','false','0'].includes(String(pick(c,['evidence','minh_chung','minh chứng','minh_chứng'],true)).toLowerCase())}}
-  function groupCriteria(items){const map=new Map;items.forEach(item=>{if(!map.has(item.group))map.set(item.group,[]);map.get(item.group).push(item)});return [...map].map(([title,children],i)=>({title,id:'group-'+i,children}))}
-
-  async function loadBootstrap(){
-    $('#dataStatus').className='status';$('#dataStatus').textContent='Đang đồng bộ';
-    try{
-      const data=await api(ACTIONS.bootstrap);
-      state.rules=arrayFrom(data,['rules','diem_thi_dua','regulations']).map(normalizeRule);
-      state.ranking=arrayFrom(data,['ranking','bang_xep_hang','leaderboard','achievements']).map(normalizeRank).sort((a,b)=>b.score-a.score);
-      const rawCriteria=arrayFrom(data,['criteria','bang_luong_hoa','quantification']);state.criteria=rawCriteria.map(normalizeCriterion);
-      state.loaded=true;renderRules();renderRanking();renderTree();$('#dataStatus').textContent='Đã đồng bộ';
-    }catch(error){
-      state.loaded=false;renderLoadError(error.message);$('#dataStatus').className='status error';$('#dataStatus').textContent='Chưa kết nối';
-    }
-  }
-  function renderLoadError(message){
-    const content=`<div class="card empty"><b>Chưa tải được dữ liệu</b><p>${esc(message)}</p><button class="retry" onclick="loadBootstrap()">Thử lại</button></div>`;
-    $('#rulesList').innerHTML=content;$('#rankingBody').innerHTML=`<tr><td colspan="5">${content}</td></tr>`;$('#podium').innerHTML='';
-    $('#criteriaTree').innerHTML=`<div class="empty"><b>Chưa tải được danh mục</b><p>${esc(message)}</p><button class="retry" onclick="loadBootstrap()">Thử lại</button></div>`;
-  }
-  function renderRules(){
-    if(!state.rules.length){$('#rulesList').innerHTML='<div class="card empty">Chưa có quy định trong bảng <b>diem_thi_dua</b>.</div>';return}
-    $('#rulesList').innerHTML=state.rules.map((r,i)=>`<article class="rule"><div class="rule-num">${String(i+1).padStart(2,'0')}</div><div><strong>${esc(r.title)}</strong>${r.description?`<p>${esc(r.description)}</p>`:''}</div><span class="points">${r.points>0?'+':''}${r.points} điểm</span></article>`).join('');
-  }
-  function renderRanking(){
-    const top=state.ranking.slice(0,3),medals=['🥇','🥈','🥉'],classes=['gold','',''];
-    $('#podium').innerHTML=top.length?top.map((p,i)=>`<article class="winner ${classes[i]}" data-rank="${i+1}"><span class="medal">${medals[i]}</span><b>${esc(p.name)}</b><span>${esc(p.unit)}</span><strong>${p.score.toLocaleString('vi-VN')} điểm</strong></article>`).join(''):'<div class="card empty" style="grid-column:1/-1">Chưa có dữ liệu xếp hạng.</div>';
-    $('#memberCount').textContent=`${state.ranking.length} cá nhân`;
-    $('#rankingBody').innerHTML=state.ranking.length?state.ranking.map((p,i)=>`<tr><td><span class="rank-pill">${i+1}</span></td><td><b>${esc(p.name)}</b></td><td>${esc(p.unit)}</td><td>${p.count}</td><td class="score">${p.score.toLocaleString('vi-VN')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">Chưa có dữ liệu xếp hạng.</td></tr>';
-  }
-  function renderTree(){
-    const groups=groupCriteria(state.criteria);
-    if(!groups.length){$('#criteriaTree').innerHTML='<div class="empty">Chưa có tiêu chí trong bảng <b>bang_luong_hoa</b>.</div>';return}
-    $('#criteriaTree').innerHTML=groups.map((g,i)=>`<div class="tree-group ${i===0?'open':''}"><button class="tree-head" type="button"><span>${roman(i+1)}.</span><span>${esc(g.title.replace(/^([IVX]+\.?\s*)/i,''))}</span><span class="chev">›</span></button><div class="tree-children">${g.children.map(c=>`<button class="tree-item" type="button" data-id="${esc(c.id)}">${esc(c.title)}</button>`).join('')}</div></div>`).join('');
-    $$('.tree-head').forEach(btn=>btn.onclick=()=>btn.closest('.tree-group').classList.toggle('open'));
-    $$('.tree-item').forEach(btn=>btn.onclick=()=>selectCriterion(btn.dataset.id,btn));
-  }
-  function roman(n){return ['I','II','III','IV','V','VI'][n-1]||n}
-  function selectCriterion(id,button){state.selected=state.criteria.find(c=>c.id===id);$$('.tree-item').forEach(b=>b.classList.toggle('active',b===button));renderDetail()}
-  function renderDetail(){
-    const c=state.selected;if(!c)return;
-    const records=state.records.filter(r=>String(pick(r,['criterionId','criterion_id','ma_tieu_chi'],''))===c.id);
-    $('#criterionDetail').className='card detail';
-    $('#criterionDetail').innerHTML=`<span class="eyebrow">Nội dung đang chọn</span><h3>${esc(c.title)}</h3><p class="path">${esc(c.group)}</p><div class="score-box"><div class="score-icon">✦</div><div><small>Điểm cộng của tiêu chí</small><strong>${c.points>0?'+':''}${c.points} điểm</strong></div></div><div class="upload"><label for="evidenceFile">Tải minh chứng ${c.evidence?'':'(không bắt buộc)'}</label><p>PDF, Word hoặc ảnh; tối đa 10 MB. Tên tệp sẽ tự thêm họ tên ở phía trước và lưu vào thư mục minh chứng của trường.</p><div class="file-picker"><input id="evidenceFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,application/pdf,image/*"></div><div id="selectedFile" class="selected-file">Chưa chọn tệp.</div></div><div class="save-row"><button id="confirmAchievement" class="save">✓ Xác nhận thành tích</button></div><div class="records"><h4>Đã lưu ở tiêu chí này</h4><div class="record-list">${records.length?records.map(r=>`<div class="record"><div><b>${esc(pick(r,['fileName','ten_file'],'Minh chứng'))}</b><small>${esc(pick(r,['createdAt','ngay_tao','date'],'Đã ghi nhận'))}</small></div><span class="record-score">+${c.points}</span></div>`).join(''):'<div class="empty" style="padding:18px">Chưa có minh chứng đã lưu.</div>'}</div></div>`;
-    $('#evidenceFile').onchange=e=>{$('#selectedFile').textContent=e.target.files[0]?e.target.files[0].name:'Chưa chọn tệp.'};$('#confirmAchievement').onclick=saveAchievement;
-  }
-
-  function openLogin(){
-    $('#loginModal').classList.add('open');setTimeout(()=>$('#email').focus(),60)
-  }
-  function closeLogin(){if(!state.user)openPage('rules');$('#loginModal').classList.remove('open')}
-  async function login(event){
-    event.preventDefault();const btn=$('#loginButton'),email=$('#email').value.trim(),password=$('#password').value;
-    btn.disabled=true;btn.textContent='Đang xác thực…';
-    try{
-      const result=await api(ACTIONS.login,email,await hashPassword(password));
-      if(!result||result.valid===false)throw new Error(result?.message||'Email hoặc mật khẩu không chính xác.');
-      state.token=pick(result,['token','accessToken'],'');state.user={name:pick(result,['name','ho_ten','họ_tên'],email.split('@')[0]),email:pick(result,['email'],email),unit:pick(result,['unit','to','tổ','bo_phan'],'')};
-      $('#loginModal').classList.remove('open');renderUser();await loadProfile();toast('Đăng nhập thành công.');
-    }catch(error){toast(error.message,true)}finally{btn.disabled=false;btn.textContent='Đăng nhập'}
-  }
-  function renderUser(){
-    $('#userBar').innerHTML=`<div><strong>${esc(state.user.name)}</strong><small>${esc(state.user.unit||state.user.email)}</small></div><button class="link-btn" id="logout">Đăng xuất</button>`;$('#logout').onclick=()=>{state.token='';state.user=null;state.records=[];renderUser();openPage('rules');toast('Đã đăng xuất.')}
-  }
-  async function loadProfile(){
-    try{const data=await api(ACTIONS.profile,state.token);const criteria=arrayFrom(data,['criteria','bang_luong_hoa','quantification']);if(criteria.length){state.criteria=criteria.map(normalizeCriterion);renderTree()}state.records=arrayFrom(data,['records','achievements','thanh_tich']);if(state.selected)renderDetail()}catch(error){toast(error.message,true)}
-  }
-  function fileToBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader;reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('Không đọc được tệp.'));reader.readAsDataURL(file)})}
-  function safeFileName(name){return name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^a-zA-Z0-9._-]+/g,'_')}
-  async function saveAchievement(){
-    if(!state.user)return openLogin();const c=state.selected,file=$('#evidenceFile').files[0];
-    if(c.evidence&&!file)return toast('Vui lòng chọn tệp minh chứng.',true);if(file&&file.size>10*1024*1024)return toast('Tệp vượt quá 10 MB.',true);
-    const btn=$('#confirmAchievement');btn.disabled=true;btn.textContent='Đang lưu…';
-    try{
-      let fileData=null;if(file){const prefix=safeFileName(state.user.name);fileData={name:`${prefix}_${safeFileName(file.name)}`,originalName:file.name,mimeType:file.type||'application/octet-stream',base64:await fileToBase64(file)}}
-      const payload={criterionId:c.id,criterionTitle:c.title,group:c.group,points:c.points,file:fileData,driveFolderId:DRIVE_FOLDER_ID};
-      const result=await postApi(ACTIONS.save,payload,state.token);state.records.push(result||{criterionId:c.id,fileName:fileData?.name||'Không có tệp',createdAt:new Date().toLocaleString('vi-VN')});renderDetail();toast('Đã lưu thành tích và cộng điểm.');loadBootstrap();
-    }catch(error){toast(error.message,true)}finally{if($('#confirmAchievement')){$('#confirmAchievement').disabled=false;$('#confirmAchievement').textContent='✓ Xác nhận thành tích'}}
-  }
-
-  function openPage(id){
-    if(id==='achievements'&&!state.user){openLogin();return}
-    $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));window.scrollTo({top:0,behavior:'smooth'})
-  }
-  $$('.nav button').forEach(btn=>btn.onclick=()=>openPage(btn.dataset.page));
-  $('#loginForm').onsubmit=login;$('#closeLogin').onclick=closeLogin;$('#loginAgain').onclick=openLogin;
-  $('#forgotPassword').onclick=()=>$('#helpPhone').classList.toggle('show');
-  $('#loginModal').onclick=e=>{if(e.target===$('#loginModal')&&state.user)$('#loginModal').classList.remove('open')};
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.user)$('#loginModal').classList.remove('open')});
-  loadBootstrap();
-</script>
+]</script>
+<script src="kpi/core.js"></script>
+<script src="kpi/reports.js"></script>
+<script src="kpi/app.js"></script>
 </body>
 </html>

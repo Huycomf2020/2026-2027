@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),K=require('../kpi/core.js');
+const task=(p={})=>({base:10,coef:1,progress:100,quality:100,inPlan:true,planStatus:'approved',reviewStatus:'approved',completed:true,due:'2027-05-30',completedAt:'2027-05-20',...p});
+assert.equal(K.score(task({quality:80})).actual,8.6);
+assert.equal(K.score(task({base:12,coef:1.1,progress:80,quality:80})).actual,10.56);
+assert.equal(K.score(task({coef:1.2,progress:60,quality:60})).actual,7.2);
+assert.throws(()=>K.score(task({quality:90})));
+assert.equal(K.summarize([],30,7).kpi,null);
+assert.equal(K.summarize([task({inPlan:false})],30,7).total,null);
+assert.equal(K.summarize([task(),task({inPlan:false})],30,7).kpi,70);
+assert.equal(K.summarize([task()],30,100).total,100);
+assert.equal(K.summarize([task({quality:60,progress:60})],30,7).reward,4.2);
+assert.equal(K.summarize([task(),task({reviewStatus:'pending'})],30,0).kpi,35);
+assert.equal(K.summarize([task(),task({reviewStatus:'pending'})],30,0).excellentEligible,false);
+assert.equal(K.summarize([task()],null,0).total,null);
+assert.equal(K.summarize([task(),task({cancelled:true})],30,0).A,10);
+assert.equal(K.summarize([task({completedAt:'2027-05-30'})],30,7).exceeded,0);
+assert.equal(K.summarize([task()],30,0).excellentEligible,true);
+console.log('Core boundary checks passed');
