@@ -250,6 +250,18 @@
       <!-- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM -->
       <div class="card" style="margin-bottom: 18px;">
         <h3>⚠️ Bảng thống kê học sinh vi phạm</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 14px;">
+          <select id="violationClassFilter" onchange="renderViolationStats()" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;font-weight:700;">
+            <option value="ALL">Tất cả lớp</option>
+          </select>
+          <select id="violationSort" onchange="renderViolationStats()" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;font-weight:700;">
+            <option value="count_desc">Số lần vi phạm: cao → thấp</option>
+            <option value="deduction_desc">Điểm trừ: cao → thấp</option>
+            <option value="class_asc">Lớp: A → Z</option>
+          </select>
+          <button class="save" onclick="downloadViolationStatsExcel()" style="background:linear-gradient(120deg,#16a34a,#15803d);">📊 Tải Excel</button>
+          <button class="save" onclick="downloadViolationStatsPdf()" style="background:linear-gradient(120deg,#dc2626,#991b1b);">📄 Tải PDF</button>
+        </div>
         <div class="table-wrap">
           <table class="ranking">
             <thead>
@@ -471,10 +483,10 @@
 
 <script>
   const SUPABASE_URL = 'https://pkuhkuyumrvrcseqlble.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdWhrdXl1bXJ2cmNzZXFsYmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNzcxNzYsImV4cCI6MjEwNTY1MzE3Nn0.TmyeZTzyVUrUTcMmWjAPFRMojUzpaxTS35HlvtyYhHI';
+  const SUPABASE_ANON = 'sb_publishable_p-7kNFpL90IFdJ-lsoZywQ_XzVrWuSU';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  const state={supabaseRules:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:3, currentRealWeek: 3, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
+  const state={supabaseRules:[],violationStats:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:3, currentRealWeek: 3, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
   const recoveryStorageKey = 'local_recovery_counts_from_20260928_week4';
   let localRecoveryCounts = JSON.parse(localStorage.getItem(recoveryStorageKey) || '{}');
@@ -884,7 +896,7 @@
 
   async function loadSupabaseRules() {
     try {
-      const { data } = await supabaseClient.from('rules').select('*').order('stt', { ascending: true });
+      const { data } = await supabaseClient.from('rules').select('*').eq('active', true).order('stt', { ascending: true });
       state.supabaseRules = data || [];
     } catch(e) {}
     renderRules();
@@ -1203,6 +1215,75 @@
     finally { buttons.forEach(button=>button.disabled=false); }
   }
 
+  function getVisibleViolationStats() {
+    const className = $('#violationClassFilter')?.value || 'ALL';
+    const sortMode = $('#violationSort')?.value || 'count_desc';
+    const rows = (state.violationStats || []).filter(item => className === 'ALL' || item.className === className);
+    return rows.sort((a,b) => {
+      if (sortMode === 'deduction_desc') return b.totalDeduction - a.totalDeduction || b.count - a.count;
+      if (sortMode === 'class_asc') return a.className.localeCompare(b.className,'vi',{numeric:true}) || b.count - a.count;
+      return b.count - a.count || b.totalDeduction - a.totalDeduction || a.className.localeCompare(b.className,'vi',{numeric:true});
+    });
+  }
+
+  function renderViolationStats() {
+    const list = getVisibleViolationStats();
+    if (!list.length) {
+      $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--muted);">Không có học sinh vi phạm theo điều kiện đã chọn.</td></tr>';
+      return;
+    }
+    $('#violationTableBody').innerHTML = list.map(item => {
+      const rKey = item.className + '_' + item.name;
+      const rCount = localRecoveryCounts[rKey] || 0;
+      const btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã khắc phục (${rCount} lần)`;
+      return `<tr>
+        <td><b>${esc(item.className)}</b></td><td><small>${esc(item.code)}</small></td><td><b>${esc(item.name)}</b></td>
+        <td><span class="badge" style="background:#fee2e2;color:#dc2626;">${item.count} lần</span></td>
+        <td><strong style="color:#dc2626;">-${item.totalDeduction}đ</strong></td>
+        <td><small>${esc(item.errors.join('; '))}</small></td>
+        <td><span class="badge" style="background:${rCount>0?'#d1fae5':'#f1f5f9'};color:${rCount>0?'#065f46':'#64748b'};font-weight:800;">${rCount} lần</span></td>
+        <td><button class="btn-remove-error" data-class="${esc(item.className)}" data-name="${esc(item.name)}" onclick="handleResolveStudent(this.dataset.class,this.dataset.name)">${btnText}</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function violationExportRows() {
+    return getVisibleViolationStats().map((item,index) => ({
+      'STT': index + 1,
+      'Lớp': item.className,
+      'Mã học sinh': item.code,
+      'Họ và tên': item.name,
+      'Số lần vi phạm': item.count,
+      'Tổng điểm trừ': item.totalDeduction,
+      'Chi tiết các lỗi': item.errors.join('; '),
+      'Số lần khắc phục': localRecoveryCounts[item.className + '_' + item.name] || 0
+    }));
+  }
+
+  function downloadViolationStatsExcel() {
+    const rows = violationExportRows();
+    if (!rows.length) return toast('Không có dữ liệu để xuất.');
+    const sheet = XLSX.utils.json_to_sheet(rows);
+    sheet['!cols'] = [{wch:6},{wch:10},{wch:16},{wch:28},{wch:16},{wch:16},{wch:70},{wch:18}];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook,sheet,'Thong ke vi pham');
+    const className = $('#violationClassFilter').value;
+    XLSX.writeFile(workbook,`Thong_ke_vi_pham_${className==='ALL'?'toan_truong':className}.xlsx`);
+    toast('Đã tải báo cáo Excel.');
+  }
+
+  function downloadViolationStatsPdf() {
+    const rows = violationExportRows();
+    if (!rows.length) return toast('Không có dữ liệu để xuất.');
+    const className = $('#violationClassFilter').value;
+    const body = rows.map(r=>`<tr><td>${r.STT}</td><td>${esc(r['Lớp'])}</td><td>${esc(r['Mã học sinh'])}</td><td>${esc(r['Họ và tên'])}</td><td>${r['Số lần vi phạm']}</td><td>-${r['Tổng điểm trừ']}</td><td>${esc(r['Chi tiết các lỗi'])}</td><td>${r['Số lần khắc phục']}</td></tr>`).join('');
+    const win = window.open('','_blank');
+    if (!win) return toast('Trình duyệt đang chặn cửa sổ xuất PDF.');
+    win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Thống kê vi phạm</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h2,p{text-align:center}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #555;padding:6px;text-align:left}th{background:#eee}@page{size:A4 landscape;margin:12mm}</style></head><body><h2>BẢNG THỐNG KÊ HỌC SINH VI PHẠM</h2><p>${className==='ALL'?'Toàn trường':'Lớp '+esc(className)} — sắp xếp theo điều kiện đang chọn</p><table><thead><tr><th>STT</th><th>Lớp</th><th>Mã HS</th><th>Họ và tên</th><th>Số lần</th><th>Điểm trừ</th><th>Chi tiết lỗi</th><th>Khắc phục</th></tr></thead><tbody>${body}</tbody></table></body></html>`);
+    win.document.close();
+    win.onload=()=>win.print();
+  }
+
   // --- TÁCH BIỆT 2 BẢNG Ở TAB HỖ TRỢ ---
   async function loadViolationsData() {
     $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
@@ -1234,31 +1315,12 @@
         });
       });
 
-      const list = Object.values(studentMap);
-      if (list.length === 0) {
-        $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color:var(--muted);">Không có học sinh vi phạm.</td></tr>';
-      } else {
-        $('#violationTableBody').innerHTML = list.map((item) => {
-          const rKey = item.className + '_' + item.name;
-          const rCount = localRecoveryCounts[rKey] || 0;
-          const btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã khắc phục (${rCount} lần)`;
-
-          return `
-            <tr>
-              <td><b>${esc(item.className)}</b></td>
-              <td><small>${esc(item.code)}</small></td>
-              <td><b>${esc(item.name)}</b></td>
-              <td><span class="badge" style="background:#fee2e2; color:#dc2626;">${item.count} lần</span></td>
-              <td><strong style="color:#dc2626;">-${item.totalDeduction}đ</strong></td>
-              <td><small>${esc(item.errors.join('; '))}</small></td>
-              <td><span class="badge" style="background:${rCount > 0 ? '#d1fae5' : '#f1f5f9'}; color:${rCount > 0 ? '#065f46' : '#64748b'}; font-weight:800;">${rCount} lần</span></td>
-              <td>
-                <button class="btn-remove-error" onclick="handleResolveStudent('${item.className}', '${esc(item.name)}')">${btnText}</button>
-              </td>
-            </tr>
-          `;
-        }).join('');
-      }
+      state.violationStats = Object.values(studentMap);
+      const classFilter = $('#violationClassFilter');
+      const selectedClass = classFilter.value || 'ALL';
+      classFilter.innerHTML = '<option value="ALL">Tất cả lớp</option>' + state.classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+      classFilter.value = state.classes.includes(selectedClass) ? selectedClass : 'ALL';
+      renderViolationStats();
 
       // --- BẢNG 2: BẢNG DUYỆT XỬ LÝ & GỠ LỖI VI PHẠM [KHIẾU NẠI] ---
       const complaintLogs = (data || []).filter(log => log.complaint_note);
@@ -1593,7 +1655,7 @@
     $('#students').innerHTML = '<div class="loader"></div>';
     
     try {
-      const { data: studentList, error } = await supabaseClient.from('students').select('*').eq('class_name', cls).order('stt', { ascending: true });
+      const { data: studentList, error } = await supabaseClient.from('students').select('*').eq('active', true).eq('class_name', cls).order('stt', { ascending: true });
       if (error) throw error;
 
       state.students = (studentList || []).map(s => ({
@@ -2015,3 +2077,5 @@
 </script>
 </body>
 </html>
+
+
