@@ -41,10 +41,9 @@
     .attendance-head{display:flex;justify-content:space-between;gap:15px;align-items:center}
     .attendance-alert{margin:18px 0 0;border:1px solid #fecaca;border-radius:14px;background:#fff1f2;color:#991b1b;overflow:hidden}
     .attendance-alert .alert-label{padding:9px 14px;font-weight:800;background:#fee2e2}
-    .attendance-alert .marquee-track{overflow:hidden;white-space:nowrap;padding:12px 0}
-    .attendance-alert .marquee-text{display:inline-block;padding-left:100%;font-weight:700;animation:attendance-scroll var(--scroll-duration,40s) linear infinite}
-    @keyframes attendance-scroll{to{transform:translateX(-100%)}}
-    @media(prefers-reduced-motion:reduce){.attendance-alert .marquee-text{animation:none;padding-left:14px;white-space:normal}.attendance-alert .marquee-track{white-space:normal}}.session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
+    .attendance-alert .marquee-track{overflow:visible;white-space:normal;padding:12px 20px}
+    .attendance-alert .marquee-text{display:block;padding-left:0;font-weight:700;animation:none;white-space:normal;line-height:1.55}
+    .session{background:#ecfeff;color:#0e7490;padding:10px 14px;border-radius:13px;font-weight:700}.search{width:100%;margin:18px 0;padding:14px 17px;border:1px solid #d8e6ed;border-radius:14px;outline:none}.search:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #cffafe}.classes{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px}.class-btn{border:1px solid #dce8ee;background:#fff;padding:12px;border-radius:13px;font-weight:800;color:var(--navy)}.class-btn:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
     
     .student{display:grid;grid-template-columns:50px minmax(180px,1.2fr) minmax(340px,2fr);align-items:center;gap:12px;padding:14px;border-bottom:1px solid #edf2f5}.student-name b{display:block}.student-name small{color:var(--muted)}
     .statuses{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -101,7 +100,7 @@
       <button data-page="rules">📜 Quy định</button>
       <button data-page="attendance">✅ Điểm danh</button>
       <button class="active" data-page="competition">🏆 Thi đua</button>
-      <button data-page="homeroom">🏫 GVCN & Sơ đồ lớp</button>
+      <button data-page="homeroom">🏫 GVCN</button>
       <button data-page="adminLog">👁️ BGH & GVCN</button>
       <button data-page="support">🛠️ Hỗ trợ</button>
     </nav>
@@ -162,11 +161,35 @@
       </div>
     </section>
 
-    <!-- TAB GVCN & SƠ ĐỒ LỚP -->
+    <!-- TAB GVCN -->
     <section id="homeroom" class="panel">
-      <div class="hero"><div><h2>🏫 Thông tin GVCN & Sơ đồ lớp</h2><p>Bấm chọn lớp để xem thông tin giáo viên chủ nhiệm và sơ đồ chỗ ngồi</p></div></div>
-      <div class="card">
-        <div id="homeroomClasses" class="classes"></div>
+      <div class="hero"><div><h2>🏫 Cổng thông tin GVCN</h2><p>Giáo viên chủ nhiệm đăng nhập để theo dõi vi phạm và kết quả xử lý của học sinh lớp mình</p></div></div>
+      <div id="gvcnLoginCard" class="card" style="max-width:620px;margin:auto;">
+        <h3>🔐 Đăng nhập GVCN</h3>
+        <label style="display:grid;gap:6px;font-weight:700;margin-top:12px;">Lớp
+          <select id="gvcnClassSelect" onchange="updateGvcnEmail()" style="padding:12px;border:1px solid #dce8ee;border-radius:12px;"></select>
+        </label>
+        <label style="display:grid;gap:6px;font-weight:700;margin-top:12px;">Tài khoản
+          <input id="gvcnEmail" type="email" readonly style="padding:12px;border:1px solid #dce8ee;border-radius:12px;background:#f1f5f9;">
+        </label>
+        <label style="display:grid;gap:6px;font-weight:700;margin-top:12px;">Mật khẩu
+          <input id="gvcnPassword" type="password" placeholder="Mật khẩu trong sheet gvcn" style="padding:12px;border:1px solid #dce8ee;border-radius:12px;">
+        </label>
+        <button id="gvcnLoginButton" class="save" onclick="loginGvcn()" style="margin-top:16px;">Đăng nhập</button>
+      </div>
+      <div id="gvcnPortal" style="display:none;">
+        <div class="card" style="margin-bottom:18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <div><h3 id="gvcnPortalTitle" style="margin:0;">Vi phạm của lớp</h3><small id="gvcnAccountBadge"></small></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <select id="gvcnWeekSelect" onchange="loadGvcnViolations()" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;"></select>
+            <button class="save" onclick="loadGvcnViolations()">🔄 Cập nhật</button>
+            <button class="secondary" onclick="logoutGvcn()">Đăng xuất</button>
+          </div>
+        </div>
+        <div class="card"><div class="table-wrap"><table class="ranking">
+          <thead><tr><th>Ngày</th><th>Buổi</th><th>Mã HS</th><th>Họ và tên</th><th>Nội dung vi phạm</th><th>Điểm trừ</th><th>Trạng thái xử lý</th></tr></thead>
+          <tbody id="gvcnViolationBody"><tr><td colspan="7" style="text-align:center;padding:20px;">Vui lòng chọn tuần.</td></tr></tbody>
+        </table></div></div>
       </div>
     </section>
 
@@ -245,6 +268,23 @@
           <button class="save" onclick="exportWeeklyViolations('excel')">📊 Xuất Excel tuần</button>
         </div>
         <p style="font-size:13px;color:var(--muted);margin:12px 0 0;">Báo cáo theo ngày thực tế, từ thứ Hai đến Chủ Nhật, chỉ gồm lỗi còn hiệu lực sau xử lý khiếu nại.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <h3>📨 Phiếu thông báo vi phạm gửi GVCN</h3>
+        <p style="font-size:13px;color:var(--muted);margin-top:-6px;">Chọn tuần, lớp và có thể chọn một học sinh; để “Toàn bộ học sinh” nếu cần lập phiếu chung cho lớp.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;">
+          <label style="display:grid;gap:5px;font-weight:700;">Tuần
+            <select id="noticeWeekSelect" onchange="loadNoticeStudents()" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;"></select>
+          </label>
+          <label style="display:grid;gap:5px;font-weight:700;">Lớp
+            <select id="noticeClassSelect" onchange="loadNoticeStudents()" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;"></select>
+          </label>
+          <label style="display:grid;gap:5px;font-weight:700;min-width:240px;">Học sinh
+            <select id="noticeStudentSelect" style="padding:10px;border:1px solid #dce8ee;border-radius:10px;"><option value="ALL">Toàn bộ học sinh vi phạm</option></select>
+          </label>
+          <button class="save" onclick="printViolationNotice()">📄 Xuất phiếu PDF</button>
+        </div>
       </div>
 
       <!-- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM -->
@@ -486,7 +526,7 @@
   const SUPABASE_ANON = 'sb_publishable_p-7kNFpL90IFdJ-lsoZywQ_XzVrWuSU';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-  const state={supabaseRules:[],violationStats:[],token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:3, currentRealWeek: 3, classes: ['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
+  const state={supabaseRules:[],violationStats:[],recoveryCounts:{},token:'',supportToken:'',assignedClass:'',userEmail:'',students:[],chart:null,selectedWeek:3,currentRealWeek:3,gvcnClass:'',gvcnEmail:'',classes:['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','11A14','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14'],gvcnClasses:['10A1','10A2','10A3','10A4','10A5','10A6','10A7','10A8','10A9','10A10','10A11','10A12','11A1','11A2','11A3','11A4','11A5','11A6','11A7','11A8','11A9','11A10','11A11','11A12','11A13','12A1','12A2','12A3','12A4','12A5','12A6','12A7','12A8','12A9','12A10','12A11','12A12','12A13','12A14']};
   let activeStudentForModal = null;
   const recoveryStorageKey = 'local_recovery_counts_from_20260928_week4';
   let localRecoveryCounts = JSON.parse(localStorage.getItem(recoveryStorageKey) || '{}');
@@ -525,7 +565,7 @@
       await loadSupabaseRules();
       await loadSliderImagesFromSupabase();
       renderClasses();
-      renderHomeroomClasses();
+      setupGvcnPortal();
       setupWeekDropdowns();
       setupAttendanceAlert();
       
@@ -873,7 +913,11 @@
     $('#competitionWeekSelect').innerHTML = opts;
     $('#weeklyLogWeekSelect').innerHTML = opts;
     $('#supportWeekSelect').innerHTML = opts;
+    $('#noticeWeekSelect').innerHTML = opts;
+    $('#gvcnWeekSelect').innerHTML = opts;
     $('#supportWeekSelect').value = state.currentRealWeek;
+    $('#noticeWeekSelect').value = state.currentRealWeek;
+    $('#gvcnWeekSelect').value = state.currentRealWeek;
     $('#competitionWeekSelect').value = state.selectedWeek;
     $('#weeklyLogWeekSelect').value = state.selectedWeek;
   }
@@ -1064,8 +1108,8 @@
     return { start, end, fromLabel: dateLabel(start), toLabel: dateLabel(new Date(end.getTime() - 86400000)) };
   }
 
-  async function getWeeklyViolationReport() {
-    const week = Number($('#supportWeekSelect').value);
+  async function getWeeklyViolationReport(weekOverride) {
+    const week = Number(weekOverride ?? $('#supportWeekSelect').value);
     if (!Number.isInteger(week) || week < 1 || week > getCurrentSchoolWeek())
       throw new Error('Vui lòng chọn tuần đã bắt đầu.');
     const bounds = schoolWeekBounds(week);
@@ -1215,6 +1259,50 @@
     finally { buttons.forEach(button=>button.disabled=false); }
   }
 
+  async function loadNoticeStudents(){
+    const select=$('#noticeStudentSelect');
+    if(!select)return;
+    select.innerHTML='<option value="ALL">Đang tải danh sách...</option>';
+    try{
+      const week=Number($('#noticeWeekSelect').value)||state.currentRealWeek;
+      const className=$('#noticeClassSelect').value;
+      const report=await getWeeklyViolationReport(week);
+      const map=new Map();report.rows.filter(r=>r.className===className).forEach(r=>{
+        const key=(r.code||r.name)+'|'+r.name;if(!map.has(key))map.set(key,{code:r.code,name:r.name});
+      });
+      state.noticeStudents=[...map.values()].sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+      select.innerHTML='<option value="ALL">Toàn bộ học sinh vi phạm</option>'+state.noticeStudents.map((s,i)=>`<option value="${i}">${esc(s.name)}${s.code?' — '+esc(s.code):''}</option>`).join('');
+    }catch(e){select.innerHTML='<option value="ALL">Toàn bộ học sinh vi phạm</option>';toast('Không tải được danh sách học sinh: '+e.message)}
+  }
+
+  async function printViolationNotice(){
+    if(!state.supportToken)return toast('Vui lòng đăng nhập khu vực Hỗ trợ.');
+    const win=window.open('','_blank');
+    if(!win)return toast('Trình duyệt đang chặn cửa sổ in.');
+    try{
+      const week=Number($('#noticeWeekSelect').value),className=$('#noticeClassSelect').value;
+      const selected=$('#noticeStudentSelect').value;
+      const report=await getWeeklyViolationReport(week);
+      let rows=report.rows.filter(r=>r.className===className);
+      let selectedStudent=null;
+      if(selected!=='ALL'){
+        selectedStudent=(state.noticeStudents||[])[Number(selected)];
+        if(selectedStudent)rows=rows.filter(r=>(r.code&&r.code===selectedStudent.code)||r.name===selectedStudent.name);
+      }
+      if(!rows.length){win.close();return toast('Không có vi phạm phù hợp để lập phiếu.');}
+      const {data:recoveries}=await supabaseClient.from('violation_recoveries').select('student_code,student_name,note,handled_at').eq('class_name',className).eq('week',week);
+      const recoveryMap={};(recoveries||[]).forEach(r=>{const k=String(r.student_code||r.student_name).toLowerCase();(recoveryMap[k]??=[]).push(r)});
+      const tableRows=rows.map((r,i)=>{
+        const handled=recoveryMap[String(r.code||r.name).toLowerCase()]||[];
+        return `<tr><td class="c">${i+1}</td><td class="c">${esc(r.date)}</td><td class="c">${esc(r.period)}</td><td class="c">${esc(r.code||'—')}</td><td>${esc(r.name)}</td><td>${esc(r.status)}</td><td class="c">-${r.deduction}</td><td>${handled.length?'Đã ghi nhận khắc phục'+(handled[0].note?': '+esc(handled[0].note):''):'Chưa ghi nhận khắc phục'}</td></tr>`;
+      }).join('');
+      const now=new Date(),day=now.toLocaleString('vi-VN',{day:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}),month=now.toLocaleString('vi-VN',{month:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}),year=now.toLocaleString('vi-VN',{year:'numeric',timeZone:'Asia/Ho_Chi_Minh'});
+      const subject=selectedStudent?`học sinh <strong>${esc(selectedStudent.name)}</strong>, lớp <strong>${esc(className)}</strong>`:`học sinh lớp <strong>${esc(className)}</strong>`;
+      const html=`<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Phiếu báo lỗi ${esc(className)}</title><style>@page{size:A4 portrait;margin:18mm 17mm 18mm 20mm}body{font:14pt 'Times New Roman',serif;color:#111;line-height:1.45;margin:0}.head{display:flex;justify-content:space-between;text-align:center;gap:10mm}.head>div{width:48%}.org{font-weight:bold}.line{display:inline-block;width:32mm;border-bottom:1px solid #111}.date{font-style:italic;margin-top:9mm}h1{text-align:center;font-size:16pt;margin:12mm 0 2mm}.sub{text-align:center;margin:0 0 7mm;font-weight:bold}.intro{text-align:justify;text-indent:12mm}table{width:100%;border-collapse:collapse;font-size:11.5pt;margin:5mm 0}th,td{border:1px solid #222;padding:2mm 1.5mm;vertical-align:middle}th{text-align:center;background:#f3f4f6}.c{text-align:center;white-space:nowrap}.request{text-align:justify;text-indent:12mm}.sign{display:flex;justify-content:space-between;text-align:center;margin-top:10mm}.sign>div{width:42%}.space{height:25mm}.receive{margin-top:8mm;font-size:12pt}</style></head><body><div class="head"><div><div class="org">ĐOÀN TNCS HỒ CHÍ MINH<br>BCH ĐOÀN TRƯỜNG THPT LỘC NINH</div><span class="line"></span><br>Số: ${String(week).padStart(2,'0')}/PBT-ĐTN</div><div><div class="org">ĐOÀN TNCS HỒ CHÍ MINH</div><div class="date">Lộc Ninh, ngày ${day} tháng ${month} năm ${year}</div></div></div><h1>PHIẾU THÔNG BÁO VI PHẠM</h1><p class="sub">Tuần ${week}, năm học 2026–2027</p><p><strong>Kính gửi:</strong> Giáo viên chủ nhiệm lớp ${esc(className)}.</p><p class="intro">Căn cứ nội quy học sinh và kết quả theo dõi, điểm danh trong tuần ${week}, Ban Chấp hành Đoàn trường thông báo các nội dung vi phạm của ${subject} như sau:</p><table><thead><tr><th>STT</th><th>Ngày</th><th>Buổi</th><th>Mã HS</th><th>Họ và tên</th><th>Nội dung vi phạm</th><th>Điểm trừ</th><th>Tình trạng xử lý</th></tr></thead><tbody>${tableRows}</tbody></table><p class="request">Đề nghị Giáo viên chủ nhiệm phối hợp nhắc nhở, giáo dục học sinh; trao đổi với phụ huynh khi cần thiết; theo dõi việc khắc phục và phản hồi kết quả cho Ban Chấp hành Đoàn trường. Phiếu này dùng để phối hợp công tác giáo dục học sinh, không thay thế quyết định xử lý kỷ luật.</p><div class="sign"><div><strong>XÁC NHẬN CỦA GVCN</strong><div class="space"></div><em>(Ký, ghi rõ họ tên)</em></div><div><strong>TM. BCH ĐOÀN TRƯỜNG<br>BÍ THƯ</strong><div class="space"></div><em>(Ký, ghi rõ họ tên)</em></div></div><div class="receive"><strong>Nơi nhận:</strong><br>– Giáo viên chủ nhiệm lớp ${esc(className)};<br>– Lưu: BCH Đoàn trường.</div></body></html>`;
+      win.document.open();win.document.write(html);win.document.close();win.onload=()=>{win.focus();win.print()};
+    }catch(e){win.close();toast('Lỗi tạo phiếu báo vi phạm: '+e.message)}
+  }
+
   function getVisibleViolationStats() {
     const className = $('#violationClassFilter')?.value || 'ALL';
     const sortMode = $('#violationSort')?.value || 'count_desc';
@@ -1226,6 +1314,11 @@
     });
   }
 
+  function recoveryCountFor(className,studentName){
+    const key=className+'_'+studentName;
+    return Math.max(Number(state.recoveryCounts[key]||0),Number(localRecoveryCounts[key]||0));
+  }
+
   function renderViolationStats() {
     const list = getVisibleViolationStats();
     if (!list.length) {
@@ -1234,7 +1327,7 @@
     }
     $('#violationTableBody').innerHTML = list.map(item => {
       const rKey = item.className + '_' + item.name;
-      const rCount = localRecoveryCounts[rKey] || 0;
+      const rCount = recoveryCountFor(item.className,item.name);
       const btnText = rCount === 0 ? '✨ Xử lý khắc phục' : `✨ Đã khắc phục (${rCount} lần)`;
       return `<tr>
         <td><b>${esc(item.className)}</b></td><td><small>${esc(item.code)}</small></td><td><b>${esc(item.name)}</b></td>
@@ -1256,7 +1349,7 @@
       'Số lần vi phạm': item.count,
       'Tổng điểm trừ': item.totalDeduction,
       'Chi tiết các lỗi': item.errors.join('; '),
-      'Số lần khắc phục': localRecoveryCounts[item.className + '_' + item.name] || 0
+      'Số lần khắc phục': recoveryCountFor(item.className,item.name)
     }));
   }
 
@@ -1289,8 +1382,12 @@
     $('#violationTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;"><div class="loader"></div></td></tr>';
     $('#supportLogTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
     try {
-      const { data, error } = await supabaseClient.from('class_log').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
+      const [{data,error},{data:recoveryRows,error:recoveryError}] = await Promise.all([
+        supabaseClient.from('class_log').select('*').order('created_at', { ascending: false }),
+        supabaseClient.from('violation_recoveries').select('class_name,student_name')
+      ]);
+      if (error) throw error;if(recoveryError) throw recoveryError;
+      state.recoveryCounts={};(recoveryRows||[]).forEach(r=>{const key=r.class_name+'_'+r.student_name;state.recoveryCounts[key]=(state.recoveryCounts[key]||0)+1});
 
       // --- BẢNG 1: THỐNG KÊ HỌC SINH VI PHẠM ---
       const studentMap = {};
@@ -1365,12 +1462,22 @@
     }
   }
 
-  function handleResolveStudent(className, studentName) {
-    const key = className + '_' + studentName;
-    localRecoveryCounts[key] = (localRecoveryCounts[key] || 0) + 1;
-    localStorage.setItem(recoveryStorageKey, JSON.stringify(localRecoveryCounts));
-    toast(`✅ Đã ghi nhận khắc phục lần thứ ${localRecoveryCounts[key]} cho ${studentName} (${className})!`);
-    loadViolationsData();
+  async function handleResolveStudent(className, studentName) {
+    try{
+      if(!state.supportToken)throw new Error('Vui lòng đăng nhập khu vực Hỗ trợ.');
+      const note=prompt('Nhập nội dung biện pháp khắc phục của học sinh:', 'Đã thực hiện biện pháp khắc phục theo yêu cầu của Đoàn trường.');
+      if(note===null)return;
+      const item=(state.violationStats||[]).find(v=>v.className===className&&v.name===studentName);
+      const {data:userData,error:userError}=await supabaseClient.auth.getUser();
+      if(userError||!userData.user)throw new Error('Phiên Bí thư Đoàn đã hết hạn.');
+      const {error}=await supabaseClient.from('violation_recoveries').insert({
+        class_name:className,student_code:item?.code==='—'?null:item?.code,student_name:studentName,
+        week:state.currentRealWeek,school_year:'2026-2027',note:String(note||'').trim(),handled_by:userData.user.id
+      });
+      if(error)throw error;
+      toast(`✅ Đã ghi nhận biện pháp khắc phục của ${studentName} (${className}).`);
+      await loadViolationsData();
+    }catch(e){toast('Lỗi ghi nhận khắc phục: '+e.message)}
   }
 
   async function handleReviewLog(logId, statusVal) {
@@ -1562,8 +1669,70 @@
     $('#classes').innerHTML=state.classes.filter(c=>c.includes(q)).map(c=>`<button class="class-btn" onclick="onSelectClassBtn('${c}')">${c}</button>`).join('');
   }
 
-  function renderHomeroomClasses(){
-    $('#homeroomClasses').innerHTML=state.classes.map(c=>`<button class="class-btn" onclick="openHomeroomModal('${c}')">🏫 Lớp ${c}</button>`).join('');
+  function setupGvcnPortal(){
+    $('#gvcnClassSelect').innerHTML=state.gvcnClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
+    updateGvcnEmail();
+    $('#gvcnPassword').onkeydown=e=>{if(e.key==='Enter')loginGvcn()};
+  }
+
+  function updateGvcnEmail(){
+    const cls=$('#gvcnClassSelect').value||state.gvcnClasses[0];
+    $('#gvcnEmail').value=`gvcn.${cls.toLowerCase()}@thptlocninh.edu.vn`;
+  }
+
+  async function loginGvcn(){
+    const cls=$('#gvcnClassSelect').value,email=$('#gvcnEmail').value.trim(),password=$('#gvcnPassword').value.trim();
+    if(!password)return toast('Vui lòng nhập mật khẩu GVCN.');
+    const btn=$('#gvcnLoginButton');btn.disabled=true;btn.textContent='Đang đăng nhập...';
+    try{
+      const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error||!data.session)throw new Error('Tài khoản hoặc mật khẩu GVCN không chính xác.');
+      const {data:profile,error:profileError}=await supabaseClient.from('gvcn_profiles').select('class_name,email,active').single();
+      if(profileError||!profile?.active||profile.class_name!==cls)throw new Error('Tài khoản không được phân quyền cho lớp đã chọn.');
+      state.gvcnClass=profile.class_name;state.gvcnEmail=profile.email;
+      $('#gvcnLoginCard').style.display='none';$('#gvcnPortal').style.display='block';
+      $('#gvcnPortalTitle').textContent=`Theo dõi vi phạm lớp ${state.gvcnClass}`;
+      $('#gvcnAccountBadge').textContent=`Tài khoản: ${state.gvcnEmail}`;
+      $('#gvcnPassword').value='';
+      subscribeGvcnUpdates();
+      await loadGvcnViolations();
+      toast(`Đăng nhập GVCN lớp ${state.gvcnClass} thành công.`);
+    }catch(e){await supabaseClient.auth.signOut();toast(e.message)}
+    finally{btn.disabled=false;btn.textContent='Đăng nhập'}
+  }
+
+  async function logoutGvcn(){
+    if(state.gvcnChannel){await supabaseClient.removeChannel(state.gvcnChannel);state.gvcnChannel=null}
+    await supabaseClient.auth.signOut();state.gvcnClass='';state.gvcnEmail='';
+    $('#gvcnPortal').style.display='none';$('#gvcnLoginCard').style.display='block';
+    toast('Đã đăng xuất GVCN.');
+  }
+
+  function subscribeGvcnUpdates(){
+    if(state.gvcnChannel)supabaseClient.removeChannel(state.gvcnChannel);
+    state.gvcnChannel=supabaseClient.channel('gvcn-'+state.gvcnClass+'-'+Date.now())
+      .on('postgres_changes',{event:'*',schema:'public',table:'class_log',filter:`class_name=eq.${state.gvcnClass}`},()=>loadGvcnViolations())
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'violation_recoveries',filter:`class_name=eq.${state.gvcnClass}`},()=>loadGvcnViolations())
+      .subscribe();
+  }
+
+  async function loadGvcnViolations(){
+    if(!state.gvcnClass)return;
+    const week=Number($('#gvcnWeekSelect').value)||state.currentRealWeek;
+    $('#gvcnViolationBody').innerHTML='<tr><td colspan="7" style="text-align:center;"><div class="loader"></div></td></tr>';
+    try{
+      const [{data:logs,error},{data:recoveries,error:recoveryError}]=await Promise.all([
+        supabaseClient.from('class_log').select('id,created_at,period,violations_json,resolved_count').eq('class_name',state.gvcnClass).eq('week',week).order('created_at',{ascending:false}),
+        supabaseClient.from('violation_recoveries').select('student_code,student_name,note,handled_at').eq('class_name',state.gvcnClass).eq('week',week).order('handled_at',{ascending:false})
+      ]);
+      if(error)throw error;if(recoveryError)throw recoveryError;
+      const recoveryMap={};(recoveries||[]).forEach(r=>{const k=(r.student_code||r.student_name).toLowerCase();(recoveryMap[k]??=[]).push(r)});
+      const rows=(logs||[]).flatMap(log=>(log.violations_json||[]).filter(v=>v.name&&v.status).map(v=>{
+        const handled=recoveryMap[String(v.code||v.name).toLowerCase()]||[];
+        return {date:new Date(log.created_at).toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}),period:log.period||'',code:v.code||'—',name:v.name,status:v.status,deduction:Number(v.deduction)||0,handled};
+      }));
+      $('#gvcnViolationBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.period)}</td><td>${esc(r.code)}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.status)}</td><td><strong style="color:#dc2626;">-${r.deduction}đ</strong></td><td>${r.handled.length?`<span class="badge" style="background:#d1fae5;color:#065f46;">Đã khắc phục (${r.handled.length})</span><br><small>${esc(r.handled[0].note||'Đoàn trường đã ghi nhận')}</small>`:'<span class="badge" style="background:#fee2e2;color:#991b1b;">Chưa khắc phục</span>'}</td></tr>`).join(''):'<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);">Không có vi phạm còn hiệu lực trong tuần này.</td></tr>';
+    }catch(e){$('#gvcnViolationBody').innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#dc2626;">'+esc(e.message)+'</td></tr>'}
   }
 
   function onSelectClassBtn(clsName) {
@@ -1647,6 +1816,8 @@
     const opts = '<option value="ALL">-- Tất cả các lớp --</option>' + state.classes.map(c => `<option value="${c}">${c}</option>`).join('');
     $('#adminLogClass').innerHTML = opts;
     $('#weeklyLogClass').innerHTML = state.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    $('#noticeClassSelect').innerHTML = state.gvcnClasses.map(c => `<option value="${c}">${c}</option>`).join('');
+    loadNoticeStudents();
   }
 
   async function loadClass(cls){
@@ -2077,5 +2248,7 @@
 </script>
 </body>
 </html>
+
+
 
 
